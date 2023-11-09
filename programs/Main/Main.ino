@@ -1,128 +1,94 @@
-/*
- * ====================================================
- *  Zumobot Testprogramm #6b - Zumo Reflektionssensoren
- * ====================================================
- *
- * Liest die Roh-Werte der Reflektionssensoren und gibt sie über den Serial Monitor aus.
- *
- * Neue Inhalte:
- * ============
- * - ZumoReflectanceSensorArray Library
- * - Arrays
- * - Zeiger
- *
- * Hardware:
- * =========
- * Benötigt nur den Zumobot; keine externe Schaltung.
- * PWM-Pins sind auf dem Arduino markiert mit einer Tilde (~).
- *
- * Referenzen:
- * ===========
- * - immer auf unserer Lieblingswebseite nachschauen (leider nur auf englisch verfügbar):
- *   https://www.arduino.cc/en/Reference/HomePage
- * - deutsche Übersetzung:
- *   https://www.arduinoforum.de/arduino_referenz_down.php
- * - und Toms Cheat Sheet nicht zu vergessen
- * - ZumoShield Libraries
- *   https://github.com/pololu/zumo-shield/blob/master/README.textile
- */
-/** 1. Farbsensor:
- *  Anschlüsse:
- *  Sensor VIN -> Arduino 3.3V
- *  Sensor GND -> Arduino GND
- *  Sensor SDA -> Arduino SDA (z.B. Pin 20 SDA auf dem Mega)
- *  Sensor SCL -> Arduino SCL (z.B. Pin 21 SCL auf dem Mega)
- */
-/** 2. Farbsensor:
- *  Anschlüsse:
- *  Sensor VIN -> Arduino 3.3V
- *  Sensor GND -> Arduino GND
- *  Sensor SDA -> Arduino SDA (z.B. Pin SDA1 auf dem Mega)
- *  Sensor SCL -> Arduino SCL (z.B. Pin SCL1 auf dem Mega)
- */
-// test
+/** importiert Arduino automatisch, muss man also hier nicht unbedingt auch noch mal importieren: */
+#include <Arduino.h>
+
+/**
+ * !!! Immer darauf achten, dass unten in der Statusleiste...
+ *     ... das richtige Arduino Board eingestellt ist
+ *     ... das richtige "Sketch File" ausgewählt ist (das ändert sich nämlich nicht automatisch)
+ *     ... die richtige C/C++ Konfiguration eingestellt ist (sonst gibt es noch mehr "rote swiggels")
+ * 
+ * :: Externen RGB Farbsensor auslesen ::
+ * :: Serial Plotter ausprobieren ::
+ * :: Hauptprogramm-Schleife in Zustände unterteilen ::
+ * :: Programm in Funktionen unterteilen ::
+ * 
+ * Hardware-Aufbau:
+ * TCS34725:    Arduino Due / Arduino Nano RP2040 Connect:
+ *     [LED <-- (kann man optional an irgendeinen Digital-Pin oder den INT Pin vom Sensor anschließen,
+ *              um die LED abzuschalten)]
+ *     [INT  --> (kann man optional an irgendeinen Digital-Pin anschließen,
+ *                wenn man den Sensor effizienter auslesen will)]
+ *      SDA <-> SDA
+ *      SCL <-- SDA
+ *     [3V3 --> (2,3V Spannungsversorgung, falls man sowas irgendwo benötigt)]
+ *      GND <-- GND
+ *      VIN <-- 3V3
+ * 
+ * Der VL53L0X ist ein externer Sensor, kann also entweder
+ * - an   Bus I2C0 ("Wire")
+ * - oder Bus I2C1 ("Wire1") verbunden werden.
+*/
+
+/** der I2C Bus */
+#include <Wire.h>
+/** I2C Adresse: 0x29 (7-bit) (unveränderlich) */
+#include <Adafruit_TCS34725.h>
+/** Sensor sehr schnell einstellen (ungenauer):
+ *  Gain 4x fand ich am besten, aber dann sind die Werte so stabil,
+ *   dass die Fehlerdetektion immer ausgelöst hat (siehe unten "helligkeitStatischStoppuhr.hasPassed"). */
+Adafruit_TCS34725 rgbSensor = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
+
+/** optional: Stoppuhr, um zu Verbindungsverluste zu erkennen */
+#include <Chrono.h> 
+Chrono helligkeitStatischStoppuhr = Chrono(Chrono::MILLIS, false); // noch nicht gestartet
+
+enum Modus {
+    /* Werte im Serial Monitor anzeigen. */
+    WERTE_LOGGEN,
+    /* Geht nur in der offiziellen Arduino IDE: Komma-Separierte Liste für den Serial Plotter. */
+    IM_SERIAL_PLOTTER_ZEIGEN,
+};
+
+/** hier einstellen, was das Programm mit den Sensorwerten anfangen soll: */
+Modus modus = WERTE_LOGGEN;
+
 #include "ZumoReflectanceSensorArray.h"
 #include "ZumoMotors.h"
 #include <Wire.h>
-#include "Adafruit_TCS34725.h"
-#include "Adafruit_TCS34725_1.h"
 
 ZumoMotors motoren;
 ZumoReflectanceSensorArray reflektionsSensoren;
-Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
-Adafruit_TCS34725_1 tcs2 = Adafruit_TCS34725_1(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 
 int varrechts = 0;
 int varlinks = 0;
-uint16_t helligkeit2;
-uint16_t rot2;
-uint16_t gruen2;
-uint16_t blau2;
-uint16_t helligkeit; // Helligkeit vom Farbsensor 1
-uint16_t rot;        // Rot-Wert vom Farbsensor 1
-uint16_t gruen;      // Grün-Wert vom Farbsensor 1
-uint16_t blau;       // Blau-Wert vom Farbsensor 1
 unsigned int sensorwerte[6];
 
-void straight()
-{
-  motoren.flipLeftMotor(true);
-  motoren.flipRightMotor(true);
-  motoren.setSpeeds(75, 75);
-}
-
-void left()
-{
-  motoren.flipLeftMotor(false);
-  motoren.flipRightMotor(true);
-  motoren.setSpeeds(75, 75);
-}
-
-void right()
-{
-  motoren.flipLeftMotor(true);
-  motoren.flipRightMotor(false);
-  motoren.setSpeeds(75, 75);
-}
-
-void turn()
-{
-  delay(1); // placeholder
-}
 
 void setup()
 {
-  // Seriellen Monitor initialisieren
-  Serial.begin(9600); // 9600 ist die Übertragungsgeschwindigkeit in Bits/s
-  Wire.begin();
-  Wire1.begin();
-  if (tcs2.begin())
-  {
-    // Initialisierung von Sensor 2 erfolgreich
-    Serial.println("Sensor 2 gefunden!");
-  }
-  else
-  {
-    // Initialisierung von Sensor 2 fehlgeschlagen
-    Serial.println("Sensor 2 nicht gefunden... Verdrahtung pruefen.");
-  }
+  Serial.begin(115200);
 
-  Serial.println("Adafruit Farbsensor Test!");
-  if (tcs.begin())
-  {
-    // Initialisierung von Sensor 1 erfolgreich
-    Serial.println("Sensor 1 gefunden!");
+  // I2C Bus 1x für alle Bus-Teilnehmer initialisieren (sonst crasht das Betriebssystem)
+  Wire.begin(); // Bus I2C0
+  Wire.setClock(1000000); // 1MHz Kommunikationsgeschwindigkeit
+  //Wire1.begin();  // Bus I2C1
+  // hier den zu nutzenden I2C Bus einstellen:
+  if (!rgbSensor.begin(TCS34725_ADDRESS, &Wire)) {
+    delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+    Serial.println("RGB Farbsensor Verdrahtung prüfen! Programm Ende.");
+    while (1);
   }
-  else
-  {
-    // Initialisierung von Sensor 1 fehlgeschlagen
-    Serial.println("Sensor 1 nicht gefunden... Verdrahtung pruefen.");
-  }
-  // Library initialisieren
-  reflektionsSensoren.init();
+  helligkeitStatischStoppuhr.start();
+  Serial.println("Initialisierung Farbe 1 abgeschlossen");
+  reflektionsSensoren.init();  // Library initialisieren
   motoren.flipLeftMotor(true);
   motoren.flipRightMotor(true);
 }
+
+// hier speichern wir die Sensorwerte ab:
+// Roh-Werte (Es gibt auch kalibierte Werte, aber die sind sehr langsam auszulesen):
+uint16_t rot, gruen, blau, helligkeit;
+uint16_t rot2, gruen2, blau2, helligkeit2;
 
 void read_reflectionandprint()
 {
@@ -141,56 +107,14 @@ void read_reflectionandprint()
   Serial.print("\n");           // Neue Zeile
 }
 
-void read_color2andprint()
-{
-  // Sensor 2: lesen starten
-  tcs2.setInterrupt(false);
-  // nach 50 ms haben wir Werte; lieber 60ms warten, um sicher zu sein
-  delay(60);
-  // Werte in unseren Variablen speichern:
-  tcs2.getRawData(&rot2, &gruen2, &blau2, &helligkeit2);
-  // Sensor 2: lesen beenden
-  tcs2.setInterrupt(true);
-  Serial.print(" HW: C:\t");
-  Serial.print(helligkeit2);
-  Serial.print("\tR:\t");
-  Serial.print(rot2);
-  Serial.print("\tG:\t");
-  Serial.print(gruen2);
-  Serial.print("\tB:\t");
-  Serial.print(blau2);
-  Serial.print("\n"); // Zeilenumbruch
-}
-
-void read_color1andprint()
-{
-  // Sensor 2: lesen starten
-  tcs.setInterrupt(false);
-  // nach 50 ms haben wir Werte; lieber 60ms warten, um sicher zu sein
-  delay(60);
-  // Werte in unseren Variablen speichern:
-  tcs.getRawData(&rot, &gruen, &blau, &helligkeit);
-  // Sensor 2: lesen beenden
-  tcs.setInterrupt(true);
-  Serial.print(" HW: C:\t");
-  Serial.print(helligkeit);
-  Serial.print("\tR:\t");
-  Serial.print(rot);
-  Serial.print("\tG:\t");
-  Serial.print(gruen);
-  Serial.print("\tB:\t");
-  Serial.print(blau);
-  Serial.print("\n"); // Zeilenumbruch
-}
-
 void doppelschwarz()
 {
   Serial.print("\n");
   Serial.print("alles-schwarz");
   motoren.setSpeeds(0, 0);
   delay(1000);
-  read_color2andprint();
-  read_color1andprint();
+  readColor2();
+  readColor();
   if (rot2 <= 1000 && (gruen2 - blau2 >= 200))
   {
     if (rot <= 1000 && (gruen - blau >= 200))
@@ -305,4 +229,110 @@ void loop()
     straight();
   }
   delay(50);
+}
+
+void straight()
+{
+  motoren.flipLeftMotor(true);
+  motoren.flipRightMotor(true);
+  motoren.setSpeeds(75, 75);
+}
+
+void left()
+{
+  motoren.flipLeftMotor(false);
+  motoren.flipRightMotor(true);
+  motoren.setSpeeds(75, 75);
+}
+
+void right()
+{
+  motoren.flipLeftMotor(true);
+  motoren.flipRightMotor(false);
+  motoren.setSpeeds(75, 75);
+}
+
+void turn()
+{
+  delay(1); // placeholder
+}
+
+const uint16_t VERBINDUNG_VERLOREN = 0;
+uint16_t vorheriges_rot, vorheriges_gruen, vorheriges_blau, vorherige_helligkeit = VERBINDUNG_VERLOREN;
+uint16_t vorheriges_rot2, vorheriges_gruen2, vorheriges_blau2, vorherige_helligkeit2 = VERBINDUNG_VERLOREN;
+
+void readColor() {
+    rgbSensor.getRawData(&rot, &gruen, &blau, &helligkeit);
+    /** Dieser Mechanismus hier ist gefährlich, wenn es passieren kann, dass die Sensoren lange Zeit das selbe sehen:
+     *  In meinen Versuchen habe ich oben den Gain von 4x auf 16x gestellt, um mehr Rauschen zu bekommen.
+     *  Mit Timeout 5s sehe ich keine False-Negatives mehr: */
+    if (!helligkeitStatischStoppuhr.hasPassed(5000)) {
+        // alles OK
+        if (vorheriges_rot != rot || vorheriges_gruen != gruen ||
+            vorheriges_blau != blau || vorherige_helligkeit != helligkeit) {
+            // merken: der Wert hat sich verändert
+            vorheriges_rot = rot;
+            vorheriges_gruen = gruen;
+            vorheriges_blau = blau;
+            vorherige_helligkeit = helligkeit;
+            helligkeitStatischStoppuhr.restart();
+        }
+        return; // rausgehen aus der Funktion, damit wir nicht zum Fehler kommen
+    }
+
+    // Fehler:
+    rot = VERBINDUNG_VERLOREN;
+    gruen = VERBINDUNG_VERLOREN;
+    blau = VERBINDUNG_VERLOREN;
+    helligkeit = VERBINDUNG_VERLOREN;
+    helligkeitStatischStoppuhr.restart(); // um bei Wackelkontakt Wiederverbindung zu erlauben
+    Serial.println("RGB Sensor 1 Verdrahtung prüfen!");
+}
+
+void readColor2() {
+    rgbSensor.getRawData(&rot2, &gruen2, &blau2, &helligkeit2);
+    /** Dieser Mechanismus hier ist gefährlich, wenn es passieren kann, dass die Sensoren lange Zeit das selbe sehen:
+     *  In meinen Versuchen habe ich oben den Gain von 4x auf 16x gestellt, um mehr Rauschen zu bekommen.
+     *  Mit Timeout 5s sehe ich keine False-Negatives mehr: */
+    if (!helligkeitStatischStoppuhr.hasPassed(5000)) {
+        // alles OK
+        if (vorheriges_rot2 != rot2 || vorheriges_gruen2 != gruen2 ||
+            vorheriges_blau2 != blau2 || vorherige_helligkeit2 != helligkeit2) {
+            // merken: der Wert hat sich verändert
+            vorheriges_rot2 = rot2;
+            vorheriges_gruen2 = gruen2;
+            vorheriges_blau2 = blau2;
+            vorherige_helligkeit2 = helligkeit2;
+            helligkeitStatischStoppuhr.restart();
+        }
+        return; // rausgehen aus der Funktion, damit wir nicht zum Fehler kommen
+    }
+
+    // Fehler:
+    rot2 = VERBINDUNG_VERLOREN;
+    gruen2 = VERBINDUNG_VERLOREN;
+    blau2 = VERBINDUNG_VERLOREN;
+    helligkeit2 = VERBINDUNG_VERLOREN;
+    helligkeitStatischStoppuhr.restart(); // um bei Wackelkontakt Wiederverbindung zu erlauben
+    Serial.println("RGB Sensor 2 Verdrahtung prüfen!");
+}
+
+void werteLoggen() {
+    Serial.println("R:" + String(rot) + " G:" + String(gruen) + " B:" + String(blau) + " C:" + String(helligkeit));
+}
+
+void fuerPlotterLoggen() {
+    Serial.println(String(blau) + "," + String(rot) + "," + String(gruen) + "," +
+                   String(helligkeit / 10)); // damit der Graph nicht die ganze Zeit raus und rein zoomt
+}
+
+void calculatecolor() {
+    if (((gruen >= blau) && (gruen >= rot)) && (gruen <= 1000) && (gruen >= 650))
+    {
+        Serial.println("green");
+    }
+    else {
+        Serial.println("not green");
+    }
+    
 }
