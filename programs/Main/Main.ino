@@ -28,7 +28,7 @@
  * - an   Bus I2C0 ("Wire")
  * - oder Bus I2C1 ("Wire1") verbunden werden.
  */
-// test
+
 /** der I2C Bus */
 #include <Wire.h>
 /** I2C Adresse: 0x29 (7-bit) (unveränderlich) */
@@ -79,6 +79,8 @@ void setup()
 // Roh-Werte (Es gibt auch kalibierte Werte, aber die sind sehr langsam auszulesen):
 uint16_t rot, gruen, blau, helligkeit;
 uint16_t rot2, gruen2, blau2, helligkeit2;
+// hier speichern wir die 6 Sensorwerte ab:
+uint16_t helligkeiten[SENSOR_LEISTE_ANZAHL_SENSOREN];
 
 void doppelschwarz()
 {
@@ -309,9 +311,6 @@ void calculatecolor()
     Serial.println("not green");
   }
 }
-
-// hier speichern wir die 6 Sensorwerte ab:
-uint16_t helligkeiten[SENSOR_LEISTE_ANZAHL_SENSOREN];
 
 void read_reflectionandprint()
 {
