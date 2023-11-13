@@ -90,9 +90,9 @@ void doppelschwarz()
   delay(1000);
   readColor2();
   readColor();
-  if (rot2 <= 1000 && (gruen2 - blau2 >= 200))
+  if (((gruen2 >= blau2) && (gruen2 >= rot2)) && (gruen2 <= 1000) && (gruen2 >= 650))
   {
-    if (rot <= 1000 && (gruen - blau >= 200))
+    if (((gruen >= blau) && (gruen >= rot)) && (gruen <= 1000) && (gruen >= 650))
     {
       turn();
     }
@@ -111,7 +111,7 @@ void doppelschwarz()
   }
   else
   {
-    if (rot <= 1000 && (gruen - blau >= 200))
+    if (((gruen >= blau) && (gruen >= rot)) && (gruen <= 1000) && (gruen >= 650))
     {
       straight();
       delay(1250);
