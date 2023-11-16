@@ -171,23 +171,60 @@ void doppelschwarz()
   }
 }
 
-void loop() //temp
+void loop()
 {
-  /* read_reflectionandprint();
-  if (calculateReflection() == "frontalLine")
-  {
-    reflectionOutput modus = frontalLine;
-  }
-  else if (calculateReflection)
-  {
-    
-  }  */
   switch (calculateReflection)
   {
-  case /* constant-expression */:
-    /* code */
+  case frontalLine:
+    doppelschwarz();
+    break;
+
+  case normalLine:
+    Serial.print("\n");
+    Serial.print("Linie");
+    straight();
+    if (varrechts > 0)
+    {
+      varrechts = varrechts - 5;
+    }
+    if (varlinks > 0)
+    {
+      varlinks = varlinks - 5;
+    }
+    break;
+
+  case leftLine:
+    Serial.print("\n");
+    Serial.print("links");
+    left();
+    varlinks = varlinks + 5;
+    if (varlinks + varrechts >= 400)
+    {
+      varlinks = 0;
+      varrechts = 0;
+      doppelschwarz();
+    }
     break;
   
+  case rightLine:
+    Serial.print("\n");
+    Serial.print("rechts");
+    right();
+    varrechts = varrechts + 5;
+    if (varlinks + varrechts >= 400)
+    {
+      varlinks = 0;
+      varrechts = 0;
+      doppelschwarz();
+    }
+    break;
+
+  case noLine:
+    Serial.print("\n");
+    Serial.print("keine Linie...");
+    straight();
+    break;
+        
   default:
     break;
   }
