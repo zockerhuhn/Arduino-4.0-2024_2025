@@ -63,18 +63,7 @@ Chrono helligkeitStatischStoppuhr = Chrono(Chrono::MILLIS, false); // noch nicht
  *  Gain 4x fand ich am besten, aber dann sind die Werte so stabil, 
  *  dass die Fehlerdetektion immer ausgelöst hat (siehe unten "helligkeitStatischStoppuhr.hasPassed"). */
 Adafruit_TCS34725 rgbSensor = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
-enum reflectionOutput {
-  /*frontal schwarze Linie getroffen*/
-  frontalLine,
-  /*Linie gefunden*/
-  normalLine,
-  /*Linie Links gefunden*/
-  leftLine,
-  /*Linie Rechts gefunden*/
-  rightLine,
-  /*Keine Linie gefunden*/
-  noLine,
-};
+String calculatedReflection;
 
 void setup()
 {
@@ -173,67 +162,12 @@ void doppelschwarz()
 
 void loop()
 {
-  switch (calculateReflection)
-  {
-  case frontalLine:
-    doppelschwarz();
-    break;
-
-  case normalLine:
-    Serial.print("\n");
-    Serial.print("Linie");
-    straight();
-    if (varrechts > 0)
-    {
-      varrechts = varrechts - 5;
-    }
-    if (varlinks > 0)
-    {
-      varlinks = varlinks - 5;
-    }
-    break;
-
-  case leftLine:
-    Serial.print("\n");
-    Serial.print("links");
-    left();
-    varlinks = varlinks + 5;
-    if (varlinks + varrechts >= 400)
-    {
-      varlinks = 0;
-      varrechts = 0;
-      doppelschwarz();
-    }
-    break;
-  
-  case rightLine:
-    Serial.print("\n");
-    Serial.print("rechts");
-    right();
-    varrechts = varrechts + 5;
-    if (varlinks + varrechts >= 400)
-    {
-      varlinks = 0;
-      varrechts = 0;
-      doppelschwarz();
-    }
-    break;
-
-  case noLine:
-    Serial.print("\n");
-    Serial.print("keine Linie...");
-    straight();
-    break;
-        
-  default:
-    break;
-  }
-  
-  if ((helligkeiten[0] >= reflectionBlackThreshold) && (helligkeiten[5] >= reflectionBlackThreshold))
+  calculatedReflection = calculateReflection();
+  if (calculatedReflection == "frontLine")
   {
     doppelschwarz();
   }
-  else if ((helligkeiten[2] >= reflectionBlackThreshold || helligkeiten[3] >= reflectionBlackThreshold) && (helligkeiten[0] <= reflectionBlackThreshold && helligkeiten[1] <= reflectionBlackThreshold && helligkeiten[4] <= reflectionBlackThreshold && helligkeiten[5] <= reflectionBlackThreshold))
+  else if (calculatedReflection == "normalLine")
   {
     Serial.print("\n");
     Serial.print("Linie");
@@ -247,7 +181,7 @@ void loop()
       varlinks = varlinks - 5;
     }
   }
-  else if (helligkeiten[0] >= reflectionBlackThreshold || helligkeiten[1] >= reflectionBlackThreshold)
+  else if (calculatedReflection == "leftLine")
   {
     Serial.print("\n");
     Serial.print("links");
@@ -260,7 +194,7 @@ void loop()
       doppelschwarz();
     }
   }
-  else if (helligkeiten[4] >= reflectionBlackThreshold || helligkeiten[5] >= reflectionBlackThreshold)
+  else if (calculatedReflection == "rightLine")
   {
     Serial.print("\n");
     Serial.print("rechts");
@@ -273,7 +207,7 @@ void loop()
       doppelschwarz();
     }
   }
-  else if (helligkeiten[0] <= reflectionBlackThreshold && helligkeiten[1] <= reflectionBlackThreshold && helligkeiten[2] <= reflectionBlackThreshold && helligkeiten[3] <= reflectionBlackThreshold && helligkeiten[4] <= reflectionBlackThreshold && helligkeiten[5] <= reflectionBlackThreshold)
+  else if (calculatedReflection == "noLine")
   {
     Serial.print("\n");
     Serial.print("keine Linie...");
