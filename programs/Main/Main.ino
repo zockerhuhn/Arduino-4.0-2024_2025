@@ -92,74 +92,6 @@ int colorMinThreshold = 650;
 int colorMaxThreshold = 1000;
 int reflectionBlackThreshold = 120;
 
-void doppelschwarz()
-{
-  Serial.print("\n");
-  Serial.print("alles-schwarz");
-  motoren.setSpeeds(0, 0);
-  delay(1000);
-  readColor2();
-  readColor();
-  if (((gruen2 >= blau2) && (gruen2 >= rot2)) && (gruen2 <= colorMaxThreshold) && (gruen2 >= colorMinThreshold))
-  {
-    if (((gruen >= blau) && (gruen >= rot)) && (gruen <= colorMaxThreshold) && (gruen >= colorMinThreshold))
-    {
-      turn();
-    }
-    else
-    {
-      straight();
-      delay(1250);
-      right();
-      delay(1000);
-      read_reflectionandprint();
-      while (helligkeiten[5] <= reflectionBlackThreshold)
-      {
-        read_reflectionandprint();
-      }
-    }
-  }
-  else
-  {
-    if (((gruen >= blau) && (gruen >= rot)) && (gruen <= colorMaxThreshold) && (gruen >= colorMinThreshold))
-    {
-      straight();
-      delay(1250);
-      left();
-      delay(1000);
-      read_reflectionandprint();
-      while (helligkeiten[1] <= reflectionBlackThreshold)
-      {
-        read_reflectionandprint();
-      }
-    }
-    else
-    {
-      straight();
-      delay(1200);
-      motoren.setSpeeds(0, 0);
-      read_reflectionandprint();
-      if (helligkeiten[0] >= reflectionBlackThreshold || helligkeiten[1] >= reflectionBlackThreshold || helligkeiten[2] >= reflectionBlackThreshold || helligkeiten[3] >= reflectionBlackThreshold || helligkeiten[4] >= reflectionBlackThreshold || helligkeiten[5] >= reflectionBlackThreshold)
-      {
-        // not else lol
-      }
-      else
-      {
-        left();
-        delay(2500);
-        right();
-        read_reflectionandprint();
-        while (helligkeiten[1] <= reflectionBlackThreshold && helligkeiten[2] <= reflectionBlackThreshold && helligkeiten[3] <= reflectionBlackThreshold && helligkeiten[4] <= reflectionBlackThreshold)
-        {
-          read_reflectionandprint();
-          Serial.print("\n");
-          Serial.print("suche...");
-        }
-      }
-    }
-  }
-}
-
 void loop()
 {
   calculatedReflection = calculateReflection();
@@ -214,6 +146,69 @@ void loop()
     straight();
   }
   delay(50);
+}
+
+void doppelschwarz()
+{
+  Serial.print("\n");
+  Serial.print("alles-schwarz");
+  motoren.setSpeeds(0, 0);
+  delay(1000);
+  readColor2();
+  readColor();
+  if (calculatecolor())
+  {
+    if (calculatecolor2())
+    {
+      turn();
+    }
+    else
+    {
+      straight();
+      delay(1250);
+      right();
+      delay(1000);
+      while (calculateReflection() == "noLine")
+      {
+        delay(1);
+      }
+    }
+  }
+  else
+  {
+    if (calculatecolor2())
+    {
+      straight();
+      delay(1250);
+      left();
+      delay(1000);
+      while (calculateReflection() == "noLine")
+      {
+        delay(1);
+      }
+    }
+    else
+    {
+      straight();
+      delay(1200);
+      motoren.setSpeeds(0, 0);
+      if (!(calculateReflection() == "noLine"))
+      {
+        // not else lol
+      }
+      else
+      {
+        left();
+        delay(2500);
+        right();
+        while (calculateReflection() == "noLine")
+        {
+          Serial.print("\n");
+          Serial.print("suche...");
+        }
+      }
+    }
+  }
 }
 
 void straight()
@@ -306,16 +301,30 @@ void readColor2()
   Serial.println("RGB Sensor 2 Verdrahtung prüfen!");
 }
 
-void calculatecolor()
+boolean calculatecolor() {
 {
   if (((gruen >= blau) && (gruen >= rot)) && (gruen <= colorMaxThreshold) && (gruen >= colorMinThreshold))
   {
-    Serial.println("green");
+    return true;
   }
   else
   {
-    Serial.println("not green");
+    return false;
   }
+}
+}
+
+boolean calculatecolor2() {
+{
+  if (((gruen2 >= blau2) && (gruen2 >= rot2)) && (gruen2 <= colorMaxThreshold) && (gruen2 >= colorMinThreshold))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
 }
 
 void read_reflectionandprint()
