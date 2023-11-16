@@ -82,6 +82,11 @@ uint16_t rot2, gruen2, blau2, helligkeit2;
 // hier speichern wir die 6 Sensorwerte ab:
 uint16_t helligkeiten[SENSOR_LEISTE_ANZAHL_SENSOREN];
 
+// Sensorenwerte für Kalibrierung
+int colorMinThreshold = 650;
+int colorMaxThreshold = 1000;
+int reflectionBlackThreshold = 120;
+
 void doppelschwarz()
 {
   Serial.print("\n");
@@ -90,9 +95,9 @@ void doppelschwarz()
   delay(1000);
   readColor2();
   readColor();
-  if (((gruen2 >= blau2) && (gruen2 >= rot2)) && (gruen2 <= 1000) && (gruen2 >= 650))
+  if (((gruen2 >= blau2) && (gruen2 >= rot2)) && (gruen2 <= colorMaxThreshold) && (gruen2 >= colorMinThreshold))
   {
-    if (((gruen >= blau) && (gruen >= rot)) && (gruen <= 1000) && (gruen >= 650))
+    if (((gruen >= blau) && (gruen >= rot)) && (gruen <= colorMaxThreshold) && (gruen >= colorMinThreshold))
     {
       turn();
     }
@@ -103,7 +108,7 @@ void doppelschwarz()
       right();
       delay(1000);
       read_reflectionandprint();
-      while (helligkeiten[5] <= 120)
+      while (helligkeiten[5] <= reflectionBlackThreshold)
       {
         read_reflectionandprint();
       }
@@ -111,14 +116,14 @@ void doppelschwarz()
   }
   else
   {
-    if (((gruen >= blau) && (gruen >= rot)) && (gruen <= 1000) && (gruen >= 650))
+    if (((gruen >= blau) && (gruen >= rot)) && (gruen <= colorMaxThreshold) && (gruen >= colorMinThreshold))
     {
       straight();
       delay(1250);
       left();
       delay(1000);
       read_reflectionandprint();
-      while (helligkeiten[1] <= 120)
+      while (helligkeiten[1] <= reflectionBlackThreshold)
       {
         read_reflectionandprint();
       }
@@ -129,7 +134,7 @@ void doppelschwarz()
       delay(1200);
       motoren.setSpeeds(0, 0);
       read_reflectionandprint();
-      if (helligkeiten[0] >= 120 || helligkeiten[1] >= 120 || helligkeiten[2] >= 120 || helligkeiten[3] >= 120 || helligkeiten[4] >= 120 || helligkeiten[5] >= 120)
+      if (helligkeiten[0] >= reflectionBlackThreshold || helligkeiten[1] >= reflectionBlackThreshold || helligkeiten[2] >= reflectionBlackThreshold || helligkeiten[3] >= reflectionBlackThreshold || helligkeiten[4] >= reflectionBlackThreshold || helligkeiten[5] >= reflectionBlackThreshold)
       {
         // not else lol
       }
@@ -139,7 +144,7 @@ void doppelschwarz()
         delay(2500);
         right();
         read_reflectionandprint();
-        while (helligkeiten[1] <= 120 && helligkeiten[2] <= 120 && helligkeiten[3] <= 120 && helligkeiten[4] <= 120)
+        while (helligkeiten[1] <= reflectionBlackThreshold && helligkeiten[2] <= reflectionBlackThreshold && helligkeiten[3] <= reflectionBlackThreshold && helligkeiten[4] <= reflectionBlackThreshold)
         {
           read_reflectionandprint();
           Serial.print("\n");
@@ -153,11 +158,11 @@ void doppelschwarz()
 void loop()
 {
   read_reflectionandprint();
-  if ((helligkeiten[0] >= 120) && (helligkeiten[5] >= 120))
+  if ((helligkeiten[0] >= reflectionBlackThreshold) && (helligkeiten[5] >= reflectionBlackThreshold))
   {
     doppelschwarz();
   }
-  else if ((helligkeiten[2] >= 120 || helligkeiten[3] >= 120) && (helligkeiten[0] <= 120 && helligkeiten[1] <= 120 && helligkeiten[4] <= 120 && helligkeiten[5] <= 120))
+  else if ((helligkeiten[2] >= reflectionBlackThreshold || helligkeiten[3] >= reflectionBlackThreshold) && (helligkeiten[0] <= reflectionBlackThreshold && helligkeiten[1] <= reflectionBlackThreshold && helligkeiten[4] <= reflectionBlackThreshold && helligkeiten[5] <= reflectionBlackThreshold))
   {
     Serial.print("\n");
     Serial.print("Linie");
@@ -171,7 +176,7 @@ void loop()
       varlinks = varlinks - 5;
     }
   }
-  else if (helligkeiten[0] >= 120 || helligkeiten[1] >= 120)
+  else if (helligkeiten[0] >= reflectionBlackThreshold || helligkeiten[1] >= reflectionBlackThreshold)
   {
     Serial.print("\n");
     Serial.print("links");
@@ -184,7 +189,7 @@ void loop()
       doppelschwarz();
     }
   }
-  else if (helligkeiten[4] >= 120 || helligkeiten[5] >= 120)
+  else if (helligkeiten[4] >= reflectionBlackThreshold || helligkeiten[5] >= reflectionBlackThreshold)
   {
     Serial.print("\n");
     Serial.print("rechts");
@@ -197,7 +202,7 @@ void loop()
       doppelschwarz();
     }
   }
-  else if (helligkeiten[0] <= 120 && helligkeiten[1] <= 120 && helligkeiten[2] <= 120 && helligkeiten[3] <= 120 && helligkeiten[4] <= 120 && helligkeiten[5] <= 120)
+  else if (helligkeiten[0] <= reflectionBlackThreshold && helligkeiten[1] <= reflectionBlackThreshold && helligkeiten[2] <= reflectionBlackThreshold && helligkeiten[3] <= reflectionBlackThreshold && helligkeiten[4] <= reflectionBlackThreshold && helligkeiten[5] <= reflectionBlackThreshold)
   {
     Serial.print("\n");
     Serial.print("keine Linie...");
@@ -302,7 +307,7 @@ void readColor2()
 
 void calculatecolor()
 {
-  if (((gruen >= blau) && (gruen >= rot)) && (gruen <= 1000) && (gruen >= 650))
+  if (((gruen >= blau) && (gruen >= rot)) && (gruen <= colorMaxThreshold) && (gruen >= colorMinThreshold))
   {
     Serial.println("green");
   }
