@@ -29,7 +29,6 @@
  * - oder Bus I2C1 ("Wire1") verbunden werden.
 */
 
-#include <WiFiNINA.h>
 /** der I2C Bus */
 #include <Wire.h>
 /** I2C Adresse: 0x29 (7-bit) (unveränderlich) */
@@ -70,19 +69,11 @@ void setup() {
 
     helligkeitStatischStoppuhr.start();
     Serial.println("Initialisierung abgeschlossen");
-
-    pinMode(LEDR, OUTPUT);
-    pinMode(LEDG, OUTPUT);
-    pinMode(LEDB, OUTPUT);
-
 }
 
 // hier speichern wir die Sensorwerte ab:
 // Roh-Werte (Es gibt auch kalibierte Werte, aber die sind sehr langsam auszulesen):
 uint16_t rot, gruen, blau, helligkeit;
-
-int rgbValues[] = { 255, 0, 0 }; // 0=Red, 1=Green and 2=Blue
-int upIndex = 0, downIndex = 1;
 
 void loop() {
     readColor();
@@ -145,16 +136,9 @@ void calculatecolor() {
     if (((gruen >= blau) && (gruen >= rot)) && (gruen <= 1000) && (gruen >= 650))
     {
         Serial.println("green");
-        analogWrite(LEDR, 0);
-        analogWrite(LEDG, 255);
-        analogWrite(LEDB, 0);
-
     }
     else {
         Serial.println("not green");
-        analogWrite(LEDR, 255);
-        analogWrite(LEDG, 0);
-        analogWrite(LEDB, 0);
     }
     
 }
