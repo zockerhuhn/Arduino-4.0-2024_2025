@@ -23,35 +23,58 @@
  *     [3V3 --> (2,3V Spannungsversorgung, falls man sowas irgendwo benötigt)]
  *      GND <-- GND
  *      VIN <-- 3V3
- *
+ * Der QTR-6RC ist ein externer Sensor, der an jeden Digital Pin angeschlossen werden kann (Siehe SENSOR_LEISTE_PINS).
+ * !!! Beim Arduino Nano RP2040 Connect darf der Sensor nicht an Pins A6 oder A7 angeschlossen werden,
+ *     da diese nur Eingänge sind und die Bibliothek den Pin sowohl als Ein- als auch als Ausgang verwendet.
+ *----------------------------------------------------------------------------------------------------------------------
  * Der VL53L0X ist ein externer Sensor, kann also entweder
  * - an   Bus I2C0 ("Wire")
  * - oder Bus I2C1 ("Wire1") verbunden werden.
  */
-//test
+
+//INCLUDES
 /** der I2C Bus */
 #include <Wire.h>
 /** I2C Adresse: 0x29 (7-bit) (unveränderlich) */
 #include <Adafruit_TCS34725.h>
-/** Sensor sehr schnell einstellen (ungenauer):
- *  Gain 4x fand ich am besten, aber dann sind die Werte so stabil,
- *   dass die Fehlerdetektion immer ausgelöst hat (siehe unten "helligkeitStatischStoppuhr.hasPassed"). */
-Adafruit_TCS34725 rgbSensor = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
-
 /** optional: Stoppuhr, um zu Verbindungsverluste zu erkennen */
 #include <Chrono.h>
-Chrono helligkeitStatischStoppuhr = Chrono(Chrono::MILLIS, false); // noch nicht gestartet
-
 #include <QTRSensors.h>
 #include "ZumoMotors.h"
 
-ZumoMotors motoren;
-
+//VARIABLES
 int varrechts = 0;
 int varlinks = 0;
-QTRSensors sensorLeiste = QTRSensors();
 const uint8_t SENSOR_LEISTE_ANZAHL_SENSOREN = 6;
 const uint8_t SENSOR_LEISTE_PINS[] = {10, 11, 12, 9, 8, 7};
+// hier speichern wir die Farbsensorwerte ab:
+// Roh-Werte (Es gibt auch kalibierte Werte, aber die sind sehr langsam auszulesen):
+uint16_t rot, gruen, blau, helligkeit;
+uint16_t rot2, gruen2, blau2, helligkeit2;
+// hier speichern wir die 6 Reflektionssensorwerte ab:
+uint16_t helligkeiten[SENSOR_LEISTE_ANZAHL_SENSOREN];
+const uint16_t VERBINDUNG_VERLOREN = 0;
+uint16_t vorheriges_rot, vorheriges_gruen, vorheriges_blau, vorherige_helligkeit = VERBINDUNG_VERLOREN;
+uint16_t vorheriges_rot2, vorheriges_gruen2, vorheriges_blau2, vorherige_helligkeit2 = VERBINDUNG_VERLOREN;
+QTRSensors sensorLeiste = QTRSensors();
+ZumoMotors motoren;
+Chrono helligkeitStatischStoppuhr = Chrono(Chrono::MILLIS, false); // noch nicht gestartet
+/** Sensor sehr schnell einstellen (ungenauer):
+ *  Gain 4x fand ich am besten, aber dann sind die Werte so stabil, 
+ *  dass die Fehlerdetektion immer ausgelöst hat (siehe unten "helligkeitStatischStoppuhr.hasPassed"). */
+Adafruit_TCS34725 rgbSensor = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
+enum reflectionOutput {
+  /*frontal schwarze Linie getroffen*/
+  frontalLine,
+  /*Linie gefunden*/
+  normalLine,
+  /*Linie Links gefunden*/
+  leftLine,
+  /*Linie Rechts gefunden*/
+  rightLine,
+  /*Keine Linie gefunden*/
+  noLine,
+};
 
 void setup()
 {
@@ -74,13 +97,6 @@ void setup()
   motoren.flipLeftMotor(true);
   motoren.flipRightMotor(true);
 }
-
-// hier speichern wir die Sensorwerte ab:
-// Roh-Werte (Es gibt auch kalibierte Werte, aber die sind sehr langsam auszulesen):
-uint16_t rot, gruen, blau, helligkeit;
-uint16_t rot2, gruen2, blau2, helligkeit2;
-// hier speichern wir die 6 Sensorwerte ab:
-uint16_t helligkeiten[SENSOR_LEISTE_ANZAHL_SENSOREN];
 
 // Sensorenwerte für Kalibrierung
 int colorMinThreshold = 650;
@@ -155,9 +171,27 @@ void doppelschwarz()
   }
 }
 
-void loop()
+void loop() //temp
 {
-  read_reflectionandprint();
+  /* read_reflectionandprint();
+  if (calculateReflection() == "frontalLine")
+  {
+    reflectionOutput modus = frontalLine;
+  }
+  else if (calculateReflection)
+  {
+    
+  }  */
+  switch (calculateReflection)
+  {
+  case /* constant-expression */:
+    /* code */
+    break;
+  
+  default:
+    break;
+  }
+  
   if ((helligkeiten[0] >= reflectionBlackThreshold) && (helligkeiten[5] >= reflectionBlackThreshold))
   {
     doppelschwarz();
@@ -236,10 +270,6 @@ void turn()
 {
   delay(1); // placeholder
 }
-
-const uint16_t VERBINDUNG_VERLOREN = 0;
-uint16_t vorheriges_rot, vorheriges_gruen, vorheriges_blau, vorherige_helligkeit = VERBINDUNG_VERLOREN;
-uint16_t vorheriges_rot2, vorheriges_gruen2, vorheriges_blau2, vorherige_helligkeit2 = VERBINDUNG_VERLOREN;
 
 void readColor()
 {
@@ -325,4 +355,24 @@ void read_reflectionandprint()
     Serial.print(String(helligkeiten[i]) + '\t'); // alles in eine Zeile
   }
   Serial.println(); // neue Zeile beginnen
+}
+
+String calculateReflection() {
+  read_reflectionandprint();
+  if ((helligkeiten[0] >= reflectionBlackThreshold) && (helligkeiten[5] >= reflectionBlackThreshold)) {
+    return "frontalLine";
+  }
+  else if((helligkeiten[2] >= reflectionBlackThreshold || helligkeiten[3] >= reflectionBlackThreshold) && (helligkeiten[0] <= reflectionBlackThreshold && helligkeiten[1] <= reflectionBlackThreshold && helligkeiten[4] <= reflectionBlackThreshold && helligkeiten[5] <= reflectionBlackThreshold)){
+    return "normalLine";
+  }
+  else if (helligkeiten[0] >= reflectionBlackThreshold || helligkeiten[1] >= reflectionBlackThreshold)
+  {
+    return "leftLine";
+  }
+  else if (helligkeiten[4] >= reflectionBlackThreshold || helligkeiten[5] >= reflectionBlackThreshold) {
+    return "rightLine";
+  }
+  else {
+    return "noLine";
+  }
 }
