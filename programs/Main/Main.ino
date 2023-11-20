@@ -32,7 +32,7 @@
  * - oder Bus I2C1 ("Wire1") verbunden werden.
  */
 
-//INCLUDES
+// INCLUDES
 /** der I2C Bus */
 #include <Wire.h>
 /** I2C Adresse: 0x29 (7-bit) (unveränderlich) */
@@ -42,7 +42,7 @@
 #include <QTRSensors.h>
 #include "ZumoMotors.h"
 
-//VARIABLES
+// VARIABLES
 int varrechts = 0;
 int varlinks = 0;
 const uint8_t SENSOR_LEISTE_ANZAHL_SENSOREN = 6;
@@ -60,7 +60,7 @@ QTRSensors sensorLeiste = QTRSensors();
 ZumoMotors motoren;
 Chrono helligkeitStatischStoppuhr = Chrono(Chrono::MILLIS, false); // noch nicht gestartet
 /** Sensor sehr schnell einstellen (ungenauer):
- *  Gain 4x fand ich am besten, aber dann sind die Werte so stabil, 
+ *  Gain 4x fand ich am besten, aber dann sind die Werte so stabil,
  *  dass die Fehlerdetektion immer ausgelöst hat (siehe unten "helligkeitStatischStoppuhr.hasPassed"). */
 Adafruit_TCS34725 rgbSensor = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 String calculatedReflection;
@@ -210,7 +210,7 @@ void doppelschwarz()
     }
   }
 }
-  
+
 void straight()
 {
   motoren.flipLeftMotor(true);
@@ -301,30 +301,32 @@ void readColor2()
   Serial.println("RGB Sensor 2 Verdrahtung prüfen!");
 }
 
-boolean calculatecolor() {
+boolean calculatecolor()
 {
-  if (((gruen >= blau) && (gruen >= rot)) && (gruen <= colorMaxThreshold) && (gruen >= colorMinThreshold))
   {
-    return true;
+    if (((gruen >= blau) && (gruen >= rot)) && (gruen <= colorMaxThreshold) && (gruen >= colorMinThreshold))
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
-  else
-  {
-    return false;
-  }
-}
 }
 
-boolean calculatecolor2() {
+boolean calculatecolor2()
 {
-  if (((gruen2 >= blau2) && (gruen2 >= rot2)) && (gruen2 <= colorMaxThreshold) && (gruen2 >= colorMinThreshold))
   {
-    return true;
+    if (((gruen2 >= blau2) && (gruen2 >= rot2)) && (gruen2 <= colorMaxThreshold) && (gruen2 >= colorMinThreshold))
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
-  else
-  {
-    return false;
-  }
-}
 }
 
 void read_reflectionandprint()
@@ -335,4 +337,29 @@ void read_reflectionandprint()
     Serial.print(String(helligkeiten[i]) + '\t'); // alles in eine Zeile
   }
   Serial.println(); // neue Zeile beginnen
+}
+
+String calculateReflection()
+{
+  read_reflectionandprint();
+  if ((helligkeiten[0] >= reflectionBlackThreshold) && (helligkeiten[5] >= reflectionBlackThreshold))
+  {
+    return "frontalLine";
+  }
+  else if ((helligkeiten[2] >= reflectionBlackThreshold || helligkeiten[3] >= reflectionBlackThreshold) && (helligkeiten[0] <= reflectionBlackThreshold && helligkeiten[1] <= reflectionBlackThreshold && helligkeiten[4] <= reflectionBlackThreshold && helligkeiten[5] <= reflectionBlackThreshold))
+  {
+    return "normalLine";
+  }
+  else if (helligkeiten[0] >= reflectionBlackThreshold || helligkeiten[1] >= reflectionBlackThreshold)
+  {
+    return "leftLine";
+  }
+  else if (helligkeiten[4] >= reflectionBlackThreshold || helligkeiten[5] >= reflectionBlackThreshold)
+  {
+    return "rightLine";
+  }
+  else
+  {
+    return "noLine";
+  }
 }
