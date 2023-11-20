@@ -2,9 +2,9 @@ name: C/C++ CI
 
 on:
   push:
-    branches: [ "master" , "Temptest" ]
+    branches: [ "master" , "new-sensors" , "updatet" ]
   pull_request:
-    branches: [ "master" , "Temptest" ]
+    branches: [ "master" ]
 
 jobs:
   build:
