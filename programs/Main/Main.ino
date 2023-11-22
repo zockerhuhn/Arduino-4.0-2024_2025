@@ -40,48 +40,8 @@
  * Die Adresse kann nicht verändert werden. Man kann also keinen anderen Sensor mit derselben Adresse
  * an den selben Bus anschließen.
 */
-
-// INCLUDES
-
-/** der I2C Bus */
-#include <Wire.h>
-/** I2C Adresse: 0x29 (7-bit) (unveränderlich) */
-#include <Adafruit_TCS34725.h>
-/** optional: Stoppuhr, um zu Verbindungsverluste zu erkennen */
-
-#include <QTRSensors.h>
-
-#include "ZumoMotors.h"
-
-// VARIABLES
-
-int varrechts = 0;
-int varlinks = 0;
-
-const uint8_t SENSOR_LEISTE_ANZAHL_SENSOREN = 6;
-const uint8_t SENSOR_LEISTE_PINS[] = {10, 11, 12, 9, 8, 7};
-// hier speichern wir die 6 Reflektionssensorwerte ab:
-uint16_t helligkeiten[SENSOR_LEISTE_ANZAHL_SENSOREN];
-QTRSensors sensorLeiste = QTRSensors();
-String calculatedReflection;
-
-// hier speichern wir die Farbsensorwerte ab:
-// Roh-Werte (Es gibt auch kalibierte Werte, aber die sind sehr langsam auszulesen):
-uint16_t rot, gruen, blau, helligkeit;
-uint16_t rot2, gruen2, blau2, helligkeit2;
-const uint16_t VERBINDUNG_VERLOREN = 0;
-uint16_t vorheriges_rot, vorheriges_gruen, vorheriges_blau, vorherige_helligkeit = VERBINDUNG_VERLOREN;
-uint16_t vorheriges_rot2, vorheriges_gruen2, vorheriges_blau2, vorherige_helligkeit2 = VERBINDUNG_VERLOREN;
-QTRSensors sensorLeiste = QTRSensors();
-ZumoMotors motoren;
-
-/** Sensor sehr schnell einstellen (ungenauer):
- *  Gain 4x fand ich am besten, aber dann sind die Werte so stabil,
- *  dass die Fehlerdetektion immer ausgelöst hat (siehe unten "helligkeitStatischStoppuhr.hasPassed"). */
-Adafruit_TCS34725 rgbSensor = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
-
-Adafruit_TCS34725 rgbSensor2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
-String calculatedReflection;
+#include <includes.h>
+#include <variables.h>
 
 void setup()
 {
@@ -110,23 +70,11 @@ void setup()
   motoren.flipRightMotor(true);
 }
 
-// Sensorenwerte für Kalibrierung
-int colorMinThreshold = 650;
-int colorMaxThreshold = 1000;
-
-int reflectionBlackThreshold = 120;
-
-/* Liegt der Arduino gerade auf dem Tisch und wird nicht bewegt, muss die Z-Achse 1G (Erdbeschleunigung) ausgeben und der Rest muss 0 sein.
-   Das ist nicht wirklich so und wird mit diesen Werten kalibriert: */
-const float ACC_X_OFFSET = +0.0231;
-const float ACC_Y_OFFSET = +0.0105;
-const float ACC_Z_OFFSET = -0.0102;
-
-/* Wird der Arduino nicht rotiert, müssen alle Winkelbeschleunigungen 0 sein.
-   Das ist nicht wirklich so und wird mit diesen Werten kalibriert: */
-const float GYRO_X_OFFSET = -0.43;
-const float GYRO_Y_OFFSET = +0.67;
-const float GYRO_Z_OFFSET = +0.31;
+#include <Kalibrierung.h>
+#include <doppelschwarz.h>
+#include <Motorbewegungen.h>
+#include <Farbauslese.h>
+#include <Reflektionsauslese.h>
 
 void loop()
 {
@@ -182,174 +130,4 @@ void loop()
     straight();
   }
   delay(50);
-}
-
-void doppelschwarz()
-{
-  Serial.print("\n");
-  Serial.print("alles-schwarz");
-  motoren.setSpeeds(0, 0);
-  delay(1000);
-  readColor2();
-  readColor();
-  if (calculateColor())
-  {
-    if (calculateColor2())
-    {
-      turn();
-    }
-    else
-    {
-      straight();
-      delay(1250);
-      right();
-      delay(1000);
-      while (calculateReflection() == "noLine")
-      {
-        delay(1);
-      }
-    }
-  }
-  else
-  {
-    if (calculateColor2())
-    {
-      straight();
-      delay(1250);
-      left();
-      delay(1000);
-      while (calculateReflection() == "noLine")
-      {
-        delay(1);
-      }
-    }
-    else
-    {
-      straight();
-      delay(1200);
-      motoren.setSpeeds(0, 0);
-      if (!(calculateReflection() == "noLine"))
-      {
-        // not else lol
-      }
-      else
-      {
-        left();
-        delay(2500);
-        right();
-        while (calculateReflection() == "noLine")
-        {
-          Serial.print("\n");
-          Serial.print("suche...");
-        }
-      }
-    }
-  }
-}
-
-void straight()
-{
-  motoren.flipLeftMotor(true);
-  motoren.flipRightMotor(true);
-  motoren.setSpeeds(75, 75);
-}
-
-void left()
-{
-  motoren.flipLeftMotor(false);
-  motoren.flipRightMotor(true);
-  motoren.setSpeeds(75, 75);
-}
-
-void right()
-{
-  motoren.flipLeftMotor(true);
-  motoren.flipRightMotor(false);
-  motoren.setSpeeds(75, 75);
-}
-
-void turn()
-{
-  delay(1); // placeholder
-}
-
-void readColor()
-{
-  rgbSensor.getRawData(&rot, &gruen, &blau, &helligkeit);
-  Serial.println("R:" + String(rot) + " G:" + String(gruen) + " B:" + String(blau) + " C:" + String(helligkeit));
-  /** Dieser Mechanismus hier ist gefährlich, wenn es passieren kann, dass die Sensoren lange Zeit das selbe sehen:
-   *  In meinen Versuchen habe ich oben den Gain von 4x auf 16x gestellt, um mehr Rauschen zu bekommen.
-   *  Mit Timeout 5s sehe ich keine False-Negatives mehr: */
-}
-
-void readColor2()
-{
-  rgbSensor2.getRawData(&rot2, &gruen2, &blau2, &helligkeit2);
-  Serial.println("R:" + String(rot2) + " G:" + String(gruen2) + " B:" + String(blau2) + " C:" + String(helligkeit2));
-  /** Dieser Mechanismus hier ist gefährlich, wenn es passieren kann, dass die Sensoren lange Zeit das selbe sehen:
-   *  In meinen Versuchen habe ich oben den Gain von 4x auf 16x gestellt, um mehr Rauschen zu bekommen.
-   *  Mit Timeout 5s sehe ich keine False-Negatives mehr: */
-}
-
-boolean calculateColor()
-{
-  {
-    if (((gruen >= blau) && (gruen >= rot)) && (gruen <= colorMaxThreshold) && (gruen >= colorMinThreshold))
-    {
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
-}
-
-boolean calculateColor2()
-{
-  {
-    if (((gruen2 >= blau2) && (gruen2 >= rot2)) && (gruen2 <= colorMaxThreshold) && (gruen2 >= colorMinThreshold))
-    {
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
-}
-
-void read_reflectionandprint()
-{
-  sensorLeiste.read(helligkeiten);
-  for (int i = 0; i < SENSOR_LEISTE_ANZAHL_SENSOREN; i++)
-  {
-    Serial.print(String(helligkeiten[i]) + '\t'); // alles in eine Zeile
-  }
-  Serial.println(); // neue Zeile beginnen
-}
-
-String calculateReflection()
-{
-  read_reflectionandprint();
-  if ((helligkeiten[0] >= reflectionBlackThreshold) && (helligkeiten[5] >= reflectionBlackThreshold))
-  {
-    return "frontalLine";
-  }
-  else if ((helligkeiten[2] >= reflectionBlackThreshold || helligkeiten[3] >= reflectionBlackThreshold) && (helligkeiten[0] <= reflectionBlackThreshold && helligkeiten[1] <= reflectionBlackThreshold && helligkeiten[4] <= reflectionBlackThreshold && helligkeiten[5] <= reflectionBlackThreshold))
-  {
-    return "normalLine";
-  }
-  else if (helligkeiten[0] >= reflectionBlackThreshold || helligkeiten[1] >= reflectionBlackThreshold)
-  {
-    return "leftLine";
-  }
-  else if (helligkeiten[4] >= reflectionBlackThreshold || helligkeiten[5] >= reflectionBlackThreshold)
-  {
-    return "rightLine";
-  }
-  else
-  {
-    return "noLine";
-  }
 }
