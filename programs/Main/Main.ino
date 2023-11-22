@@ -71,10 +71,10 @@ void setup()
 }
 
 #include "Kalibrierung.h"
-#include "doppelschwarz.h"
 #include "Motorbewegungen.h"
 #include "Farbauslese.h"
 #include "Reflektionsauslese.h"
+#include "doppelschwarz.h"
 
 void loop()
 {
