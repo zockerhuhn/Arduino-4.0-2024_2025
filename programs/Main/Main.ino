@@ -38,7 +38,6 @@
 /** I2C Adresse: 0x29 (7-bit) (unveränderlich) */
 #include <Adafruit_TCS34725.h>
 /** optional: Stoppuhr, um zu Verbindungsverluste zu erkennen */
-#include <Chrono.h>
 #include <QTRSensors.h>
 #include "ZumoMotors.h"
 
@@ -58,11 +57,11 @@ uint16_t vorheriges_rot, vorheriges_gruen, vorheriges_blau, vorherige_helligkeit
 uint16_t vorheriges_rot2, vorheriges_gruen2, vorheriges_blau2, vorherige_helligkeit2 = VERBINDUNG_VERLOREN;
 QTRSensors sensorLeiste = QTRSensors();
 ZumoMotors motoren;
-Chrono helligkeitStatischStoppuhr = Chrono(Chrono::MILLIS, false); // noch nicht gestartet
 /** Sensor sehr schnell einstellen (ungenauer):
  *  Gain 4x fand ich am besten, aber dann sind die Werte so stabil,
  *  dass die Fehlerdetektion immer ausgelöst hat (siehe unten "helligkeitStatischStoppuhr.hasPassed"). */
 Adafruit_TCS34725 rgbSensor = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
+Adafruit_TCS34725 rgbSensor2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 String calculatedReflection;
 
 void setup()
@@ -70,16 +69,21 @@ void setup()
   Serial.begin(115200);
   // I2C Bus 1x für alle Bus-Teilnehmer initialisieren (sonst crasht das Betriebssystem)
   Wire.begin();           // Bus I2C0
-  Wire.setClock(1000000); // 1MHz Kommunikationsgeschwindigkeit
-  // Wire1.begin();  // Bus I2C1
+  // Wire.setClock(1000000); // 1MHz Kommunikationsgeschwindigkeit
+  Wire1.begin();  // Bus I2C1
   //  hier den zu nutzenden I2C Bus einstellen:
   if (!rgbSensor.begin(TCS34725_ADDRESS, &Wire))
   {
     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
     Serial.println("RGB Farbsensor Verdrahtung prüfen!");
   }
-  helligkeitStatischStoppuhr.start();
   Serial.println("Initialisierung Farbe 1 abgeschlossen");
+   if (!rgbSensor2.begin(TCS34725_ADDRESS, &Wire1))
+  {
+    delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+    Serial.println("RGB Farbsensor Verdrahtung prüfen!");
+  }
+  Serial.println("Initialisierung Farbe 2 abgeschlossen");
   sensorLeiste.setTypeRC();
   sensorLeiste.setSensorPins(SENSOR_LEISTE_PINS, SENSOR_LEISTE_ANZAHL_SENSOREN);
   Serial.println("Initialisierung Reflektionssensor abgeschlossen");
@@ -156,9 +160,9 @@ void doppelschwarz()
   delay(1000);
   readColor2();
   readColor();
-  if (calculatecolor())
+  if (calculateColor())
   {
-    if (calculatecolor2())
+    if (calculateColor2())
     {
       turn();
     }
@@ -176,7 +180,7 @@ void doppelschwarz()
   }
   else
   {
-    if (calculatecolor2())
+    if (calculateColor2())
     {
       straight();
       delay(1250);
@@ -244,64 +248,18 @@ void readColor()
   /** Dieser Mechanismus hier ist gefährlich, wenn es passieren kann, dass die Sensoren lange Zeit das selbe sehen:
    *  In meinen Versuchen habe ich oben den Gain von 4x auf 16x gestellt, um mehr Rauschen zu bekommen.
    *  Mit Timeout 5s sehe ich keine False-Negatives mehr: */
-  if (!helligkeitStatischStoppuhr.hasPassed(5000))
-  {
-    // alles OK
-    if (vorheriges_rot != rot || vorheriges_gruen != gruen ||
-        vorheriges_blau != blau || vorherige_helligkeit != helligkeit)
-    {
-      // merken: der Wert hat sich verändert
-      vorheriges_rot = rot;
-      vorheriges_gruen = gruen;
-      vorheriges_blau = blau;
-      vorherige_helligkeit = helligkeit;
-      helligkeitStatischStoppuhr.restart();
-    }
-    return; // rausgehen aus der Funktion, damit wir nicht zum Fehler kommen
-  }
-
-  // Fehler:
-  rot = VERBINDUNG_VERLOREN;
-  gruen = VERBINDUNG_VERLOREN;
-  blau = VERBINDUNG_VERLOREN;
-  helligkeit = VERBINDUNG_VERLOREN;
-  helligkeitStatischStoppuhr.restart(); // um bei Wackelkontakt Wiederverbindung zu erlauben
-  Serial.println("RGB Sensor 1 Verdrahtung prüfen!");
 }
 
 void readColor2()
 {
-  rgbSensor.getRawData(&rot2, &gruen2, &blau2, &helligkeit2);
+  rgbSensor2.getRawData(&rot2, &gruen2, &blau2, &helligkeit2);
   Serial.println("R:" + String(rot2) + " G:" + String(gruen2) + " B:" + String(blau2) + " C:" + String(helligkeit2));
   /** Dieser Mechanismus hier ist gefährlich, wenn es passieren kann, dass die Sensoren lange Zeit das selbe sehen:
    *  In meinen Versuchen habe ich oben den Gain von 4x auf 16x gestellt, um mehr Rauschen zu bekommen.
    *  Mit Timeout 5s sehe ich keine False-Negatives mehr: */
-  if (!helligkeitStatischStoppuhr.hasPassed(5000))
-  {
-    // alles OK
-    if (vorheriges_rot2 != rot2 || vorheriges_gruen2 != gruen2 ||
-        vorheriges_blau2 != blau2 || vorherige_helligkeit2 != helligkeit2)
-    {
-      // merken: der Wert hat sich verändert
-      vorheriges_rot2 = rot2;
-      vorheriges_gruen2 = gruen2;
-      vorheriges_blau2 = blau2;
-      vorherige_helligkeit2 = helligkeit2;
-      helligkeitStatischStoppuhr.restart();
-    }
-    return; // rausgehen aus der Funktion, damit wir nicht zum Fehler kommen
-  }
-
-  // Fehler:
-  rot2 = VERBINDUNG_VERLOREN;
-  gruen2 = VERBINDUNG_VERLOREN;
-  blau2 = VERBINDUNG_VERLOREN;
-  helligkeit2 = VERBINDUNG_VERLOREN;
-  helligkeitStatischStoppuhr.restart(); // um bei Wackelkontakt Wiederverbindung zu erlauben
-  Serial.println("RGB Sensor 2 Verdrahtung prüfen!");
 }
 
-boolean calculatecolor()
+boolean calculateColor()
 {
   {
     if (((gruen >= blau) && (gruen >= rot)) && (gruen <= colorMaxThreshold) && (gruen >= colorMinThreshold))
@@ -315,7 +273,7 @@ boolean calculatecolor()
   }
 }
 
-boolean calculatecolor2()
+boolean calculateColor2()
 {
   {
     if (((gruen2 >= blau2) && (gruen2 >= rot2)) && (gruen2 <= colorMaxThreshold) && (gruen2 >= colorMinThreshold))
