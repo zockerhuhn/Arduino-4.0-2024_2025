@@ -44,22 +44,6 @@
 #include "includes.h"
 #include "variables.h"
 
-// INCLUDES
-/** I2C Adresse: 0x6A (7-bit) (unveränderlich) */
-#include <Arduino_LSM6DSOX.h>
-#include <imuFilter.h>
-imuFilter Fusion = imuFilter(); // Objekt, dass Sensordaten fusionieren kann
-#include <WiFiNINA.h>
-
-int rgbValues[] = {255, 0, 0}; // 0=Red, 1=Green and 2=Blue
-bool imuFusionInitialisiert = false;
-double accxalt;
-double accyalt;
-double acczalt;
-// hier speichern wir die Sensorwerte ab:
-vec3_t acc = vec3_t(0, 0, 0);  // (x, y, z)
-vec3_t gyro = vec3_t(0, 0, 0); // (x, y, z)
-
 void setup()
 {
   Serial.begin(115200);
@@ -84,10 +68,6 @@ void setup()
   sensorLeiste.setTypeRC();
   sensorLeiste.setSensorPins(SENSOR_LEISTE_PINS, SENSOR_LEISTE_ANZAHL_SENSOREN);
   Serial.println("Initialisierung Reflektionssensor abgeschlossen");
-  if (!IMU.begin())
-  {
-    Serial.Println("Onboard broken");
-  }
   motoren.flipLeftMotor(true);
   motoren.flipRightMotor(true);
 }
@@ -100,13 +80,6 @@ void setup()
 
 void loop()
 {
-  readAcc();
-  if (acc.x <= 0.7)
-  {
-    straight();
-  }
-  else
-  {
   calculatedReflection = calculateReflection();
   if (calculatedReflection == "frontLine")
   {
@@ -127,7 +100,6 @@ void loop()
     }
   }
   else if (calculatedReflection == "leftLine")
-
   {
     Serial.print("\n");
     Serial.print("links");
@@ -139,7 +111,6 @@ void loop()
       varrechts = 0;
       doppelschwarz();
     }
-  }
   }
   else if (calculatedReflection == "rightLine")
   {
@@ -161,46 +132,4 @@ void loop()
     straight();
   }
   delay(50);
-}
-
-void readAcc()
-{
-  if (IMU.accelerationAvailable())
-  {
-    IMU.readAcceleration(acc.x, acc.y, acc.z);
-    acc.x += ACC_X_OFFSET;
-    acc.y += ACC_Y_OFFSET;
-    acc.z += ACC_Z_OFFSET;
-  } // else: nicht jedes Mal, wenn dir den Sensor fragen, hat er auch neue Werte
-}
-
-void ReadGyro()
-{
-  if (IMU.gyroscopeAvailable())
-  {
-    IMU.readGyroscope(gyro.x, gyro.y, gyro.z);
-    gyro.x += GYRO_X_OFFSET;
-    gyro.y += GYRO_Y_OFFSET;
-    gyro.z += GYRO_Z_OFFSET;
-  } // else: nicht jedes Mal, wenn dir den Sensor fragen, hat er auch neue Werte
-}
-
-void accWerteLoggen()
-{
-  Serial.println(
-      "Beschleunigung x=" + String(acc.x) + " y=" + String(acc.y) + " z=" + String(acc.z) + " Rotationsgeschwindigkeit x=" + String(gyro.x) + " y=" + String(gyro.y) + " z=" + String(gyro.z));
-}
-
-void fusionInitialisieren()
-{
-  Serial.println("Der Arduino muss jetzt gerade liegen und darf nicht bewegt werden!");
-  Fusion.setup(acc);
-}
-
-void fusionLoggen()
-{
-  Fusion.update(gyro, acc);
-  /* Wenn man aus Sicht des Arduino Richting USB-Stecker schaut: */
-  Serial.println(
-      "Gierwinkel (links<->rechts schauen)=" + String(Fusion.yaw()) + " Nickwinkel (hoch<->runten schauen)=" + String(Fusion.pitch()) + " Rollwinkel (links<->rechts kippen)=" + String(Fusion.roll()));
 }
