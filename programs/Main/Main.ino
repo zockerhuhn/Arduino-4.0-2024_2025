@@ -40,8 +40,8 @@
  * Die Adresse kann nicht verändert werden. Man kann also keinen anderen Sensor mit derselben Adresse
  * an den selben Bus anschließen.
 */
-#include <includes.h>
-#include <variables.h>
+#include "includes.h"
+#include "variables.h"
 
 void setup()
 {
@@ -70,11 +70,11 @@ void setup()
   motoren.flipRightMotor(true);
 }
 
-#include <Kalibrierung.h>
-#include <doppelschwarz.h>
-#include <Motorbewegungen.h>
-#include <Farbauslese.h>
-#include <Reflektionsauslese.h>
+#include "Kalibrierung.h"
+#include "doppelschwarz.h"
+#include "Motorbewegungen.h"
+#include "Farbauslese.h"
+#include "Reflektionsauslese.h"
 
 void loop()
 {
