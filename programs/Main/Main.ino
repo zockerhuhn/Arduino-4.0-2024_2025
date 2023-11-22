@@ -30,37 +30,74 @@
  * Der VL53L0X ist ein externer Sensor, kann also entweder
  * - an   Bus I2C0 ("Wire")
  * - oder Bus I2C1 ("Wire1") verbunden werden.
- */
+------------------------------------------------------------------------------------------------------------------------
+ * Hardware-Aufbau:
+ * Arduino Nano RP2040 Connect (!! Arduino Due geht nicht !!)
+ * <nichts weiter>
+ * Der LSM6DSOX ist immer an Bus I2C0 ("Wire") verbunden. Das kann nicht geändert werden.
+ *
+ * Der LSM6DSOX Sensor hängt am I2C Bus (SDA/SCL) mit 7-Bit Adresse 0x6A.
+ * Die Adresse kann nicht verändert werden. Man kann also keinen anderen Sensor mit derselben Adresse
+ * an den selben Bus anschließen.
+*/
 
 // INCLUDES
+/** I2C Adresse: 0x6A (7-bit) (unveränderlich) */
+#include <Arduino_LSM6DSOX.h>
+#include <imuFilter.h>
+imuFilter Fusion = imuFilter(); // Objekt, dass Sensordaten fusionieren kann
+#include <WiFiNINA.h>
+
+
 /** der I2C Bus */
 #include <Wire.h>
 /** I2C Adresse: 0x29 (7-bit) (unveränderlich) */
 #include <Adafruit_TCS34725.h>
 /** optional: Stoppuhr, um zu Verbindungsverluste zu erkennen */
+
+
 #include <QTRSensors.h>
+
 #include "ZumoMotors.h"
 
 // VARIABLES
+
+
+int rgbValues[] = {255, 0, 0}; // 0=Red, 1=Green and 2=Blue
+bool imuFusionInitialisiert = false;
+double accxalt;
+double accyalt;
+double acczalt;
+// hier speichern wir die Sensorwerte ab:
+vec3_t acc = vec3_t(0, 0, 0);  // (x, y, z)
+vec3_t gyro = vec3_t(0, 0, 0); // (x, y, z)
+
+
 int varrechts = 0;
 int varlinks = 0;
+
 const uint8_t SENSOR_LEISTE_ANZAHL_SENSOREN = 6;
 const uint8_t SENSOR_LEISTE_PINS[] = {10, 11, 12, 9, 8, 7};
+// hier speichern wir die 6 Reflektionssensorwerte ab:
+uint16_t helligkeiten[SENSOR_LEISTE_ANZAHL_SENSOREN];
+QTRSensors sensorLeiste = QTRSensors();
+String calculatedReflection;
+
 // hier speichern wir die Farbsensorwerte ab:
 // Roh-Werte (Es gibt auch kalibierte Werte, aber die sind sehr langsam auszulesen):
 uint16_t rot, gruen, blau, helligkeit;
 uint16_t rot2, gruen2, blau2, helligkeit2;
-// hier speichern wir die 6 Reflektionssensorwerte ab:
-uint16_t helligkeiten[SENSOR_LEISTE_ANZAHL_SENSOREN];
 const uint16_t VERBINDUNG_VERLOREN = 0;
 uint16_t vorheriges_rot, vorheriges_gruen, vorheriges_blau, vorherige_helligkeit = VERBINDUNG_VERLOREN;
 uint16_t vorheriges_rot2, vorheriges_gruen2, vorheriges_blau2, vorherige_helligkeit2 = VERBINDUNG_VERLOREN;
 QTRSensors sensorLeiste = QTRSensors();
 ZumoMotors motoren;
+
 /** Sensor sehr schnell einstellen (ungenauer):
  *  Gain 4x fand ich am besten, aber dann sind die Werte so stabil,
  *  dass die Fehlerdetektion immer ausgelöst hat (siehe unten "helligkeitStatischStoppuhr.hasPassed"). */
 Adafruit_TCS34725 rgbSensor = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
+
 Adafruit_TCS34725 rgbSensor2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 String calculatedReflection;
 
@@ -87,6 +124,12 @@ void setup()
   sensorLeiste.setTypeRC();
   sensorLeiste.setSensorPins(SENSOR_LEISTE_PINS, SENSOR_LEISTE_ANZAHL_SENSOREN);
   Serial.println("Initialisierung Reflektionssensor abgeschlossen");
+  if (!IMU.begin())
+  {
+    delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+    Serial.println("IMU Verdrahtung prüfen!");
+  }
+  Serial.println("Onboard_Sensoren Initialisierung abgeschlossen");
   motoren.flipLeftMotor(true);
   motoren.flipRightMotor(true);
 }
@@ -94,62 +137,83 @@ void setup()
 // Sensorenwerte für Kalibrierung
 int colorMinThreshold = 650;
 int colorMaxThreshold = 1000;
+
 int reflectionBlackThreshold = 120;
+
+/* Liegt der Arduino gerade auf dem Tisch und wird nicht bewegt, muss die Z-Achse 1G (Erdbeschleunigung) ausgeben und der Rest muss 0 sein.
+   Das ist nicht wirklich so und wird mit diesen Werten kalibriert: */
+const float ACC_X_OFFSET = +0.0231;
+const float ACC_Y_OFFSET = +0.0105;
+const float ACC_Z_OFFSET = -0.0102;
+
+/* Wird der Arduino nicht rotiert, müssen alle Winkelbeschleunigungen 0 sein.
+   Das ist nicht wirklich so und wird mit diesen Werten kalibriert: */
+const float GYRO_X_OFFSET = -0.43;
+const float GYRO_Y_OFFSET = +0.67;
+const float GYRO_Z_OFFSET = +0.31;
 
 void loop()
 {
-  calculatedReflection = calculateReflection();
-  if (calculatedReflection == "frontLine")
+  readAcc();
+  if (acc.x <= 0.7)
   {
-    doppelschwarz();
-  }
-  else if (calculatedReflection == "normalLine")
-  {
-    Serial.print("\n");
-    Serial.print("Linie");
-    straight();
-    if (varrechts > 0)
-    {
-      varrechts = varrechts - 5;
-    }
-    if (varlinks > 0)
-    {
-      varlinks = varlinks - 5;
-    }
-  }
-  else if (calculatedReflection == "leftLine")
-  {
-    Serial.print("\n");
-    Serial.print("links");
-    left();
-    varlinks = varlinks + 5;
-    if (varlinks + varrechts >= 400)
-    {
-      varlinks = 0;
-      varrechts = 0;
-      doppelschwarz();
-    }
-  }
-  else if (calculatedReflection == "rightLine")
-  {
-    Serial.print("\n");
-    Serial.print("rechts");
-    right();
-    varrechts = varrechts + 5;
-    if (varlinks + varrechts >= 400)
-    {
-      varlinks = 0;
-      varrechts = 0;
-      doppelschwarz();
-    }
-  }
-  else if (calculatedReflection == "noLine")
-  {
-    Serial.print("\n");
-    Serial.print("keine Linie...");
     straight();
   }
-  delay(50);
+  else
+  {
+    calculatedReflection = calculateReflection();
+    if (calculatedReflection == "frontLine")
+    {
+      doppelschwarz();
+    }
+    else if (calculatedReflection == "normalLine")
+    {
+      Serial.print("\n");
+      Serial.print("Linie");
+      straight();
+      if (varrechts > 0)
+      {
+        varrechts = varrechts - 5;
+      }
+      if (varlinks > 0)
+      {
+        varlinks = varlinks - 5;
+      }
+    }
+    else if (calculatedReflection == "leftLine")
+    {
+      Serial.print("\n");
+      Serial.print("links");
+      left();
+      varlinks = varlinks + 5;
+      if (varlinks + varrechts >= 400)
+      {
+        varlinks = 0;
+        varrechts = 0;
+        doppelschwarz();
+      }
+    }
+    else if (calculatedReflection == "rightLine")
+    {
+      Serial.print("\n");
+      Serial.print("rechts");
+      right();
+      varrechts = varrechts + 5;
+      if (varlinks + varrechts >= 400)
+      {
+        varlinks = 0;
+        varrechts = 0;
+        doppelschwarz();
+      }
+    }
+    else if (calculatedReflection == "noLine")
+    {
+      Serial.print("\n");
+      Serial.print("keine Linie...");
+      straight();
+    }
+    delay(50);
+  }
 }
 
 void doppelschwarz()
@@ -296,6 +360,49 @@ void read_reflectionandprint()
   }
   Serial.println(); // neue Zeile beginnen
 }
+
+void readAcc()
+{
+  if (IMU.accelerationAvailable())
+  {
+    IMU.readAcceleration(acc.x, acc.y, acc.z);
+    acc.x += ACC_X_OFFSET;
+    acc.y += ACC_Y_OFFSET;
+    acc.z += ACC_Z_OFFSET;
+  } // else: nicht jedes Mal, wenn dir den Sensor fragen, hat er auch neue Werte
+}
+
+void ReadGyro()
+{
+  if (IMU.gyroscopeAvailable())
+  {
+    IMU.readGyroscope(gyro.x, gyro.y, gyro.z);
+    gyro.x += GYRO_X_OFFSET;
+    gyro.y += GYRO_Y_OFFSET;
+    gyro.z += GYRO_Z_OFFSET;
+  } // else: nicht jedes Mal, wenn dir den Sensor fragen, hat er auch neue Werte
+}
+
+void accWerteLoggen()
+{
+  Serial.println(
+      "Beschleunigung x=" + String(acc.x) + " y=" + String(acc.y) + " z=" + String(acc.z) + " Rotationsgeschwindigkeit x=" + String(gyro.x) + " y=" + String(gyro.y) + " z=" + String(gyro.z));
+}
+
+void fusionInitialisieren()
+{
+  Serial.println("Der Arduino muss jetzt gerade liegen und darf nicht bewegt werden!");
+  Fusion.setup(acc);
+}
+
+void fusionLoggen()
+{
+  Fusion.update(gyro, acc);
+  /* Wenn man aus Sicht des Arduino Richting USB-Stecker schaut: */
+  Serial.println(
+      "Gierwinkel (links<->rechts schauen)=" + String(Fusion.yaw()) + " Nickwinkel (hoch<->runten schauen)=" + String(Fusion.pitch()) + " Rollwinkel (links<->rechts kippen)=" + String(Fusion.roll()));
+}
+
 
 String calculateReflection()
 {
