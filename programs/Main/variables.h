@@ -1,7 +1,7 @@
 int varrechts = 0;
 int varlinks = 0;
 const uint8_t SENSOR_LEISTE_ANZAHL_SENSOREN = 6;
-const uint8_t SENSOR_LEISTE_PINS[] = {10, 11, 12, 9, 8, 7};
+const uint8_t SENSOR_LEISTE_PINS[] = {D6, D0, D1, D7, D8, D9};
 // hier speichern wir die 6 Reflektionssensorwerte ab:
 uint16_t helligkeiten[SENSOR_LEISTE_ANZAHL_SENSOREN];
 QTRSensors sensorLeiste = QTRSensors();

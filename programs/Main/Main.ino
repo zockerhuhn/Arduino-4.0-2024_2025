@@ -81,7 +81,7 @@ void setup()
 void loop()
 {
   calculatedReflection = calculateReflection();
-  if (calculatedReflection == "frontLine")
+  if (calculatedReflection == "frontalLine")
   {
     doppelschwarz();
   }

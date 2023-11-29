@@ -1,6 +1,6 @@
 {
     "board": "rp2040:rp2040:arduino_nano_connect",
     "sketch": "programs\\Main\\Main.ino",
-    "port": "COM20",
+    "port": "COM21",
     "prebuild": ".vscode\\prebuild.bat"
 }
