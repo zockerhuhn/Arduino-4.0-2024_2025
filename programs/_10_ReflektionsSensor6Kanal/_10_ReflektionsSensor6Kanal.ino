@@ -34,7 +34,7 @@
 #include <QTRSensors.h>
 QTRSensors sensorLeiste = QTRSensors();
 const uint8_t SENSOR_LEISTE_ANZAHL_SENSOREN = 6;
-const uint8_t SENSOR_LEISTE_PINS[] = {10, 11, 12, 9, 8, 7};
+const uint8_t SENSOR_LEISTE_PINS[] = {D6, D0, D1, D7, D8, D9};
 
 enum Modus {
     /* Werte im Serial Monitor anzeigen. */
