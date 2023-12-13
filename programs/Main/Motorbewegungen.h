@@ -1,22 +1,22 @@
 void straight()
 {
-  motoren.flipLeftMotor(true);
-  motoren.flipRightMotor(true);
-  motoren.setSpeeds(75, 75);
+  motors.flipLeftMotor(false);
+  motors.flipRightMotor(true);
+  motors.setSpeeds(60, 48);
 }
 
 void left()
 {
-  motoren.flipLeftMotor(false);
-  motoren.flipRightMotor(true);
-  motoren.setSpeeds(75, 75);
+  motors.flipLeftMotor(true);
+  motors.flipRightMotor(true);
+  motors.setSpeeds(60, 48);
 }
 
 void right()
 {
-  motoren.flipLeftMotor(true);
-  motoren.flipRightMotor(false);
-  motoren.setSpeeds(75, 75);
+  motors.flipLeftMotor(false);
+  motors.flipRightMotor(false);
+  motors.setSpeeds(60, 48);
 }
 
 void turn()

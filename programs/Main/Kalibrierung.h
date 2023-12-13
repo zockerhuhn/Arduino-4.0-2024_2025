@@ -2,7 +2,7 @@
 int colorMinThreshold = 650;
 int colorMaxThreshold = 1000;
 
-int reflectionBlackThreshold = 600;
+int reflectionBlackThreshold = 2000;
 
 /* Liegt der Arduino gerade auf dem Tisch und wird nicht bewegt, muss die Z-Achse 1G (Erdbeschleunigung) ausgeben und der Rest muss 0 sein.
    Das ist nicht wirklich so und wird mit diesen Werten kalibriert: */

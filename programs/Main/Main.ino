@@ -46,6 +46,7 @@
 
 void setup()
 {
+  delay(3000);
   Serial.begin(115200);
   // I2C Bus 1x für alle Bus-Teilnehmer initialisieren (sonst crasht das Betriebssystem)
   Wire.begin(); // Bus I2C0
@@ -59,7 +60,6 @@ void setup()
   }
   Serial.println("Initialisierung Farbe 1 abgeschlossen");
   if (!rgbSensor2.begin(TCS34725_ADDRESS, &Wire1))
-  
   {
     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
     Serial.println("RGB Farbsensor Verdrahtung prüfen!");
@@ -68,8 +68,10 @@ void setup()
   sensorLeiste.setTypeRC();
   sensorLeiste.setSensorPins(SENSOR_LEISTE_PINS, SENSOR_LEISTE_ANZAHL_SENSOREN);
   Serial.println("Initialisierung Reflektionssensor abgeschlossen");
-  motoren.flipLeftMotor(true);
-  motoren.flipRightMotor(true);
+    motors.initialize();
+  // falls man global die Motor-Drehrichtung ändern möchte:
+  motors.flipLeftMotor(false); // nur notwendig, wenn man true reinschreibt
+  motors.flipRightMotor(true); // nur notwendig, wenn man true reinschreibt
 }
 
 #include "Kalibrierung.h"
@@ -90,40 +92,18 @@ void loop()
     Serial.print("\n");
     Serial.print("Linie");
     straight();
-    if (varrechts > 0)
-    {
-      varrechts = varrechts - 5;
-    }
-    if (varlinks > 0)
-    {
-      varlinks = varlinks - 5;
-    }
   }
   else if (calculatedReflection == "leftLine")
   {
     Serial.print("\n");
     Serial.print("links");
     left();
-    varlinks = varlinks + 5;
-    if (varlinks + varrechts >= 400)
-    {
-      varlinks = 0;
-      varrechts = 0;
-      doppelschwarz();
-    }
   }
   else if (calculatedReflection == "rightLine")
   {
     Serial.print("\n");
     Serial.print("rechts");
     right();
-    varrechts = varrechts + 5;
-    if (varlinks + varrechts >= 400)
-    {
-      varlinks = 0;
-      varrechts = 0;
-      doppelschwarz();
-    }
   }
   else if (calculatedReflection == "noLine")
   {
@@ -131,5 +111,5 @@ void loop()
     Serial.print("keine Linie...");
     straight();
   }
-  delay(50);
+  delay(5);
 }

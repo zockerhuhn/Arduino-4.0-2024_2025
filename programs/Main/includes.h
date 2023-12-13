@@ -4,4 +4,4 @@
 #include <Adafruit_TCS34725.h>
 /** optional: Stoppuhr, um zu Verbindungsverluste zu erkennen */
 #include <QTRSensors.h>
-#include <ZumoMotors.h>
+#include <RescueBoardMotors.h>

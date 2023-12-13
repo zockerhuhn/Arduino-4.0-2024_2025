@@ -2,7 +2,7 @@ void doppelschwarz()
 {
   Serial.print("\n");
   Serial.print("alles-schwarz");
-  motoren.setSpeeds(0, 0);
+  motors.setSpeeds(0, 0);
   delay(1000);
   readColor2();
   readColor();
@@ -41,7 +41,7 @@ void doppelschwarz()
     {
       straight();
       delay(1200);
-      motoren.setSpeeds(0, 0);
+      motors.setSpeeds(0, 0);
       if (!(calculateReflection() == "noLine"))
       {
         // not else lol
