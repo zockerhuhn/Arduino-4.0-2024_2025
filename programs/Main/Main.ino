@@ -97,9 +97,21 @@ void loop()
   {
     Serial.print("\n");
     Serial.print("links");
-    left();
+    straight_left();
   }
   else if (calculatedReflection == "rightLine")
+  {
+    Serial.print("\n");
+    Serial.print("rechts");
+    straight_right();
+  }
+  else if (calculatedReflection == "hardleftLine")
+  {
+    Serial.print("\n");
+    Serial.print("links");
+    left();
+  }
+  else if (calculatedReflection == "hardrightLine")
   {
     Serial.print("\n");
     Serial.print("rechts");

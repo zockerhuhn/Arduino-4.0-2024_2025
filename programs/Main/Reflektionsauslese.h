@@ -1,11 +1,11 @@
 void read_reflectionandprint()
 {
   sensorLeiste.read(helligkeiten);
-  for (int i = 0; i < SENSOR_LEISTE_ANZAHL_SENSOREN; i++)
-  {
-    Serial.print(String(helligkeiten[i]) + '\t'); // alles in eine Zeile
-  }
-  Serial.println(); // neue Zeile beginnen
+  // for (int i = 0; i < SENSOR_LEISTE_ANZAHL_SENSOREN; i++)
+  // {
+  //   Serial.print(String(helligkeiten[i]) + '\t'); // alles in eine Zeile
+  // }
+  // Serial.println(); // neue Zeile beginnen
 }
 
 String calculateReflection()
@@ -15,15 +15,23 @@ String calculateReflection()
   {
     return "frontalLine";
   }
-  else if ((helligkeiten[2] >= reflectionBlackThreshold || helligkeiten[3] >= reflectionBlackThreshold) && (helligkeiten[0] <= reflectionBlackThreshold && helligkeiten[1] <= reflectionBlackThreshold && helligkeiten[4] <= reflectionBlackThreshold && helligkeiten[5] <= reflectionBlackThreshold))
+  else if ((helligkeiten[2] >= reflectionBlackThreshold) || (helligkeiten[3] >= reflectionBlackThreshold))
   {
     return "normalLine";
   }
-  else if (helligkeiten[0] >= reflectionBlackThreshold || helligkeiten[1] >= reflectionBlackThreshold)
+  else if (helligkeiten[0] >= reflectionBlackThreshold)
+  {
+    return "hardleftLine";
+  }
+  else if (helligkeiten[5] >= reflectionBlackThreshold)
+  {
+    return "hardrightLine";
+  }
+  else if (helligkeiten[1] >= reflectionBlackThreshold)
   {
     return "leftLine";
   }
-  else if (helligkeiten[4] >= reflectionBlackThreshold || helligkeiten[5] >= reflectionBlackThreshold)
+  else if (helligkeiten[4] >= reflectionBlackThreshold)
   {
     return "rightLine";
   }
