@@ -68,7 +68,7 @@ void setup()
   sensorLeiste.setTypeRC();
   sensorLeiste.setSensorPins(SENSOR_LEISTE_PINS, SENSOR_LEISTE_ANZAHL_SENSOREN);
   Serial.println("Initialisierung Reflektionssensor abgeschlossen");
-    motors.initialize();
+  motors.initialize();
   // falls man global die Motor-Drehrichtung ändern möchte:
   motors.flipLeftMotor(false); // nur notwendig, wenn man true reinschreibt
   motors.flipRightMotor(true); // nur notwendig, wenn man true reinschreibt
