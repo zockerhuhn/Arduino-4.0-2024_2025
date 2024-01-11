@@ -109,13 +109,13 @@ void loop()
   {
     Serial.print("\n");
     Serial.print("links");
-    left();
+    straight_left();
   }
   else if (calculatedReflection == "hardrightLine")
   {
     Serial.print("\n");
     Serial.print("rechts");
-    right();
+    straight_right();
   }
   else if (calculatedReflection == "noLine")
   {
@@ -123,5 +123,5 @@ void loop()
     Serial.print("keine Linie...");
     straight();
   }
-  delay(5);
+  delay(10);
 }
