@@ -1,6 +1,6 @@
 // Sensorenwerte für Kalibrierung
-int colorMinThreshold = 650;
-int colorMaxThreshold = 1500;
+int colorMinThreshold = 1; //650
+int colorMaxThreshold = 15000; // 1500
 
 int reflectionBlackThreshold = 2000;
 

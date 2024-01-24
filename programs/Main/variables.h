@@ -13,7 +13,7 @@ uint16_t rot2, gruen2, blau2, helligkeit2;
 /** Sensor sehr schnell einstellen (ungenauer):
  *  Gain 4x fand ich am besten, aber dann sind die Werte so stabil,
  *  dass die Fehlerdetektion immer ausgelöst hat (siehe unten "helligkeitStatischStoppuhr.hasPassed"). */
-Adafruit_TCS34725 rgbSensor = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
-Adafruit_TCS34725 rgbSensor2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
+Adafruit_TCS34725 rgbSensor = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_60MS, TCS34725_GAIN_4X);
+Adafruit_TCS34725 rgbSensor2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_60MS, TCS34725_GAIN_4X);
 // Dieses Objekt repräsentiert 2 Motor-Kanäle (1..2 Motoren pro Kanal):
 RescueBoardMotors motors = RescueBoardMotors();

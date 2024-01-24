@@ -2,21 +2,21 @@ void straight()
 {
   motors.flipLeftMotor(false);
   motors.flipRightMotor(true);
-  motors.setSpeeds(70, 60);
+  motors.setSpeeds(70, 75);
 }
 
 void left()
 {
   motors.flipLeftMotor(true);
   motors.flipRightMotor(true);
-  motors.setSpeeds(70, 60);
+  motors.setSpeeds(70, 75);
 }
 
 void right()
 {
   motors.flipLeftMotor(false);
   motors.flipRightMotor(false);
-  motors.setSpeeds(70, 60);
+  motors.setSpeeds(70, 75);
 }
 
 void turn()
