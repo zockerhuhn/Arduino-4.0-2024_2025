@@ -26,14 +26,14 @@ void turn()
 
 void straight_left()
 {
-  motors.flipLeftMotor(true);
-  motors.flipRightMotor(false);
-  motors.setSpeeds(70, 30);
+  motors.flipLeftMotor(false);
+  motors.flipRightMotor(true);
+  motors.setSpeeds(30, 70);
 }
 
 void straight_right()
 {
-  motors.flipLeftMotor(true);
-  motors.flipRightMotor(false);
-  motors.setSpeeds(30, 70);
+  motors.flipLeftMotor(false);
+  motors.flipRightMotor(true);
+  motors.setSpeeds(70, 30);
 }
