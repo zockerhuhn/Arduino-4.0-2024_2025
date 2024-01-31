@@ -5,3 +5,4 @@
 /** optional: Stoppuhr, um zu Verbindungsverluste zu erkennen */
 #include <QTRSensors.h>
 #include <RescueBoardMotors.h>
+#include <WiFiNINA.h>

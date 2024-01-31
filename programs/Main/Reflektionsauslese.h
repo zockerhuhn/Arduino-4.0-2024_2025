@@ -15,10 +15,6 @@ String calculateReflection()
   {
     return "frontalLine";
   }
-  else if ((helligkeiten[2] >= reflectionBlackThreshold) || (helligkeiten[3] >= reflectionBlackThreshold))
-  {
-    return "normalLine";
-  }
   else if (helligkeiten[5] >= reflectionBlackThreshold)
   {
     return "hardleftLine";
@@ -34,6 +30,10 @@ String calculateReflection()
   else if (helligkeiten[1] >= reflectionBlackThreshold)
   {
     return "rightLine";
+  }
+  else if ((helligkeiten[2] >= reflectionBlackThreshold) || (helligkeiten[3] >= reflectionBlackThreshold))
+  {
+    return "normalLine";
   }
   else
   {

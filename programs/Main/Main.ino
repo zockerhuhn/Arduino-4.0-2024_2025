@@ -46,11 +46,13 @@
 
 void setup()
 {
-  delay(3000);
+  delay(300);
+  pinMode(motorpin, INPUT_PULLDOWN);
+  pinMode(killswitch, INPUT);
   Serial.begin(115200);
   // I2C Bus 1x für alle Bus-Teilnehmer initialisieren (sonst crasht das Betriebssystem)
   Wire.begin(); // Bus I2C0
-  // Wire.setClock(1000000); // 1MHz Kommunikationsgeschwindigkeit
+  Wire.setClock(1000000); // 1MHz Kommunikationsgeschwindigkeit
   Wire1.begin(); // Bus I2C1
   //  hier den zu nutzenden I2C Bus einstellen:
   if (!rgbSensor.begin(TCS34725_ADDRESS, &Wire))
@@ -82,6 +84,12 @@ void setup()
 
 void loop()
 {
+  if (digitalRead(killswitch)){
+    motors.setSpeeds(0,0);
+    while(true){
+      delay(1);
+    }
+  }
   calculatedReflection = calculateReflection();
   if (calculatedReflection == "frontalLine")
   {

@@ -1,8 +1,8 @@
 // Sensorenwerte für Kalibrierung
-int colorMinThreshold = 1; //650
-int colorMaxThreshold = 15000; // 1500
+int colorBrightMaxThreshold = 1500; //2000
+int colorMaxThreshold = 300; // 300
 
-int reflectionBlackThreshold = 2000;
+int reflectionBlackThreshold = 1500;
 
 /* Liegt der Arduino gerade auf dem Tisch und wird nicht bewegt, muss die Z-Achse 1G (Erdbeschleunigung) ausgeben und der Rest muss 0 sein.
    Das ist nicht wirklich so und wird mit diesen Werten kalibriert: */
