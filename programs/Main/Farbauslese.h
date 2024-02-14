@@ -19,7 +19,7 @@ void readColor2()
 boolean calculateColor()
 {
   {
-    if (gruen >= colorMaxThreshold && helligkeit >= colorBrightMaxThreshold)
+    if (gruen >= blau && gruen >= rot && helligkeit >= colorBrightMaxThreshold)
     {
       return true;
     }
@@ -33,7 +33,7 @@ boolean calculateColor()
 boolean calculateColor2()
 {
   {
-    if (gruen2 >= colorMaxThreshold && helligkeit2 >= colorBrightMaxThreshold)
+    if (gruen2 >= blau2 && gruen2 >= rot2 && helligkeit2 >= colorBrightMaxThreshold)
     {
       return true;
     }
