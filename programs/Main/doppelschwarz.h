@@ -2,14 +2,12 @@ void doppelschwarz()
 {
   Serial.print("\n");
   Serial.print("alles-schwarz");
-  motors.setSpeeds(0, 0);
-  delay(1000);
   straight();
-  delay(350);
+  delay(450);
   motors.setSpeeds(0,0);
   readColor2();
   readColor();
-  delay(60);
+  delay(600);
   if (calculateColor())
   {
     Serial.print("rechts");

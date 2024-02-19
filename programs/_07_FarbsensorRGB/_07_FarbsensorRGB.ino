@@ -75,6 +75,7 @@ uint16_t rot2, gruen2, blau2, helligkeit2;
 int sensor1_verg[4] = {0,0,0,0};
 int sensor2_verg[4] = {0,0,0,0};
 int counter = 0;
+int countermax = 1000; //Amount of reads after which the program stops
 
 void loop() {
     readColor();
@@ -89,8 +90,15 @@ void loop() {
             if (counter % 10 == 0) {
                 werteausgeben();
             }
+            if (counter == countermax) {
+                Serial.println("END");
+                while (true) {
+                    delay(1);
+                }
+            }
             break;
     }
+    delay(5);
 }
 
 const uint16_t VERBINDUNG_VERLOREN = 0;
@@ -132,10 +140,12 @@ void addvalues() {
 void werteausgeben() {
     Serial.println("Sensor 1:");
     for (int i : sensor1_verg) {
-        Serial.print(String(i/counter));
+        Serial.print(String(i/counter) + " ");
     }
+    Serial.print("\n");
     Serial.println("Sensor 2:");
     for (int i : sensor2_verg) {
-        Serial.print(String(i/counter));
+        Serial.print(String(i/counter) + " ");
     }
+    Serial.print("\n");
 }

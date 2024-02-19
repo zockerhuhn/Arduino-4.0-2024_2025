@@ -1,8 +1,8 @@
 void straight()
 {
-  if (digitalRead(motorpin)) {
-    return;
-  }
+  // if (digitalRead(motorpin)) {
+  //   return;
+  // }
   motors.flipLeftMotor(false);
   motors.flipRightMotor(true);
   motors.setSpeeds(50, 55);
@@ -10,9 +10,9 @@ void straight()
 
 void left()
 {
-  if (digitalRead(motorpin)) {
-    return;
-  }
+  // if (digitalRead(motorpin)) {
+  //   return;
+  // }
   motors.flipLeftMotor(true);
   motors.flipRightMotor(true);
   motors.setSpeeds(70, 75);
@@ -20,9 +20,9 @@ void left()
 
 void right()
 {
-  if (digitalRead(motorpin)) {
-    return;
-  }
+  // if (digitalRead(motorpin)) {
+  //   return;
+  // }
   motors.flipLeftMotor(false);
   motors.flipRightMotor(false);
   motors.setSpeeds(70, 75);
@@ -35,9 +35,9 @@ void turn()
 
 void straight_left()
 {
-  if (digitalRead(motorpin)) {
-    return;
-  }
+  // if (digitalRead(motorpin)) {
+  //   return;
+  // }
   motors.flipLeftMotor(false);
   motors.flipRightMotor(true);
   motors.setSpeeds(30, 70);
@@ -45,9 +45,9 @@ void straight_left()
 
 void straight_right()
 {
-  if (digitalRead(motorpin)) {
-    return;
-  }
+  // if (digitalRead(motorpin)) {
+  //   return;
+  // }
   motors.flipLeftMotor(false);
   motors.flipRightMotor(true);
   motors.setSpeeds(70, 30);
