@@ -37,16 +37,12 @@
  *  Gain 4x fand ich am besten, aber dann sind die Werte so stabil,
  *   dass die Fehlerdetektion immer ausgelöst hat (siehe unten "helligkeitStatischStoppuhr.hasPassed"). */
 Adafruit_TCS34725 rgbSensor = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
-
-/** optional: Stoppuhr, um zu Verbindungsverluste zu erkennen */
-#include <Chrono.h> 
-Chrono helligkeitStatischStoppuhr = Chrono(Chrono::MILLIS, false); // noch nicht gestartet
+Adafruit_TCS34725 rgbSensor2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 
 enum Modus {
     /* Werte im Serial Monitor anzeigen. */
     WERTE_LOGGEN,
-    /* Geht nur in der offiziellen Arduino IDE: Komma-Separierte Liste für den Serial Plotter. */
-    IM_SERIAL_PLOTTER_ZEIGEN,
+    WERTE_VERARBEITEN,
 };
 
 /** hier einstellen, was das Programm mit den Sensorwerten anfangen soll: */
@@ -54,41 +50,46 @@ Modus modus = WERTE_LOGGEN;
 
 void setup() {
     Serial.begin(115200);
-
     // I2C Bus 1x für alle Bus-Teilnehmer initialisieren (sonst crasht das Betriebssystem)
     Wire.begin(); // Bus I2C0
     Wire.setClock(1000000); // 1MHz Kommunikationsgeschwindigkeit
-    //Wire1.begin();  // Bus I2C1
-
+    Wire1.begin();  // Bus I2C1
     // hier den zu nutzenden I2C Bus einstellen:
     if (!rgbSensor.begin(TCS34725_ADDRESS, &Wire)) {
         delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
         Serial.println("RGB Farbsensor Verdrahtung prüfen! Programm Ende.");
         while (1);
     }
-
-    helligkeitStatischStoppuhr.start();
+    if (!rgbSensor2.begin(TCS34725_ADDRESS, &Wire1)) {
+        delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+        Serial.println("RGB Farbsensor Verdrahtung prüfen! Programm Ende.");
+        while (1);
+    }
     Serial.println("Initialisierung abgeschlossen");
 }
 
 // hier speichern wir die Sensorwerte ab:
 // Roh-Werte (Es gibt auch kalibierte Werte, aber die sind sehr langsam auszulesen):
 uint16_t rot, gruen, blau, helligkeit;
+uint16_t rot2, gruen2, blau2, helligkeit2;
+int sensor1_verg[4] = {0,0,0,0};
+int sensor2_verg[4] = {0,0,0,0};
+int counter = 0;
 
 void loop() {
     readColor();
-
     switch (modus) {
         case WERTE_LOGGEN:
             werteLoggen();
             calculatecolor();
             break;
 
-        case IM_SERIAL_PLOTTER_ZEIGEN:
-            fuerPlotterLoggen();
-            delay(100); // damit man im Plotter auch was erkennt und nicht alles so schnell vorbei fliegt
+        case WERTE_VERARBEITEN:
+            addvalues();
+            if (counter % 10 == 0) {
+                werteausgeben();
+            }
             break;
-
     }
 }
 
@@ -97,39 +98,12 @@ uint16_t vorheriges_rot, vorheriges_gruen, vorheriges_blau, vorherige_helligkeit
 
 void readColor() {
     rgbSensor.getRawData(&rot, &gruen, &blau, &helligkeit);
-    /** Dieser Mechanismus hier ist gefährlich, wenn es passieren kann, dass die Sensoren lange Zeit das selbe sehen:
-     *  In meinen Versuchen habe ich oben den Gain von 4x auf 16x gestellt, um mehr Rauschen zu bekommen.
-     *  Mit Timeout 5s sehe ich keine False-Negatives mehr: */
-    if (!helligkeitStatischStoppuhr.hasPassed(5000)) {
-        // alles OK
-        if (vorheriges_rot != rot || vorheriges_gruen != gruen ||
-            vorheriges_blau != blau || vorherige_helligkeit != helligkeit) {
-            // merken: der Wert hat sich verändert
-            vorheriges_rot = rot;
-            vorheriges_gruen = gruen;
-            vorheriges_blau = blau;
-            vorherige_helligkeit = helligkeit;
-            helligkeitStatischStoppuhr.restart();
-        }
-        return; // rausgehen aus der Funktion, damit wir nicht zum Fehler kommen
-    }
-
-    // Fehler:
-    rot = VERBINDUNG_VERLOREN;
-    gruen = VERBINDUNG_VERLOREN;
-    blau = VERBINDUNG_VERLOREN;
-    helligkeit = VERBINDUNG_VERLOREN;
-    helligkeitStatischStoppuhr.restart(); // um bei Wackelkontakt Wiederverbindung zu erlauben
-    Serial.println("RGB Sensor Verdrahtung prüfen!");
+    rgbSensor2.getRawData(&rot2, &gruen2, &blau2, &helligkeit2);
 }
 
 void werteLoggen() {
     Serial.println("R:" + String(rot) + " G:" + String(gruen) + " B:" + String(blau) + " C:" + String(helligkeit));
-}
-
-void fuerPlotterLoggen() {
-    Serial.println(String(blau) + "," + String(rot) + "," + String(gruen) + "," +
-                   String(helligkeit / 10)); // damit der Graph nicht die ganze Zeit raus und rein zoomt
+    Serial.println("R:" + String(rot2) + " G:" + String(gruen2) + " B:" + String(blau2) + " C:" + String(helligkeit2));
 }
 
 void calculatecolor() {
@@ -141,4 +115,27 @@ void calculatecolor() {
         Serial.println("not green");
     }
     
+}
+
+void addvalues() {
+    sensor1_verg[0] += rot;
+    sensor1_verg[1] += gruen;
+    sensor1_verg[2] += blau;
+    sensor1_verg[3] += helligkeit;
+    sensor2_verg[0] += rot2;
+    sensor2_verg[1] += gruen2;
+    sensor2_verg[2] += blau2;
+    sensor2_verg[3] += helligkeit2;
+    counter += 1;
+}
+
+void werteausgeben() {
+    Serial.println("Sensor 1:");
+    for (int i : sensor1_verg) {
+        Serial.print(String(i/counter));
+    }
+    Serial.println("Sensor 2:");
+    for (int i : sensor2_verg) {
+        Serial.print(String(i/counter));
+    }
 }
