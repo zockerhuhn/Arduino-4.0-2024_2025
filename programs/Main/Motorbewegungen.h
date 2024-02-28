@@ -1,14 +1,14 @@
-void straight()
+void straight() //drive straight
 {
   if (digitalRead(motorpin)) {
     return;
   }
   motors.flipLeftMotor(false);
   motors.flipRightMotor(true);
-  motors.setSpeeds(50, 55);
+  motors.setSpeeds(50, 55); //prevent motor drifting
 }
 
-void left()
+void left() //turn left
 {
   if (digitalRead(motorpin)) {
     return;
@@ -18,7 +18,7 @@ void left()
   motors.setSpeeds(70, 75);
 }
 
-void right()
+void right() //turn right
 {
   if (digitalRead(motorpin)) {
     return;
@@ -28,7 +28,7 @@ void right()
   motors.setSpeeds(70, 75);
 }
 
-void turn()
+void turn() //turn around
 {
   motors.flipLeftMotor(false);
   motors.flipRightMotor(true);
@@ -36,7 +36,7 @@ void turn()
   delay(2000);
 }
 
-void straight_left()
+void straight_left() //drive straight but pull left
 {
   if (digitalRead(motorpin)) {
     return;
@@ -46,7 +46,7 @@ void straight_left()
   motors.setSpeeds(30, 70);
 }
 
-void straight_right()
+void straight_right() //drive straight but pull right
 {
   if (digitalRead(motorpin)) {
     return;
