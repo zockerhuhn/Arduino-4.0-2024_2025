@@ -15,6 +15,10 @@ void doppelschwarz()
     {
       Serial.print("links");
       turn();
+      while (calculateReflection() == "noLine")
+      {
+        delay(10);
+      }
     }
     else
     {
