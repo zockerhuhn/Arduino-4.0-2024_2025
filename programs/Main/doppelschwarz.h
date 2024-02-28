@@ -49,7 +49,7 @@ void doppelschwarz()
     else
     {
       straight();
-      delay(1200);
+      delay(800);
       motors.setSpeeds(0, 0);
       if (!(calculateReflection() == "noLine"))
       {
@@ -58,9 +58,13 @@ void doppelschwarz()
       else
       {
         if (calculateReflection() != "normalLine") {
-        left();
+        motors.flipLeftMotor(true);
+        motors.flipRightMotor(true);
+        motors.setSpeeds(70, 65);
         delay(2500);
-        right(); }
+        motors.flipLeftMotor(false);
+        motors.flipRightMotor(false);
+        motors.setSpeeds(60, 75); }
         while (calculateReflection() == "noLine")
         {
           Serial.print("\n");

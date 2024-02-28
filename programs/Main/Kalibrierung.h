@@ -1,6 +1,6 @@
 // Sensorenwerte für Kalibrierung
-int colorBrightMaxThreshold = 2000; //Maximum brightness threshold for colorsensors to detect green
-int colorBrightMinThreshold = 1000; //Minimum brightness threshold for colorsensors to detect green
+int colorBrightMaxThreshold = 4000; //Maximum brightness threshold for colorsensors to detect green
+int colorBrightMinThreshold = 1200; //Minimum brightness threshold for colorsensors to detect green
 
 int reflectionBlackThreshold = 1500;
 
