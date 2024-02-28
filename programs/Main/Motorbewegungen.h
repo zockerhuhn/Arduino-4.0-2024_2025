@@ -30,7 +30,7 @@ void right()
 
 void turn()
 {
-  delay(1); // placeholder
+  motors.flipLeftMotor(true);
 }
 
 void straight_left()
