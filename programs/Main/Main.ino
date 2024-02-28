@@ -90,46 +90,46 @@ void loop()
       delay(1);
     }
   }
-  calculatedReflection = calculateReflection(); //read the reflectionsensor and save the result in a variable to avoid 
-  if (calculatedReflection == "frontalLine")
+  calculatedReflection = calculateReflection(); //read the reflectionsensor and save the result in a variable to avoid changing values while processing 
+  if (calculatedReflection == "frontalLine") //detected crosssection
   {
     doppelschwarz();
   }
-  else if (calculatedReflection == "normalLine")
+  else if (calculatedReflection == "normalLine") //detected normal line
   {
     Serial.print("\n");
     Serial.print("Linie");
     straight();
   }
-  else if (calculatedReflection == "leftLine")
+  else if (calculatedReflection == "leftLine") //detected a slight left line
   {
     Serial.print("\n");
     Serial.print("links");
     straight_left();
   }
-  else if (calculatedReflection == "rightLine")
+  else if (calculatedReflection == "rightLine") //detected a slight right line
   {
     Serial.print("\n");
     Serial.print("rechts");
     straight_right();
   }
-  else if (calculatedReflection == "hardleftLine")
+  else if (calculatedReflection == "hardleftLine") //detected a hard left line
   {
     Serial.print("\n");
     Serial.print("links");
     left();
   }
-  else if (calculatedReflection == "hardrightLine")
+  else if (calculatedReflection == "hardrightLine") //detected a hard right line
   {
     Serial.print("\n");
     Serial.print("rechts");
     right();
   }
-  else if (calculatedReflection == "noLine")
+  else if (calculatedReflection == "noLine") //no line detected 
   {
     Serial.print("\n");
     Serial.print("keine Linie...");
     straight();
   }
-  delay(10);
+  delay(10); //don't max out processor
 }
