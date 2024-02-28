@@ -49,13 +49,27 @@ void setup()
   delay(300);
   pinMode(LED_BUILTIN, OUTPUT); // Pin D13
   pinMode(motorpin, INPUT_PULLDOWN);
-  pinMode(killswitch, INPUT);
+  pinMode(kalibrierung, INPUT);
   Serial.begin(115200);
   // I2C Bus 1x für alle Bus-Teilnehmer initialisieren (sonst crasht das Betriebssystem)
   Wire.begin(); // Bus I2C0
   Wire.setClock(1000000); // 1MHz Kommunikationsgeschwindigkeit
   Wire1.begin(); // Bus I2C1
   //  hier den zu nutzenden I2C Bus einstellen:
+    Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
+    // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
+    if (!abstandsSensor.begin(NEUE_ADDRESSE, Wire)) {
+        delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+        Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
+    }
+    if (!abstandsSensor.setResolution(einstellungen.aufloesung) ||
+        !abstandsSensor.setRangingFrequency(einstellungen.maxMessfrequenz)) {  // siehe oben
+            delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+            Serial.println("ToF64 Auflösung oder Messfrequenz konnte nicht geändert werden! Programm Ende.");
+            while (1);
+    }
+    abstandsSensor.startRanging();
+    Serial.println("Initialisierung abgeschlossen");
   if (!rgbSensor.begin(TCS34725_ADDRESS, &Wire))
   {
     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
@@ -85,7 +99,7 @@ void setup()
 
 void loop()
 {
-  if (digitalRead(killswitch)){
+  if (digitalRead(kalibrierung)){
     motors.setSpeeds(0,0);
     for (int i = 0; i < 5; i++) { // 5x blinken (AN/AUS):
         digitalWrite(LED_BUILTIN, HIGH);
@@ -104,6 +118,17 @@ void loop()
         delay(250);
         digitalWrite(LED_BUILTIN, LOW);
         delay(250);
+    }
+  }
+  readDistances();
+  if (messDaten.target_status[4 + 4] == 5 || messDaten.target_status[4 + 4] == 8) {
+    if (messDaten.distance_mm[4 + 4] <= 100) {
+      right();
+      delay(200);
+      straight();
+      delay(2000);
+      left();
+      delay(400);
     }
   }
   calculatedReflection = calculateReflection();
@@ -153,4 +178,14 @@ void loop()
     straight();
   }
   delay(10);
+}
+
+void readDistances() {
+  if (abstandsSensor.isDataReady()) {
+      // diese Zeile speicher bereits die Daten ab:
+      if (abstandsSensor.getRangingData(&messDaten)) {
+          // alles OK
+          return;  // rausgehen aus der Funktion, damit wir nicht zum Fehler kommen
+      } // else: Fehler
+  } // else: wenn es keine neuen Daten gibt, müssen wir sie auch nicht lesen
 }
