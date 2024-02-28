@@ -47,6 +47,7 @@
 void setup()
 {
   delay(300);
+  pinMode(LED_BUILTIN, OUTPUT); // Pin D13
   pinMode(motorpin, INPUT_PULLDOWN);
   pinMode(killswitch, INPUT);
   Serial.begin(115200);
@@ -86,15 +87,35 @@ void loop()
 {
   if (digitalRead(killswitch)){
     motors.setSpeeds(0,0);
-    while(true){
-      delay(1);
+    for (int i = 0; i < 5; i++) { // 5x blinken (AN/AUS):
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(250);
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(250);
+    }
+    readColor();
+    readColor2();
+    colorBrightMaxThreshold = max(helligkeit, helligkeit2)+1500;
+    colorBrightMinThreshold = min(helligkeit, helligkeit2)-1500;
+    // 5x blinken (AN/AUS):
+    delay(1000);
+    for (int i = 0; i < 5; i++) {
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(250);
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(250);
     }
   }
   calculatedReflection = calculateReflection();
   if (calculatedReflection == "frontalLine")
   {
-    doppelschwarz();
+    doppelschwarz(true);
   }
+  else if (calculatedReflection == "sideLine")
+  {
+    doppelschwarz(false);
+  }
+  
   else if (calculatedReflection == "normalLine")
   {
     Serial.print("\n");

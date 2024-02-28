@@ -1,13 +1,23 @@
-void doppelschwarz()
+void doppelschwarz(bool bothsides)
 {
   Serial.print("\n");
   Serial.print("alles-schwarz");
-  straight();
-  delay(450);
-  motors.setSpeeds(0,0);
-  readColor2();
-  readColor();
-  delay(600);
+  if (bothsides) {
+    straight();
+    delay(650);
+    motors.setSpeeds(0,0);
+    readColor2();
+    readColor();
+    delay(1000);
+  }
+  else {
+    straight();
+    delay(500);
+    motors.setSpeeds(0, 0);
+    readColor();
+    readColor2();
+    delay(1000);
+  }
   if (calculateColor())
   {
     Serial.print("rechts");
@@ -61,7 +71,7 @@ void doppelschwarz()
         motors.flipLeftMotor(true);
         motors.flipRightMotor(true);
         motors.setSpeeds(70, 65);
-        delay(2500);
+        delay(2000);
         motors.flipLeftMotor(false);
         motors.flipRightMotor(false);
         motors.setSpeeds(60, 75); }
