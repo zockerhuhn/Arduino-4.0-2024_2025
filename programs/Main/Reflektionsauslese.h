@@ -1,4 +1,4 @@
-void read_reflectionandprint()
+void read_reflectionandprint() //read relfectionsensor and print result
 {
   sensorLeiste.read(helligkeiten);
   for (int i = 0; i < SENSOR_LEISTE_ANZAHL_SENSOREN; i++)
@@ -8,7 +8,7 @@ void read_reflectionandprint()
   Serial.println(); // neue Zeile beginnen
 }
 
-String calculateReflection()
+String calculateReflection() //read reflection and return processed result
 {
   read_reflectionandprint();
   if ((helligkeiten[0] >= reflectionBlackThreshold) && (helligkeiten[5] >= reflectionBlackThreshold))
