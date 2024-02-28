@@ -1,4 +1,4 @@
-void readColor()
+void readColor() //liest Farbsensor 1 aus und printed Ergebnis
 {
   rgbSensor.getRawData(&rot, &gruen, &blau, &helligkeit);
   Serial.println("R:" + String(rot) + " G:" + String(gruen) + " B:" + String(blau) + " C:" + String(helligkeit));
@@ -7,7 +7,7 @@ void readColor()
    *  Mit Timeout 5s sehe ich keine False-Negatives mehr: */
 }
 
-void readColor2()
+void readColor2() //liest Farbsensor 2 aus und printed Ergebnis
 {
   rgbSensor2.getRawData(&rot2, &gruen2, &blau2, &helligkeit2);
   Serial.println("R:" + String(rot2) + " G:" + String(gruen2) + " B:" + String(blau2) + " C:" + String(helligkeit2));
@@ -16,7 +16,7 @@ void readColor2()
    *  Mit Timeout 5s sehe ich keine False-Negatives mehr: */
 }
 
-boolean calculateColor()
+boolean calculateColor() //nimmt letzten ausgelesen Wert von Farbsensor 1 und return ob grün erkannt wurde als bool
 {
   {
     if (gruen >= blau && gruen >= rot && helligkeit <= colorBrightMaxThreshold && helligkeit >= colorBrightMinThreshold)
@@ -30,7 +30,7 @@ boolean calculateColor()
   }
 }
 
-boolean calculateColor2()
+boolean calculateColor2() //nimmt letzten ausgelesen Wert von Farbsensor 2 und returnt ob grün erkannt wurde als bool
 {
   {
     if (gruen2 >= blau2 && gruen2 >= rot2 && helligkeit2 <= colorBrightMaxThreshold && helligkeit2 >= colorBrightMinThreshold)
