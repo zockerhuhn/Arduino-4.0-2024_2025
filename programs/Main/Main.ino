@@ -41,27 +41,27 @@
  * an den selben Bus anschließen.
 */
 
-#include "includes.h"
-#include "variables.h"
+#include "includes.h" //all libraries
+#include "variables.h" //all declarations and variables
 
 void setup()
 {
   delay(300);
-  pinMode(motorpin, INPUT_PULLDOWN);
-  pinMode(killswitch, INPUT);
+  pinMode(motorpin, INPUT_PULLDOWN); //define pinmode for switch on the side of bot
+  pinMode(killswitch, INPUT); //define pinmode for killswitch
   Serial.begin(115200);
   // I2C Bus 1x für alle Bus-Teilnehmer initialisieren (sonst crasht das Betriebssystem)
   Wire.begin(); // Bus I2C0
   Wire.setClock(1000000); // 1MHz Kommunikationsgeschwindigkeit
   Wire1.begin(); // Bus I2C1
   //  hier den zu nutzenden I2C Bus einstellen:
-  if (!rgbSensor.begin(TCS34725_ADDRESS, &Wire))
+  if (!rgbSensor.begin(TCS34725_ADDRESS, &Wire)) //test colorsensor 1
   {
     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
     Serial.println("RGB Farbsensor Verdrahtung prüfen!");
   }
   Serial.println("Initialisierung Farbe 1 abgeschlossen");
-  if (!rgbSensor2.begin(TCS34725_ADDRESS, &Wire1))
+  if (!rgbSensor2.begin(TCS34725_ADDRESS, &Wire1)) //test colorsensor 2
   {
     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
     Serial.println("RGB Farbsensor Verdrahtung prüfen!");
@@ -76,15 +76,15 @@ void setup()
   motors.flipRightMotor(true); // nur notwendig, wenn man true reinschreibt
 }
 
-#include "Kalibrierung.h"
-#include "Motorbewegungen.h"
-#include "Farbauslese.h"
-#include "Reflektionsauslese.h"
-#include "doppelschwarz.h"
+#include "Kalibrierung.h" //calibration values for reflectionsensor and colorsensors
+#include "Motorbewegungen.h" //predefined motor commands
+#include "Farbauslese.h" //commands for reading and processing colorsensors
+#include "Reflektionsauslese.h" //commands for reading and processing reflectionsensor
+#include "doppelschwarz.h" //command for handling crosssections
 
 void loop()
 {
-  if (digitalRead(killswitch)){
+  if (digitalRead(killswitch)){ //kill the bot if killswitch is pressed
     motors.setSpeeds(0,0);
     while(true){
       delay(1);
