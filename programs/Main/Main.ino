@@ -1,6 +1,6 @@
 /** importiert Arduino automatisch, muss man also hier nicht unbedingt auch noch mal importieren: */
 #include <Arduino.h>
-//test
+
 /**
  * !!! Immer darauf achten, dass unten in der Statusleiste...
  *     ... das richtige Arduino Board eingestellt ist

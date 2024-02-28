@@ -30,7 +30,10 @@ void right()
 
 void turn()
 {
-  motors.flipLeftMotor(true);
+  motors.flipLeftMotor(false);
+  motors.flipRightMotor(true);
+  motors.setSpeeds(70, 30);
+  delay(2000);
 }
 
 void straight_left()
