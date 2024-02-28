@@ -90,7 +90,7 @@ void loop()
       delay(1);
     }
   }
-  calculatedReflection = calculateReflection();
+  calculatedReflection = calculateReflection(); //read the reflectionsensor and save the result in a variable to avoid 
   if (calculatedReflection == "frontalLine")
   {
     doppelschwarz();
