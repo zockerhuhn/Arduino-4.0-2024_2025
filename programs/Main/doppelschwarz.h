@@ -4,10 +4,10 @@ void doppelschwarz()
   Serial.print("alles-schwarz");
   straight();
   delay(450);
-  motors.setSpeeds(0,0);
+  motors.setSpeeds(0,0); //stop where color sensors are at the right spot
   readColor2();
   readColor();
-  delay(600);
+  delay(600); //wait for sensors to 100% finish
   if (calculateColor())
   {
     Serial.print("rechts");
