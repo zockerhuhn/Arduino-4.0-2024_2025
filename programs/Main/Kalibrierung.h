@@ -1,8 +1,8 @@
 // Sensorenwerte für Kalibrierung
-int colorBrightMaxThreshold = 2000; //Maximum brightness threshold for colorsensors to detect green
-int colorBrightMinThreshold = 1000; //Minimum brightness threshold for colorsensors to detect green
+int colorBrightMaxThreshold = 4000; //Maximum brightness threshold for colorsensors to detect green
+int colorBrightMinThreshold = 1200; //Minimum brightness threshold for colorsensors to detect green
 
-int reflectionBlackThreshold = 1500;
+int reflectionBlackThreshold = 2000;
 
 /* Liegt der Arduino gerade auf dem Tisch und wird nicht bewegt, muss die Z-Achse 1G (Erdbeschleunigung) ausgeben und der Rest muss 0 sein.
    Das ist nicht wirklich so und wird mit diesen Werten kalibriert: */

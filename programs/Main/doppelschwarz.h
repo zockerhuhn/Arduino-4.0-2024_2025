@@ -1,13 +1,19 @@
-void doppelschwarz()
+void doppelschwarz(bool bothsides)
 {
   Serial.print("\n");
   Serial.print("alles-schwarz");
   straight();
-  delay(450);
-  motors.setSpeeds(0,0); //stop where color sensors are at the right spot
-  readColor2();
-  readColor();
-  delay(600); //wait for sensors to 100% finish
+  if (bothsides) {
+    delay(650);
+  }
+  else {
+    delay(500);
+  }
+    motors.setSpeeds(0,0);
+    readColor2();
+    readColor();
+    delay(1000);
+  }
   if (calculateColor())
   {
     Serial.print("rechts");
@@ -49,7 +55,7 @@ void doppelschwarz()
     else
     {
       straight();
-      delay(1200);
+      delay(800);
       motors.setSpeeds(0, 0);
       if (!(calculateReflection() == "noLine"))
       {
@@ -58,9 +64,13 @@ void doppelschwarz()
       else
       {
         if (calculateReflection() != "normalLine") {
-        left();
-        delay(2500);
-        right(); }
+        motors.flipLeftMotor(true);
+        motors.flipRightMotor(true);
+        motors.setSpeeds(70, 65);
+        delay(2000);
+        motors.flipLeftMotor(false);
+        motors.flipRightMotor(false);
+        motors.setSpeeds(60, 75); }
         while (calculateReflection() == "noLine")
         {
           Serial.print("\n");
