@@ -2,22 +2,17 @@ void doppelschwarz(bool bothsides)
 {
   Serial.print("\n");
   Serial.print("alles-schwarz");
+  straight();
   if (bothsides) {
-    straight();
-    delay(650);
-    motors.setSpeeds(0,0);
-    readColor2();
-    readColor();
-    delay(1000);
+    delay(450);
   }
   else {
-    straight();
     delay(500);
-    motors.setSpeeds(0, 0);
-    readColor();
-    readColor2();
-    delay(1000);
   }
+  motors.setSpeeds(0,0);
+  readColor2();
+  readColor();
+  delay(1000);  
   if (calculateColor())
   {
     Serial.print("rechts");

@@ -18,4 +18,18 @@ Adafruit_TCS34725 rgbSensor2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_60MS, 
 // Dieses Objekt repräsentiert 2 Motor-Kanäle (1..2 Motoren pro Kanal):
 RescueBoardMotors motors = RescueBoardMotors();
 #define motorpin D12
-#define killswitch A7
+#define kalibrierung A7
+SparkFun_VL53L5CX abstandsSensor = SparkFun_VL53L5CX();
+const uint8_t NEUE_ADDRESSE = 0x35;
+typedef struct Einstellungen {
+    uint8_t aufloesung;
+    uint8_t bildSeitenlaenge;
+    uint8_t maxMessfrequenz;
+} Einstellungen_t;
+// Bei meinem Sensor habe ich hier ein paar "kaputte Pixel":
+const Einstellungen ACHT_MAL_ACHT = { VL53L5CX_RESOLUTION_8X8, 8, 15 }; // 8x8: max 15Hz
+// Bei meinem Sensor sieht hier alles gut aus:
+const Einstellungen VIER_MAL_VIER = { VL53L5CX_RESOLUTION_4X4, 4, 60 }; // 4x4: max 60Hz
+Einstellungen einstellungen = VIER_MAL_VIER;
+// hier speichern wir die 6 TOFsensorwerte ab:
+VL53L5CX_ResultsData messDaten;

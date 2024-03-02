@@ -41,28 +41,42 @@
  * an den selben Bus anschließen.
 */
 
-#include "includes.h"
-#include "variables.h"
+#include "includes.h" //all libraries
+#include "variables.h" //all declarations and variables
 
 void setup()
 {
   delay(300);
   pinMode(LED_BUILTIN, OUTPUT); // Pin D13
-  pinMode(motorpin, INPUT_PULLDOWN);
-  pinMode(killswitch, INPUT);
+  pinMode(motorpin, INPUT_PULLDOWN); //define pinmode for switch on the side of the bot
+  pinMode(kalibrierung, INPUT); //define pinmode for calibration button
   Serial.begin(115200);
   // I2C Bus 1x für alle Bus-Teilnehmer initialisieren (sonst crasht das Betriebssystem)
   Wire.begin(); // Bus I2C0
   Wire.setClock(1000000); // 1MHz Kommunikationsgeschwindigkeit
   Wire1.begin(); // Bus I2C1
   //  hier den zu nutzenden I2C Bus einstellen:
+    Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
+    // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
+    if (!abstandsSensor.begin(NEUE_ADDRESSE, Wire)) {
+        delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+        Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
+    }
+    if (!abstandsSensor.setResolution(einstellungen.aufloesung) ||
+        !abstandsSensor.setRangingFrequency(einstellungen.maxMessfrequenz)) {  // siehe oben
+            delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+            Serial.println("ToF64 Auflösung oder Messfrequenz konnte nicht geändert werden! Programm Ende.");
+            while (1);
+    }
+    abstandsSensor.startRanging();
+    Serial.println("Initialisierung abgeschlossen");
   if (!rgbSensor.begin(TCS34725_ADDRESS, &Wire))
   {
     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
     Serial.println("RGB Farbsensor Verdrahtung prüfen!");
   }
   Serial.println("Initialisierung Farbe 1 abgeschlossen");
-  if (!rgbSensor2.begin(TCS34725_ADDRESS, &Wire1))
+  if (!rgbSensor2.begin(TCS34725_ADDRESS, &Wire1)) //test colorsensor 2
   {
     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
     Serial.println("RGB Farbsensor Verdrahtung prüfen!");
@@ -77,15 +91,17 @@ void setup()
   motors.flipRightMotor(true); // nur notwendig, wenn man true reinschreibt
 }
 
-#include "Kalibrierung.h"
-#include "Motorbewegungen.h"
-#include "Farbauslese.h"
-#include "Reflektionsauslese.h"
-#include "doppelschwarz.h"
+#include "Kalibrierung.h" //calibration values for reflectionsensor and colorsensors
+#include "Motorbewegungen.h" //predefined motor commands
+#include "Farbauslese.h" //commands for reading and processing colorsensors
+#include "Reflektionsauslese.h" //commands for reading and processing reflectionsensor
+#include "doppelschwarz.h" //command for handling crosssections
+
+int x = 0;
 
 void loop()
 {
-  if (digitalRead(killswitch)){
+  if (digitalRead(kalibrierung)){ //calibrate color sensors if button pressed
     motors.setSpeeds(0,0);
     for (int i = 0; i < 5; i++) { // 5x blinken (AN/AUS):
         digitalWrite(LED_BUILTIN, HIGH);
@@ -106,8 +122,23 @@ void loop()
         delay(250);
     }
   }
-  calculatedReflection = calculateReflection();
-  if (calculatedReflection == "frontalLine")
+  if (x == 5)
+  {
+    x = 0;
+    readDistances();
+    if (messDaten.target_status[2 + 2] == 5 || messDaten.target_status[2+ 2] == 8) {
+      if (messDaten.distance_mm[2 + 2] <= 100) {
+        right();
+        delay(200);
+        straight();
+        delay(2000);
+        left();
+        delay(400);
+      }
+    }
+  }
+  calculatedReflection = calculateReflection(); //read the reflectionsensor and save the result in a variable to avoid changing values while processing 
+  if (calculatedReflection == "frontalLine") //detected crosssection
   {
     doppelschwarz(true);
   }
@@ -115,42 +146,52 @@ void loop()
   {
     doppelschwarz(false);
   }
-  
-  else if (calculatedReflection == "normalLine")
+  else if (calculatedReflection == "normalLine") //detected normal line
   {
     Serial.print("\n");
     Serial.print("Linie");
     straight();
   }
-  else if (calculatedReflection == "leftLine")
+  else if (calculatedReflection == "leftLine") //detected a slight left line
   {
     Serial.print("\n");
     Serial.print("links");
     straight_left();
   }
-  else if (calculatedReflection == "rightLine")
+  else if (calculatedReflection == "rightLine") //detected a slight right line
   {
     Serial.print("\n");
     Serial.print("rechts");
     straight_right();
   }
-  else if (calculatedReflection == "hardleftLine")
+  else if (calculatedReflection == "hardleftLine") //detected a hard left line
   {
     Serial.print("\n");
     Serial.print("links");
     left();
   }
-  else if (calculatedReflection == "hardrightLine")
+  else if (calculatedReflection == "hardrightLine") //detected a hard right line
   {
     Serial.print("\n");
     Serial.print("rechts");
     right();
   }
-  else if (calculatedReflection == "noLine")
+  else if (calculatedReflection == "noLine") //no line detected 
   {
     Serial.print("\n");
     Serial.print("keine Linie...");
     straight();
   }
-  delay(10);
+  delay(10); //don't max out processor
+  x++;
+}
+
+void readDistances() {
+  if (abstandsSensor.isDataReady()) {
+      // diese Zeile speicher bereits die Daten ab:
+      if (abstandsSensor.getRangingData(&messDaten)) {
+          // alles OK
+          return;  // rausgehen aus der Funktion, damit wir nicht zum Fehler kommen
+      } // else: Fehler
+  } // else: wenn es keine neuen Daten gibt, müssen wir sie auch nicht lesen
 }
