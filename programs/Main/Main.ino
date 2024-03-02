@@ -41,42 +41,43 @@
  * an den selben Bus anschließen.
 */
 
-#include "includes.h" //all libraries
-#include "variables.h" //all declarations and variables
+#include "includes.h"     //all libraries
+#include "variables.h"    //all declarations and variables
+#include "Kalibrierung.h" //calibration values for reflectionsensor and colorsensors
 
 void setup()
 {
   delay(300);
-  pinMode(LED_BUILTIN, OUTPUT); // Pin D13
-  pinMode(motorpin, INPUT_PULLDOWN); //define pinmode for switch on the side of the bot
-  pinMode(kalibrierung, INPUT); //define pinmode for calibration button
+  pinMode(LED_BUILTIN, OUTPUT);      // Pin D13
+  pinMode(motorpin, INPUT_PULLDOWN); // define pinmode for switch on the side of the bot
+  pinMode(kalibrierung, INPUT);      // define pinmode for calibration button
   Serial.begin(115200);
   // I2C Bus 1x für alle Bus-Teilnehmer initialisieren (sonst crasht das Betriebssystem)
-  Wire.begin(); // Bus I2C0
+  Wire.begin();           // Bus I2C0
   Wire.setClock(1000000); // 1MHz Kommunikationsgeschwindigkeit
-  Wire1.begin(); // Bus I2C1
+  Wire1.begin();          // Bus I2C1
   //  hier den zu nutzenden I2C Bus einstellen:
-    // Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
-    // // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
-    // if (!abstandsSensor.begin(NEUE_ADDRESSE, Wire)) {
-    //     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
-    //     Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
-    // }
-    // if (!abstandsSensor.setResolution(einstellungen.aufloesung) ||
-    //     !abstandsSensor.setRangingFrequency(einstellungen.maxMessfrequenz)) {  // siehe oben
-    //         delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
-    //         Serial.println("ToF64 Auflösung oder Messfrequenz konnte nicht geändert werden! Programm Ende.");
-    //         while (1);
-    // }
-    // abstandsSensor.startRanging();
-    // Serial.println("Initialisierung abgeschlossen");
+  // Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
+  // // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
+  // if (!abstandsSensor.begin(NEUE_ADDRESSE, Wire)) {
+  //     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+  //     Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
+  // }
+  // if (!abstandsSensor.setResolution(einstellungen.aufloesung) ||
+  //     !abstandsSensor.setRangingFrequency(einstellungen.maxMessfrequenz)) {  // siehe oben
+  //         delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+  //         Serial.println("ToF64 Auflösung oder Messfrequenz konnte nicht geändert werden! Programm Ende.");
+  //         while (1);
+  // }
+  // abstandsSensor.startRanging();
+  // Serial.println("Initialisierung abgeschlossen");
   if (!rgbSensor.begin(TCS34725_ADDRESS, &Wire))
   {
     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
     Serial.println("RGB Farbsensor Verdrahtung prüfen!");
   }
   Serial.println("Initialisierung Farbe 1 abgeschlossen");
-  if (!rgbSensor2.begin(TCS34725_ADDRESS, &Wire1)) //test colorsensor 2
+  if (!rgbSensor2.begin(TCS34725_ADDRESS, &Wire1)) // test colorsensor 2
   {
     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
     Serial.println("RGB Farbsensor Verdrahtung prüfen!");
@@ -91,39 +92,52 @@ void setup()
   motors.flipRightMotor(true); // nur notwendig, wenn man true reinschreibt
 }
 
-#include "Kalibrierung.h" //calibration values for reflectionsensor and colorsensors
-#include "Motorbewegungen.h" //predefined motor commands
-#include "Farbauslese.h" //commands for reading and processing colorsensors
+#include "Motorbewegungen.h"    //predefined motor commands
+#include "Farbauslese.h"        //commands for reading and processing colorsensors
 #include "Reflektionsauslese.h" //commands for reading and processing reflectionsensor
-#include "doppelschwarz.h" //command for handling crosssections
-
+#include "doppelschwarz.h"      //command for handling crosssections
 int x = 0;
 
 void loop()
 {
-  if (digitalRead(kalibrierung)){ //calibrate color sensors if button pressed
-    motors.setSpeeds(0,0);
-    for (int i = 0; i < 5; i++) { // 5x blinken (AN/AUS):
-        digitalWrite(LED_BUILTIN, HIGH);
-        delay(250);
-        digitalWrite(LED_BUILTIN, LOW);
-        delay(250);
+  if (x == 0)
+  {
+    motors.setSpeeds(0, 0);
+    for (int i = 0; i < 5; i++)
+    { // 5x blinken (AN/AUS):
+      digitalWrite(LED_BUILTIN, HIGH);
+      delay(250);
+      digitalWrite(LED_BUILTIN, LOW);
+      delay(250);
     }
     readColor();
     readColor2();
-    colorBrightMaxThreshold = max(helligkeit, helligkeit2)+1500;
-    colorBrightMinThreshold = min(helligkeit, helligkeit2)-1500;
+    colorBrightMaxThreshold = max(helligkeit, helligkeit2) + 1500;
+    colorBrightMinThreshold = min(helligkeit, helligkeit2) - 1500;
     // 5x blinken (AN/AUS):
     delay(1000);
-    for (int i = 0; i < 5; i++) {
-        digitalWrite(LED_BUILTIN, HIGH);
-        delay(250);
-        digitalWrite(LED_BUILTIN, LOW);
-        delay(250);
+    for (int i = 0; i < 5; i++)
+    {
+      digitalWrite(LED_BUILTIN, HIGH);
+      delay(250);
+      digitalWrite(LED_BUILTIN, LOW);
+      delay(250);
     }
   }
-  calculatedReflection = calculateReflection(); //read the reflectionsensor and save the result in a variable to avoid changing values while processing 
-  if (calculatedReflection == "frontalLine") //detected crosssection
+  if (x == 5)
+  {
+    x = 1;
+    readColor();
+    readColor2();
+    while (rot-150 >= gruen || rot-150 >= blau || rot2-150 >= gruen2 || rot2-150 >= gruen2)
+    {
+      readColor();
+      readColor2();
+      motors.setSpeeds(0, 0);
+    }
+  }
+  calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
+  if (calculatedReflection == "frontalLine")    // detected crosssection
   {
     doppelschwarz(true);
   }
@@ -131,42 +145,42 @@ void loop()
   {
     doppelschwarz(false);
   }
-  else if (calculatedReflection == "normalLine") //detected normal line
+  else if (calculatedReflection == "normalLine") // detected normal line
   {
     Serial.print("\n");
     Serial.print("Linie");
     straight();
   }
-  else if (calculatedReflection == "leftLine") //detected a slight left line
+  else if (calculatedReflection == "leftLine") // detected a slight left line
   {
     Serial.print("\n");
     Serial.print("links");
     straight_left();
   }
-  else if (calculatedReflection == "rightLine") //detected a slight right line
+  else if (calculatedReflection == "rightLine") // detected a slight right line
   {
     Serial.print("\n");
     Serial.print("rechts");
     straight_right();
   }
-  else if (calculatedReflection == "hardleftLine") //detected a hard left line
+  else if (calculatedReflection == "hardleftLine") // detected a hard left line
   {
     Serial.print("\n");
     Serial.print("links");
     left();
   }
-  else if (calculatedReflection == "hardrightLine") //detected a hard right line
+  else if (calculatedReflection == "hardrightLine") // detected a hard right line
   {
     Serial.print("\n");
     Serial.print("rechts");
     right();
   }
-  else if (calculatedReflection == "noLine") //no line detected 
+  else if (calculatedReflection == "noLine") // no line detected
   {
     Serial.print("\n");
     Serial.print("keine Linie...");
     straight();
   }
-  delay(10); //don't max out processor
+  delay(10); // don't max out processor
   x++;
 }

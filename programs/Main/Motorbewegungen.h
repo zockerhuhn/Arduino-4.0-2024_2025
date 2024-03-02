@@ -5,7 +5,7 @@ void straight() //drive straight
   }
   motors.flipLeftMotor(false);
   motors.flipRightMotor(true);
-  motors.setSpeeds(50, 55); //prevent motor drifting
+  motors.setSpeeds(50, 60); //prevent motor drifting
 }
 
 void left() //turn left
@@ -43,7 +43,7 @@ void straight_left() //drive straight but pull left
   }
   motors.flipLeftMotor(false);
   motors.flipRightMotor(true);
-  motors.setSpeeds(30, 70);
+  motors.setSpeeds(30, 80);
 }
 
 void straight_right() //drive straight but pull right
@@ -53,5 +53,5 @@ void straight_right() //drive straight but pull right
   }
   motors.flipLeftMotor(false);
   motors.flipRightMotor(true);
-  motors.setSpeeds(70, 30);
+  motors.setSpeeds(80, 30);
 }

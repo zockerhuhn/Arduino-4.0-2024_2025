@@ -7,7 +7,7 @@ void doppelschwarz(bool bothsides)
     delay(450);
   }
   else {
-    delay(500);
+    delay(450);
   }
   motors.setSpeeds(0,0);
   readColor2();
@@ -62,7 +62,6 @@ void doppelschwarz(bool bothsides)
       }
       else
       {
-        if (calculateReflection() != "normalLine") {
         motors.flipLeftMotor(true);
         motors.flipRightMotor(true);
         motors.setSpeeds(70, 65);
@@ -75,7 +74,6 @@ void doppelschwarz(bool bothsides)
           Serial.print("\n");
           Serial.print("suche...");
         }
-      }
     }
   }
 }
