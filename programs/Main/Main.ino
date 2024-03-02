@@ -97,6 +97,8 @@ void setup()
 #include "Reflektionsauslese.h" //commands for reading and processing reflectionsensor
 #include "doppelschwarz.h" //command for handling crosssections
 
+int x = 0;
+
 void loop()
 {
   if (digitalRead(kalibrierung)){ //calibrate color sensors if button pressed
@@ -120,15 +122,19 @@ void loop()
         delay(250);
     }
   }
-  readDistances();
-  if (messDaten.target_status[4 + 4] == 5 || messDaten.target_status[4 + 4] == 8) {
-    if (messDaten.distance_mm[4 + 4] <= 100) {
-      right();
-      delay(200);
-      straight();
-      delay(2000);
-      left();
-      delay(400);
+  if (x == 5)
+  {
+    x = 0;
+    readDistances();
+    if (messDaten.target_status[2 + 2] == 5 || messDaten.target_status[2+ 2] == 8) {
+      if (messDaten.distance_mm[2 + 2] <= 100) {
+        right();
+        delay(200);
+        straight();
+        delay(2000);
+        left();
+        delay(400);
+      }
     }
   }
   calculatedReflection = calculateReflection(); //read the reflectionsensor and save the result in a variable to avoid changing values while processing 
@@ -177,6 +183,7 @@ void loop()
     straight();
   }
   delay(10); //don't max out processor
+  x++;
 }
 
 void readDistances() {

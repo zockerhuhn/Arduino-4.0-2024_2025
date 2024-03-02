@@ -30,6 +30,6 @@ typedef struct Einstellungen {
 const Einstellungen ACHT_MAL_ACHT = { VL53L5CX_RESOLUTION_8X8, 8, 15 }; // 8x8: max 15Hz
 // Bei meinem Sensor sieht hier alles gut aus:
 const Einstellungen VIER_MAL_VIER = { VL53L5CX_RESOLUTION_4X4, 4, 60 }; // 4x4: max 60Hz
-Einstellungen einstellungen = ACHT_MAL_ACHT;
+Einstellungen einstellungen = VIER_MAL_VIER;
 // hier speichern wir die 6 TOFsensorwerte ab:
 VL53L5CX_ResultsData messDaten;

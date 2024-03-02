@@ -4,16 +4,15 @@ void doppelschwarz(bool bothsides)
   Serial.print("alles-schwarz");
   straight();
   if (bothsides) {
-    delay(650);
+    delay(450);
   }
   else {
     delay(500);
   }
-    motors.setSpeeds(0,0);
-    readColor2();
-    readColor();
-    delay(1000);
-  }
+  motors.setSpeeds(0,0);
+  readColor2();
+  readColor();
+  delay(1000);  
   if (calculateColor())
   {
     Serial.print("rechts");
