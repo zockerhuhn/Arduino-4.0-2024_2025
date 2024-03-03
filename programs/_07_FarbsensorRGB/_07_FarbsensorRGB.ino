@@ -46,7 +46,7 @@ enum Modus {
 };
 
 /** hier einstellen, was das Programm mit den Sensorwerten anfangen soll: */
-Modus modus = WERTE_VERARBEITEN;
+Modus modus = WERTE_LOGGEN;
 
 void setup() {
     Serial.begin(115200);

@@ -4,10 +4,10 @@ void doppelschwarz(bool bothsides)
   Serial.print("alles-schwarz");
   straight();
   if (bothsides) {
-    delay(450);
+    delay(550);
   }
   else {
-    delay(450);
+    delay(700);
   }
   motors.setSpeeds(0,0);
   readColor2();
@@ -28,7 +28,7 @@ void doppelschwarz(bool bothsides)
     else
     {
       straight();
-      delay(500);
+      delay(600);
       right();
       delay(1500);
       while (calculateReflection() == "noLine")
@@ -43,7 +43,7 @@ void doppelschwarz(bool bothsides)
     {
       Serial.print("links");
       straight();
-      delay(500);
+      delay(600);
       left();
       delay(1500);
       while (calculateReflection() == "noLine")
@@ -54,7 +54,7 @@ void doppelschwarz(bool bothsides)
     else
     {
       straight();
-      delay(800);
+      delay(900);
       motors.setSpeeds(0, 0);
       if (!(calculateReflection() == "noLine"))
       {

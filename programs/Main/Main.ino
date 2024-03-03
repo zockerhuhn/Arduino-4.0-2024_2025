@@ -92,17 +92,26 @@ void setup()
   motors.flipRightMotor(true); // nur notwendig, wenn man true reinschreibt
 }
 
-#include "Motorbewegungen.h"    //predefined motor commands
+#include "Motorbewegungen.h"    //predefined motor movements
 #include "Farbauslese.h"        //commands for reading and processing colorsensors
 #include "Reflektionsauslese.h" //commands for reading and processing reflectionsensor
 #include "doppelschwarz.h"      //command for handling crosssections
+#include "Opfer.h"              //Du Opfer
+
 int x = 0;
+int y = 0;
 
 void loop()
 {
-  if (x == 0)
+  if (y >= 70)
   {
-    motors.setSpeeds(0, 0);
+    opfer();
+    Serial.println("opfer");
+    y = 0;
+  }
+  if (digitalRead(motorpin))
+  {
+    stop();
     for (int i = 0; i < 5; i++)
     { // 5x blinken (AN/AUS):
       digitalWrite(LED_BUILTIN, HIGH);
@@ -124,62 +133,71 @@ void loop()
       delay(250);
     }
   }
-  if (x == 5)
+  if (x == 2)
   {
     x = 1;
     readColor();
     readColor2();
-    while (rot-150 >= gruen || rot-150 >= blau || rot2-150 >= gruen2 || rot2-150 >= gruen2)
+    while ((rot-250 >= gruen || rot-250 >= blau || rot2-250 >= gruen2 || rot2-250 >= gruen2) && (helligkeit <= colorBrightMaxThreshold || helligkeit2 <= colorBrightMaxThreshold))
     {
       readColor();
       readColor2();
-      motors.setSpeeds(0, 0);
+      stop();
+      Serial.println("red");
     }
   }
   calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
   if (calculatedReflection == "frontalLine")    // detected crosssection
   {
     doppelschwarz(true);
+    y = 0;
   }
   else if (calculatedReflection == "sideLine")
   {
     doppelschwarz(false);
+    y = 0;
   }
   else if (calculatedReflection == "normalLine") // detected normal line
   {
     Serial.print("\n");
     Serial.print("Linie");
     straight();
+    y = 0;
   }
   else if (calculatedReflection == "leftLine") // detected a slight left line
   {
     Serial.print("\n");
     Serial.print("links");
     straight_left();
+    y = 0;
   }
   else if (calculatedReflection == "rightLine") // detected a slight right line
   {
     Serial.print("\n");
     Serial.print("rechts");
     straight_right();
+    y = 0;
   }
   else if (calculatedReflection == "hardleftLine") // detected a hard left line
   {
     Serial.print("\n");
     Serial.print("links");
     left();
+    y = 0;
   }
   else if (calculatedReflection == "hardrightLine") // detected a hard right line
   {
     Serial.print("\n");
     Serial.print("rechts");
     right();
+    y = 0;
   }
   else if (calculatedReflection == "noLine") // no line detected
   {
     Serial.print("\n");
     Serial.print("keine Linie...");
     straight();
+    y++;
   }
   delay(10); // don't max out processor
   x++;

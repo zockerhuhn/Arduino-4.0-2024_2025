@@ -100,29 +100,24 @@ void loop() {
     readAcc();
     ReadGyro();
 
-    Serial.println(fabs  (acc.x - accxalt));
-    Serial.println(fabs  (acc.y - accyalt));
-    Serial.println(acczalt);
-    Serial.println(fabs  (acc.z - acczalt));
+    // Serial.println(fabs  (acc.x - accxalt));
+    // Serial.println(fabs  (acc.y - accyalt));
+    // Serial.println(acczalt);
+    // Serial.println(fabs  (acc.z - acczalt));
     
-    if ((fabs (acc.x - accxalt) >= 0.06) || (fabs (acc.y - accyalt) >= 0.06) || (fabs (acc.z - acczalt) >= 0.06))
-    {
-        analogWrite(LEDR, 0);
-        analogWrite(LEDG, 255);
-        analogWrite(LEDB, 0);
-    }
-    else {
-        analogWrite(LEDR, 255);
-        analogWrite(LEDG, 0);
-        analogWrite(LEDB, 0);
-    }
-        
-    
-
-
+    // if ((fabs (acc.x - accxalt) >= 0.06) || (fabs (acc.y - accyalt) >= 0.06) || (fabs (acc.z - acczalt) >= 0.06))
+    // {
+    //     analogWrite(LEDR, 0);
+    //     analogWrite(LEDG, 255);
+    //     analogWrite(LEDB, 0);
+    // }
+    // else {
+    //     analogWrite(LEDR, 255);
+    //     analogWrite(LEDG, 0);
+    //     analogWrite(LEDB, 0);
+    // }
+    Serial.println(String(gyro.x) + "," + String(gyro.y) + "," + String(gyro.z)) + "\n";
     switch (modus) {
-
-
         case WERTE_LOGGEN:
             werteLoggen();
             break;
@@ -146,7 +141,7 @@ void loop() {
             }
             break;
     }
-    delay(100);
+   // delay(1000);
 }
 
 void readAcc() {
@@ -168,9 +163,9 @@ void ReadGyro() {
 }
 
 void werteLoggen() {
-    Serial.println(
-        "Beschleunigung x=" + String(acc.x) + " y=" + String(acc.y) + " z=" + String(acc.z)
-        + " Rotationsgeschwindigkeit x=" + String(gyro.x) + " y=" + String(gyro.y) + " z=" + String(gyro.z));
+    // Serial.println(
+    //     "Beschleunigung x=" + String(acc.x) + " y=" + String(acc.y) + " z=" + String(acc.z)
+    //     + " Rotationsgeschwindigkeit x=" + String(gyro.x) + " y=" + String(gyro.y) + " z=" + String(gyro.z));
 }
 
 void fuerPlotterLoggen() {
