@@ -30,6 +30,7 @@ void right() //turn right
 
 void turn() //turn around
 {
+  if (digitalRead(motorpin)) return;
   motors.flipLeftMotor(false);
   motors.flipRightMotor(false);
   motors.setSpeeds(70, 75);
