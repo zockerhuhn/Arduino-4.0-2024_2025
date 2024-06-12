@@ -119,10 +119,42 @@ void loop()
       digitalWrite(LED_BUILTIN, LOW);
       delay(250);
     }
-    readColor();
-    readColor2();
-    colorBrightMaxThreshold = max(helligkeit, helligkeit2) + 1500;
-    colorBrightMinThreshold = min(helligkeit, helligkeit2) - 1500;
+    // Calibrating should word by calculating an average from multiple values
+    uint16_t average_r, average_g, average_b, average_c,  average_r2, average_g2, average_b2, average_c2 = 0;
+    int total_cycles = 10;
+    for (int i = 0; i < total_cycles; i++) 
+    {
+      readColor();
+      readColor2();
+
+      average_r += rot;
+      average_g += gruen;
+      average_b += blau;
+      average_c += helligkeit;
+
+      average_r2 += rot2;
+      average_g2 += gruen2;
+      average_b2 += blau2;
+      average_c2 += helligkeit2;
+    }
+    // calculate average values for both sensors
+    average_r /= total_cycles;
+    average_g /= total_cycles;
+    average_b /= total_cycles;
+    average_c /= total_cycles;
+    average_r2 /= total_cycles;
+    average_g2 /= total_cycles;
+    average_b2 /= total_cycles;
+    average_c2 /= total_cycles;
+    
+    //somehow calculate how much green deviates from red and blue and thereby calculate the difference threshold
+    blueGreenThreshold = min(average_g - average_b, average_g2 - average_b2) - 50;
+    redGreenThreshold = min(average_g - average_r, average_g2 - average_r2) - 50;
+
+    colorBrightMaxThreshold = max(helligkeit, helligkeit2) + 200;
+    colorBrightMinThreshold = min(helligkeit, helligkeit2) - 200;
+
+    Serial.println("Thresholds: " + String(blueGreenThreshold) + " " + String(redGreenThreshold) + " " + String(colorBrightMaxThreshold)+ " " + String(colorBrightMinThreshold));
     // 5x blinken (AN/AUS):
     delay(1000);
     for (int i = 0; i < 5; i++)
