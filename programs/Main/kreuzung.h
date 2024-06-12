@@ -1,12 +1,15 @@
-void doppelschwarz(bool bothsides)
+void kreuzung(bool bothsides)
 {
   Serial.print("\n");
-  Serial.print("alles-schwarz");
+
+  
   straight();
   if (bothsides) {
+    Serial.print("alles schwarz\t");
     delay(550);
   }
   else {
+    Serial.print("einseitig schwarz\t");
     delay(700);
   }
   motors.setSpeeds(0,0);
@@ -20,6 +23,7 @@ void doppelschwarz(bool bothsides)
     {
       Serial.print("links");
       turn();
+      delay(150); 
       while (calculateReflection() == "noLine")
       {
         delay(10);
@@ -62,6 +66,7 @@ void doppelschwarz(bool bothsides)
       }
       else
       {
+        // finding line
         motors.flipLeftMotor(true);
         motors.flipRightMotor(true);
         motors.setSpeeds(70, 65);

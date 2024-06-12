@@ -95,7 +95,7 @@ void setup()
 #include "Motorbewegungen.h"    //predefined motor movements
 #include "Farbauslese.h"        //commands for reading and processing colorsensors
 #include "Reflektionsauslese.h" //commands for reading and processing reflectionsensor
-#include "doppelschwarz.h"      //command for handling crosssections
+#include "kreuzung.h"      //command for handling crosssections
 #include "Opfer.h"              //Du Opfer
 
 int x = 0;
@@ -156,6 +156,7 @@ void loop()
 
     Serial.println("Thresholds: " + String(blueGreenThreshold) + " " + String(redGreenThreshold) + " " + String(colorBrightMaxThreshold)+ " " + String(colorBrightMinThreshold));
     // 5x blinken (AN/AUS):
+    Serial.println(String(calculateColor()) + " " + String(calculateColor2()));
     delay(1000);
     for (int i = 0; i < 5; i++)
     {
@@ -181,12 +182,12 @@ void loop()
   calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
   if (calculatedReflection == "frontalLine")    // detected crosssection
   {
-    doppelschwarz(true);
+    kreuzung(true);
     y = 0;
   }
   else if (calculatedReflection == "sideLine")
   {
-    doppelschwarz(false);
+    kreuzung(false);
     y = 0;
   }
   else if (calculatedReflection == "normalLine") // detected normal line
