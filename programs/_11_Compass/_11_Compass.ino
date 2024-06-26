@@ -1,21 +1,21 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#define ADDRESS 0xC0
+#define ADDRESS 0x60
 uint16_t direction_16;
 uint8_t direction_8;
 
+float Yaw;
+
 void ReadDirection() {
   Wire.beginTransmission(ADDRESS);
-  Wire.write(1);      // sets register pointer to echo #1 register (0x1E)
-  Wire.endTransmission();      // stop transmitting
+  Wire.write(0X01);
+  Wire.endTransmission(false);      // stop transmitting
 
-  Wire.requestFrom(ADDRESS, 1);
-  byte x1 = Wire.read();
-  // byte x2 = Wire.read();
-  // byte x3 = Wire.read();
-  // direction_16 = x3 | x2 << 8;
-  direction_8 = x1;
+  Wire.requestFrom(ADDRESS, 3);
+  direction_8 = Wire.read();
+  Yaw=(int16_t)(Wire.read()<<8|Wire.read())/10.00; //Two bytes Yaw in range of (0 to 359 degrees) 
+  direction_16 = Yaw;
 }
 
 void setup() {
@@ -27,8 +27,8 @@ void setup() {
 
 void loop() {
   ReadDirection();
-  // Serial.print("1: ");
-  // Serial.println(direction_16);
-  Serial.print("2: ");
-  Serial.println(direction_8);
+  Serial.print("1: ");
+  Serial.println(direction_16);
+  // Serial.print("2: ");
+  // Serial.println(direction_8);
 }
