@@ -6,20 +6,38 @@ void kreuzung(bool bothsides)
   straight();
   if (bothsides) {
     Serial.print("alles schwarz\t");
-    delay(550);
+    delay(300);
   }
   else {
     Serial.print("einseitig schwarz\t");
-    delay(700);
+    delay(450);
   }
-  motors.setSpeeds(0,0);
-  readColor2();
-  readColor();
-  delay(1000);  
-  if (calculateColor())
+  motors.setSpeeds(25,25);
+  bool green1 = false;
+  bool green2 = false;
+  for (int i = 0; i < 15; i++) {
+    readColor2();
+    readColor();
+    delay(10);  
+
+    if (calculateColor()) {
+      green1 = true; 
+      Serial.print("Found green 1 (right)");
+    }
+    if (calculateColor2()) {
+      green2 = true;
+      Serial.print("Found green 2 (left)");
+    }
+    if (green1 || green2) motors.setSpeeds(15,15);
+    if (green1 && green2) break;
+    // (problem) maybe this moves too far
+  } // TODO set motor speeds according to the weird deficiencies they have
+  
+
+  if (green1)
   {
     Serial.print("rechts");
-    if (calculateColor2())
+    if (green2)
     {
       Serial.print("links");
       turn();
@@ -43,7 +61,7 @@ void kreuzung(bool bothsides)
   }
   else
   {
-    if (calculateColor2())
+    if (green2)
     {
       Serial.print("links");
       straight();

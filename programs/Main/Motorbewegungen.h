@@ -15,7 +15,7 @@ void left() //turn left
   }
   motors.flipLeftMotor(true);
   motors.flipRightMotor(true);
-  motors.setSpeeds(70, 75);
+  motors.setSpeeds(63, 75);
 }
 
 void right() //turn right
@@ -25,7 +25,7 @@ void right() //turn right
   }
   motors.flipLeftMotor(false);
   motors.flipRightMotor(false);
-  motors.setSpeeds(70, 75);
+  motors.setSpeeds(63, 75);
 }
 
 void turn() //turn around
@@ -34,7 +34,7 @@ void turn() //turn around
   if (digitalRead(motorpin)) return;
   motors.flipLeftMotor(false);
   motors.flipRightMotor(false);
-  motors.setSpeeds(70, 75);
+  motors.setSpeeds(63, 75);
   delay(4000);
 }
 

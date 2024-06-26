@@ -151,8 +151,8 @@ void loop()
     blueGreenThreshold = min(average_g - average_b, average_g2 - average_b2) - 50;
     redGreenThreshold = min(average_g - average_r, average_g2 - average_r2) - 50;
 
-    colorBrightMaxThreshold = max(helligkeit, helligkeit2) + 200;
-    colorBrightMinThreshold = min(helligkeit, helligkeit2) - 200;
+    colorBrightMaxThreshold = max(helligkeit, helligkeit2) + 500;
+    colorBrightMinThreshold = min(helligkeit, helligkeit2) - 500;
 
     Serial.println("Thresholds: " + String(blueGreenThreshold) + " " + String(redGreenThreshold) + " " + String(colorBrightMaxThreshold)+ " " + String(colorBrightMinThreshold));
     // 5x blinken (AN/AUS):
