@@ -1,3 +1,5 @@
+//#include "variables.h"
+
 void straight() //drive straight
 {
   if (digitalRead(motorpin)) {

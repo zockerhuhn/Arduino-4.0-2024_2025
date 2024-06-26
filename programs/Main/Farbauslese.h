@@ -1,3 +1,6 @@
+//#include "variables.h"
+//#include "Kalibrierung.h"
+
 void readColor() //liest Farbsensor 1 aus und printed Ergebnis
 {
   rgbSensor.getRawData(&rot, &gruen, &blau, &helligkeit);

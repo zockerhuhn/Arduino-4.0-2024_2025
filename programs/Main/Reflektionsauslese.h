@@ -1,3 +1,6 @@
+//#include "variables.h"
+//#include "Kalibrierung.h"
+
 void read_reflectionandprint() //read relfectionsensor and print result
 {
   sensorLeiste.read(helligkeiten);
