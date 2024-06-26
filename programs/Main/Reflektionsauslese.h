@@ -44,3 +44,12 @@ String calculateReflection() //read reflection and return processed result
     return "noLine";
   }
 }
+
+
+void ReadDirection() {
+  Wire.beginTransmission(CMPS12);
+  Wire.write(0X02);
+  Wire.endTransmission(false);
+  Wire.requestFrom(CMPS12, 2);
+  direction = (int16_t)(Wire.read()<<8|Wire.read())/10.00; //Two bytes Yaw in range of (0 to 359 degrees)
+}
