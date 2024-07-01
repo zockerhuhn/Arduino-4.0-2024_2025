@@ -8,7 +8,7 @@ void straight() //drive straight
   motors.setSpeeds(42, 50); //prevent motor drifting
 }
 
-void left() //turn left
+void left(int turnBy=0) //turn left
 {
   if (digitalRead(motorpin)) {
     return;
@@ -16,9 +16,16 @@ void left() //turn left
   motors.flipLeftMotor(true);
   motors.flipRightMotor(true);
   motors.setSpeeds(70, 75);
+  if (turnBy!=0) {
+    int initialDirection = ReadDirection();
+    while (((initialDirection+turnBy)%360)!=ReadDirection()) {
+      delay(10);
+    }
+    stop();
+  }
 }
 
-void right() //turn right
+void right(int turnBy=0) //turn right
 {
   if (digitalRead(motorpin)) {
     return;
@@ -26,6 +33,13 @@ void right() //turn right
   motors.flipLeftMotor(false);
   motors.flipRightMotor(false);
   motors.setSpeeds(70, 75);
+  if (turnBy!=0) {
+    int initialDirection = ReadDirection();
+    while (((initialDirection-turnBy)%360)!=ReadDirection()) {
+      delay(10);
+    }
+    stop();
+  }
 }
 
 void turn() //turn around
