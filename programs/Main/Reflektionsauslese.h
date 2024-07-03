@@ -1,3 +1,6 @@
+//#include "variables.h"
+//#include "Kalibrierung.h"
+
 void read_reflectionandprint() //read relfectionsensor and print result
 {
   sensorLeiste.read(helligkeiten);
@@ -44,7 +47,6 @@ String calculateReflection() //read reflection and return processed result
     return "noLine";
   }
 }
-
 
 void ReadDirection() {
   Wire.beginTransmission(CMPS12);

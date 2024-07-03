@@ -111,18 +111,11 @@ void readColor() {
 
 void werteLoggen() {
     Serial.println("R:" + String(rot) + " G:" + String(gruen) + " B:" + String(blau) + " C:" + String(helligkeit));
-    Serial.println("R:" + String(rot2) + " G:" + String(gruen2) + " B:" + String(blau2) + " C:" + String(helligkeit2));
+    Serial.println("R2:" + String(rot2) + " G2:" + String(gruen2) + " B2:" + String(blau2) + " C2:" + String(helligkeit2));
 }
 
 void calculatecolor() {
-    if (((gruen >= blau) && (gruen >= rot)) && (gruen <= 1000) && (gruen >= 650))
-    {
-        Serial.println("green");
-    }
-    else {
-        Serial.println("not green");
-    }
-    
+    return;
 }
 
 void addvalues() {
