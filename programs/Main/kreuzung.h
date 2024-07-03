@@ -79,9 +79,9 @@ void kreuzung(bool bothsides)
     }
     else
     {
-      straight();
-      delay(900);
-      motors.setSpeeds(0, 0);
+      // straight();
+      // delay(900);
+      // motors.setSpeeds(0, 0);
       if (!(calculateReflection() == "noLine"))
       {
         // not else lol
