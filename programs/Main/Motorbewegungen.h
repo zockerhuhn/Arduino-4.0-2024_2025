@@ -3,14 +3,14 @@ void stop()
   motors.setSpeeds(0, 0);
 }
 
-void straight() //drive straight
+void straight(int factor = 1) //drive straight
 {
   if (digitalRead(motorpin)) {
     return;
   }
   motors.flipLeftMotor(false);
   motors.flipRightMotor(true);
-  motors.setSpeeds(42, 50); //prevent motor drifting
+  motors.setSpeeds(42 * factor, 50 * factor); //prevent motor drifting
 }
 
 void left(int turnBy=0) //turn left
@@ -24,8 +24,7 @@ void left(int turnBy=0) //turn left
   if (turnBy!=0) {
     ReadDirection();
     int initialDirection = direction;
-    while (((initialDirection+turnBy)%360)!=direction) {
-      delay(10);
+    while (((initialDirection-turnBy)%360)!=direction) {
       ReadDirection();
     }
     stop();
@@ -43,8 +42,7 @@ void right(int turnBy=0) //turn right
   if (turnBy!=0) {
     ReadDirection();
     int initialDirection = direction;
-    while (((initialDirection-turnBy)%360)!=direction) {
-      delay(10);
+    while (((initialDirection+turnBy)%360)!=direction) { // != is not accurate enough
       ReadDirection();
     }
     stop();

@@ -16,7 +16,7 @@ void kreuzung(bool bothsides)
     Serial.print("einseitig schwarz\t");
     delay(450);
   }
-  motors.setSpeeds(25,25);
+  straight(0.5); // driving at half speed
   bool green1 = false;
   bool green2 = false;
   for (int i = 0; i < 15; i++) {
@@ -55,8 +55,7 @@ void kreuzung(bool bothsides)
     {
       straight();
       delay(600);
-      right();
-      delay(1500);
+      right(90);
       while (calculateReflection() == "noLine")
       {
         delay(1);
@@ -70,32 +69,19 @@ void kreuzung(bool bothsides)
       Serial.print("links");
       straight();
       delay(600);
-      left();
-      delay(1500);
-      while (calculateReflection() == "noLine")
-      {
-        delay(1);
-      }
+      left(90);
     }
     else
     {
-      // straight();
-      // delay(900);
-      // motors.setSpeeds(0, 0);
-      if (!(calculateReflection() == "noLine"))
+      if (!(calculateReflection() == "noLine")/*doesnt work otherwise apparently*/)
       {
         // not else lol
       }
       else
       {
         // finding line
-        motors.flipLeftMotor(true);
-        motors.flipRightMotor(true);
-        motors.setSpeeds(70, 65); 
-        delay(2000); // turn 90 deg 
-        motors.flipLeftMotor(false);
-        motors.flipRightMotor(false);
-        motors.setSpeeds(60, 75); // go opposite direction
+        left(90);
+        right(); // going right "forever"    
         while (calculateReflection() == "noLine")
         {
           Serial.print("\n");
