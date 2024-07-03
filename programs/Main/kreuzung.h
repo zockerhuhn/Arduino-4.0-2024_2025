@@ -91,16 +91,17 @@ void kreuzung(bool bothsides)
         // finding line
         motors.flipLeftMotor(true);
         motors.flipRightMotor(true);
-        motors.setSpeeds(70, 65);
-        delay(2000);
+        motors.setSpeeds(70, 65); 
+        delay(2000); // turn 90 deg 
         motors.flipLeftMotor(false);
         motors.flipRightMotor(false);
-        motors.setSpeeds(60, 75); }
+        motors.setSpeeds(60, 75); // go opposite direction
         while (calculateReflection() == "noLine")
         {
           Serial.print("\n");
           Serial.print("suche...");
         }
+      }
     }
   }
 }
