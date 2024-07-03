@@ -92,9 +92,9 @@ void setup()
   motors.flipRightMotor(true); // nur notwendig, wenn man true reinschreibt
 }
 
+#include "Reflektionsauslese.h" //commands for reading and processing reflectionsensor
 #include "Motorbewegungen.h"    //predefined motor movements
 #include "Farbauslese.h"        //commands for reading and processing colorsensors
-#include "Reflektionsauslese.h" //commands for reading and processing reflectionsensor
 #include "kreuzung.h"      //command for handling crosssections
 #include "Opfer.h"              //Du Opfer
 
