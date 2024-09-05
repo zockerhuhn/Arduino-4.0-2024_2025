@@ -44,7 +44,7 @@ void kreuzung(bool bothsides)
     if (green2)
     {
       Serial.print("links");
-      turn();
+      right(180);
       delay(150); 
       while (calculateReflection() == "noLine")
       {

@@ -51,7 +51,6 @@ void right(int turnBy=0) //turn right
 
 void turn() //turn around
 {
-  // TODO with compass: turn to 180 deg
   if (digitalRead(motorpin)) return;
   motors.flipLeftMotor(false);
   motors.flipRightMotor(false);
