@@ -26,54 +26,51 @@ void kreuzung(bool bothsides)
 
     if (calculateColor()) {
       green1 = true; 
-      Serial.print("Found green 1 (right)");
+      Serial.print("Found green 1 (right)\t");
     }
     if (calculateColor2()) {
       green2 = true;
-      Serial.print("Found green 2 (left)");
+      Serial.print("Found green 2 (left)\t");
     }
-    if (green1 || green2) straight(0.3);
-    if (green1 && green2) break;
+    if (green1 || green2) {
+      digitalWrite(LED_BUILTIN, HIGH);
+      straight(1);
+      }
+    if (green1 && green2) {
+      stop();
+      break;
+    }
     // (problem) maybe this moves too far
-  } // TODO set motor speeds according to the weird deficiencies they have
+  }
+  digitalWrite(LED_BUILTIN, LOW);
   
-
-  if (green1)
-  {
-    Serial.print("rechts");
-    if (green2)
-    {
-      Serial.print("links");
+  if (green1 && green2) {
+    Serial.print("both\t");
+    Serial.print("links");
       right(180);
       delay(150); 
       while (calculateReflection() == "noLine")
       {
         delay(10);
       }
-    }
-    else
-    {
-      straight();
+  }
+  else if (green1) {
+    straight();
       delay(600);
       right(90);
       while (calculateReflection() == "noLine")
       {
         delay(1);
       }
-    }
   }
-  else
-  {
-    if (green2)
-    {
-      Serial.print("links");
+  else if (green2) {
+    Serial.print("links");
       straight();
       delay(600);
       left(90);
-    }
-    else
-    {
-      if (!(calculateReflection() == "noLine")/*doesnt work otherwise apparently*/)
+  }
+  else {
+    if (!(calculateReflection() == "noLine")/*doesnt work otherwise apparently*/)
       {
         // not else lol
       }
@@ -88,6 +85,5 @@ void kreuzung(bool bothsides)
           Serial.print("suche...");
         }
       }
-    }
   }
 }
