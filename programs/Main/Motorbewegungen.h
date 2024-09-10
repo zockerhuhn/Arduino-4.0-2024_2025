@@ -49,15 +49,6 @@ void right(int turnBy=0) //turn right
   }
 }
 
-void turn() //turn around
-{
-  if (digitalRead(motorpin)) return;
-  motors.flipLeftMotor(false);
-  motors.flipRightMotor(false);
-  motors.setSpeeds(63, 75);
-  delay(4000);
-}
-
 void straight_left() //drive straight but pull left
 {
   if (digitalRead(motorpin)) {

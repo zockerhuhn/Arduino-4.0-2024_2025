@@ -32,7 +32,7 @@ void kreuzung(bool bothsides)
       green2 = true;
       Serial.print("Found green 2 (left)");
     }
-    if (green1 || green2) motors.setSpeeds(15,15);
+    if (green1 || green2) straight(0.3);
     if (green1 && green2) break;
     // (problem) maybe this moves too far
   } // TODO set motor speeds according to the weird deficiencies they have
