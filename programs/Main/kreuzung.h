@@ -40,13 +40,14 @@ void kreuzung(bool bothsides)
       stop();
       break;
     }
+    // ACTUAL PROBLEM often the sensor reads green1 at the end (like that: alles schwarz	Found green 2 (left)	Found green 2 (left)	Found green 2 (left)	Found green 1 (right)	both	)
+    // even though it doesn't occur and maaaybe bc of turning or black/white grenze idk
     // (problem) maybe this moves too far
   }
   digitalWrite(LED_BUILTIN, LOW);
   
   if (green1 && green2) {
     Serial.print("both\t");
-    Serial.print("links");
       right(180);
       delay(150); 
       while (calculateReflection() == "noLine")
