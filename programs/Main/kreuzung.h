@@ -16,9 +16,10 @@ void kreuzung(bool bothsides)
     Serial.print("einseitig schwarz\t");
     delay(450);
   }
-  straight(0.5); // driving at half speed
+  straight(0.25); // driving slow
   bool green1 = false;
   bool green2 = false;
+  digitalWrite(LED_BUILTIN, HIGH);
   for (int i = 0; i < 15; i++) {
     readColor2();
     readColor();
@@ -33,13 +34,14 @@ void kreuzung(bool bothsides)
       Serial.print("Found green 2 (left)\t");
     }
     if (green1 || green2) {
-      digitalWrite(LED_BUILTIN, HIGH);
       straight(1);
       }
-    if (green1 && green2) {
+    if ((green1 && green2) || calculateReflection() == "frontalLine") /*reached the crossing or needs to turn, doesn't need to scan for colors anymore*/ {
       stop();
       break;
     }
+
+
     // ACTUAL PROBLEM often the sensor reads green1 at the end (like that: alles schwarz	Found green 2 (left)	Found green 2 (left)	Found green 2 (left)	Found green 1 (right)	both	)
     // even though it doesn't occur and maaaybe bc of turning or black/white grenze idk
     // (problem) maybe this moves too far
@@ -79,7 +81,11 @@ void kreuzung(bool bothsides)
       {
         // finding line
         left(90);
-        right(); // going right "forever"    
+        
+        // going right "forever"    
+        motors.flipLeftMotor(false);
+        motors.flipRightMotor(false);
+        motors.setSpeeds(70, 75);
         while (calculateReflection() == "noLine")
         {
           Serial.print("\n");

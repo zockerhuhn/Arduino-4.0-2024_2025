@@ -181,6 +181,7 @@ void loop()
     }
   }
   calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
+  Serial.print("\t" + calculatedReflection);
   if (calculatedReflection == "frontalLine")    // detected crosssection
   {
     kreuzung(true);
