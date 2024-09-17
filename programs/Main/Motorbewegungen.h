@@ -85,13 +85,12 @@ int findClosest(int arr[], int size, int target) {
   int closest = arr[0];
   int minDiff = std::abs(target - closest);
 
-  for (int i = 1; i < size; i++) {
+  for (int i = 0; i < size; i++) {
     int diff = std::abs(target - closest);
 
     if (diff < minDiff) {
       minDiff = diff;
       closest = arr[i];
-    
     }
   }
   return closest;
@@ -100,5 +99,6 @@ int findClosest(int arr[], int size, int target) {
 void straighten()
 {
   ReadDirection();
+  private int closest = findClosest(calibrateddirection, 4, direction);
   
 }

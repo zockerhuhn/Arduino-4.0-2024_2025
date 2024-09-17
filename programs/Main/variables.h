@@ -37,4 +37,4 @@ VL53L5CX_ResultsData messDaten;
 #define CMPS12 0x60
 uint16_t direction;
 uint16_t currentdirection;
-uint16_t calibrateddirection = [0, 0, 0, 0];
+uint16_t calibrateddirection[] = {0, 0, 0, 0};
