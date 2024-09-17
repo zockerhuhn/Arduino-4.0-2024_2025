@@ -2,6 +2,46 @@
 //#include "Farbauslese.h"
 //#include "Reflektionsauslese.h"
 
+void kreuzung(bool bothSides) {
+  if (bothSides) { // very probably a crossing where green is
+
+    // drive forward slowly, check for greens
+
+
+
+  }
+  else { // should usually not occur
+      // IDEA turn towards the nearest possible direction (got from compass)
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void kreuzung(bool bothsides)
 {
   Serial.print("\n");
