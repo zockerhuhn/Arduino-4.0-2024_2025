@@ -21,10 +21,11 @@ void left(int turnBy=0) //turn left
   motors.flipLeftMotor(true);
   motors.flipRightMotor(true);
   motors.setSpeeds(70, 75);
+  Serial.println(turnBy);
   if (turnBy!=0) {
     ReadDirection();
     int initialDirection = direction;
-    while (((initialDirection-turnBy)%360)!=direction) {
+    while ((((initialDirection-turnBy)+360)%360)!=direction) { // +360 because negative modulo is still negative
       ReadDirection();
     }
     stop();
@@ -42,7 +43,7 @@ void right(int turnBy=0) //turn right
   if (turnBy!=0) {
     ReadDirection();
     int initialDirection = direction;
-    while (((initialDirection+turnBy)%360)!=direction) { // != is not accurate enough
+    while (((initialDirection+turnBy)%360)!=direction) {
       ReadDirection();
     }
     stop();
