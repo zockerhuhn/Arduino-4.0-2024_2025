@@ -53,7 +53,6 @@ void right(int turnBy=0) //turn right
 
 void turn() //turn around
 {
-  // TODO with compass: turn to 180 deg
   if (digitalRead(motorpin)) return;
   motors.flipLeftMotor(false);
   motors.flipRightMotor(false);
@@ -81,12 +80,12 @@ void straight_right() //drive straight but pull right
   motors.setSpeeds(80, 30);
 }
 
-int findClosest(int arr[], int size, int target) {
-  int closest = arr[0];
-  int minDiff = std::abs(target - closest);
+int findClosest(uint16_t arr[], int size, uint16_t target) {
+  uint16_t closest = arr[0];
+  uint16_t minDiff = std::abs(target - closest);
 
   for (int i = 0; i < size; i++) {
-    int diff = std::abs(target - closest);
+    uint16_t diff = std::abs(target - closest);
 
     if (diff < minDiff) {
       minDiff = diff;
@@ -99,6 +98,15 @@ int findClosest(int arr[], int size, int target) {
 void straighten()
 {
   ReadDirection();
-  private int closest = findClosest(calibrateddirection, 4, direction);
-  
+  uint16_t closest = findClosest(calibrateddirection, 4, direction);
+  if (0 <= closest - direction <= 45) {
+    left(closest-direction);
+  }
+  else {
+    if (0 >= closest - direction >= -45 ) {
+      right(abs((closest-direction)));
+    } else if (closest - direction < -45) {
+
+    }
+  }
 }
