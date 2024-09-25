@@ -2,95 +2,117 @@
 //#include "Farbauslese.h"
 //#include "Reflektionsauslese.h"
 
-void kreuzung(bool bothsides)
-{
-  Serial.print("\n");
+void kreuzung(bool bothSides) {
+  if (bothSides) { // very probably a crossing where green is
 
-  
-  straight();
-  if (bothsides) {
-    Serial.print("alles schwarz\t");
-    delay(300);
-  }
-  else {
-    Serial.print("einseitig schwarz\t");
-    delay(450);
-  }
-  straight(0.25); // driving slow
-  bool green1 = false;
-  bool green2 = false;
-  digitalWrite(LED_BUILTIN, HIGH);
-  for (int i = 0; i < 15; i++) {
-    readColor2();
-    readColor();
-    delay(10);  
+    // drive forward slowly, check for greens
+    digitalWrite(LED_BUILTIN, HIGH); // Activate Lamp to see when a Kreuzung is detected
+    
+    motors.flipLeftMotor(false);
+    motors.flipRightMotor(true);
+    motors.setSpeeds((int)(42 * 0.5),(int)(50 * 0.5)); // half the default speed
+    // ERROR this does not suffice for double green because the kreuzung is detected earlier because "green" is seen as black by reflektion
 
-    if (calculateColor()) {
-      green1 = true; 
-      Serial.print("Found green 1 (right)\t");
-    }
-    if (calculateColor2()) {
-      green2 = true;
-      Serial.print("Found green 2 (left)\t");
-    }
-    if (green1 || green2) {
-      straight(1);
+    bool green1 = false; // right
+    bool green2 = false; // left
+    int reading_time = 12;  /*adjust that value*/
+    
+    for (int i = 0; i < reading_time; i++) {
+      readColor2();
+      readColor();
+
+      if (calculateColor() && !green1) {
+        green1 = true; 
+        Serial.print("Found green 1 (right)\t");
+        i = reading_time - 2; // Let the robot check for the other green just one more time
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(20);
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(20);
+        digitalWrite(LED_BUILTIN, LOW);
       }
-    if ((green1 && green2) || calculateReflection() == "frontalLine") /*reached the crossing or needs to turn, doesn't need to scan for colors anymore*/ {
-      stop();
-      break;
+      if (calculateColor2() && !green2) {
+        green2 = true;
+        Serial.print("Found green 2 (left)\t");
+        i = reading_time - 2;
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(20);
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(20);
+        digitalWrite(LED_BUILTIN, LOW);
+      }
+
+      if (green1 && green2) {
+        break;
+      }
+
+      else if (green1 || green2) {
+        // Stop to indicate that green has been detected
+        digitalWrite(LED_BUILTIN, LOW);
+        stop();
+        delay(250);
+        digitalWrite(LED_BUILTIN, HIGH);
+      }
+
+      delay(10);
     }
+    digitalWrite(LED_BUILTIN, LOW);
 
 
-    // ACTUAL PROBLEM often the sensor reads green1 at the end (like that: alles schwarz	Found green 2 (left)	Found green 2 (left)	Found green 2 (left)	Found green 1 (right)	both	)
-    // even though it doesn't occur and maaaybe bc of turning or black/white grenze idk
-    // (problem) maybe this moves too far
-  }
-  digitalWrite(LED_BUILTIN, LOW);
-  
-  if (green1 && green2) {
-    Serial.print("both\t");
+    // Handle the recorded greens
+    if (green1 && green2) {
+      // Turn
+      Serial.print("turn\t");
       right(180);
-      delay(150); 
-      while (calculateReflection() == "noLine")
-      {
-        delay(10);
-      }
-  }
-  else if (green1) {
-    straight();
+
+      // TODO turn to the nearest direction that is indicated as straight by the compass
+    }
+    else if (green1) {
+      Serial.print("right\t");
+
+      // Drive forward for some time to position the geometric centre above the crossing
+      straight();
       delay(600);
       right(90);
-      while (calculateReflection() == "noLine")
-      {
-        delay(1);
-      }
-  }
-  else if (green2) {
-    Serial.print("links");
+
+    }
+    else if (green2) {
+      Serial.print("left\t");
       straight();
       delay(600);
       left(90);
-  }
-  else {
-    if (!(calculateReflection() == "noLine")/*doesnt work otherwise apparently*/)
-      {
-        // not else lol
-      }
-      else
-      {
+
+      Serial.println(calculateReflection());
+      
+    
+    }
+
+    else { // Did not find any green
+      straight();
+      delay(1800); // adjust that waiting time
+
+      if (calculateReflection() == "noLine") {
         // finding line
         left(90);
         
         // going right "forever"    
         motors.flipLeftMotor(false);
         motors.flipRightMotor(false);
-        motors.setSpeeds(70, 75);
-        while (calculateReflection() == "noLine")
+        motors.setSpeeds(35, 37.5); // probably accounting for motor deficiencies
+        Serial.print("looping\t");
+        while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
         {
-          Serial.print("\n");
-          Serial.print("suche...");
+          Serial.print("\nsuche...");
         }
       }
+    }
+
+  }
+  else { // hit the kreuzung more from a side
+      // motors.flipLeftMotor(true);
+      // motors.flipRightMotor(false);
+      // motors.setSpeeds(35, 37.5);
+      // delay(200);
+      // straighten();
   }
 }
