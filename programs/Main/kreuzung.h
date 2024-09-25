@@ -7,10 +7,15 @@ void kreuzung(bool bothSides) {
 
     // drive forward slowly, check for greens
     digitalWrite(LED_BUILTIN, HIGH); // Activate Lamp to see when a Kreuzung is detected
-    straight();
+    
+    motors.flipLeftMotor(false);
+    motors.flipRightMotor(true);
+    motors.setSpeeds((int)(42 * 0.5),(int)(50 * 0.5)); // half the default speed
+    // ERROR this does not suffice for double green because the kreuzung is detected earlier because "green" is seen as black by reflektion
+
     bool green1 = false; // right
     bool green2 = false; // left
-    int reading_time = 6;  /*adjust that value*/
+    int reading_time = 12;  /*adjust that value*/
     
     for (int i = 0; i < reading_time; i++) {
       readColor2();
@@ -47,14 +52,12 @@ void kreuzung(bool bothSides) {
         stop();
         delay(250);
         digitalWrite(LED_BUILTIN, HIGH);
-        straight(0.8); // drive slower to try to detect a potential other green
       }
 
       delay(10);
     }
     digitalWrite(LED_BUILTIN, LOW);
 
-    // SOMEWHERE THERE IS A CASE WHERE THE ROBOT JUST STOPS!!!!!
 
     // Handle the recorded greens
     if (green1 && green2) {
@@ -78,29 +81,38 @@ void kreuzung(bool bothSides) {
       straight();
       delay(600);
       left(90);
+
+      Serial.println(calculateReflection());
+      
+    
     }
 
     else { // Did not find any green
       straight();
-      delay(1500);
-      // finding line
-      left(90);
-      
-      // going right "forever"    
-      motors.flipLeftMotor(false);
-      motors.flipRightMotor(false);
-      motors.setSpeeds(35, 37.5); // probably accounting for motor deficiencies
-      Serial.print("looping\t");
-      while (calculateReflection() == "noLine")
-      {
-        Serial.print("\nsuche...");
+      delay(1800); // adjust that waiting time
+
+      if (calculateReflection() == "noLine") {
+        // finding line
+        left(90);
+        
+        // going right "forever"    
+        motors.flipLeftMotor(false);
+        motors.flipRightMotor(false);
+        motors.setSpeeds(35, 37.5); // probably accounting for motor deficiencies
+        Serial.print("looping\t");
+        while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
+        {
+          Serial.print("\nsuche...");
+        }
       }
     }
 
   }
-  else { // should usually not occur
-      // IDEA turn towards the nearest possible direction (got from compass)
-
-
+  else { // hit the kreuzung more from a side
+      // motors.flipLeftMotor(true);
+      // motors.flipRightMotor(false);
+      // motors.setSpeeds(35, 37.5);
+      // delay(200);
+      // straighten();
   }
 }

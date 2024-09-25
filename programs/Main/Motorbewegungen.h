@@ -10,7 +10,7 @@ void straight(int factor = 1) //drive straight
   }
   motors.flipLeftMotor(false);
   motors.flipRightMotor(true);
-  motors.setSpeeds(42 * factor, 50 * factor); //prevent motor drifting
+  motors.setSpeeds((int)(42 * factor),(int)(50 * factor)); //prevent motor drifting
 }
 
 void left(int turnBy=0) //turn left
