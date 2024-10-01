@@ -29,10 +29,10 @@ void left(int turnBy=0, boolean turnToExact=false) //turn left
       ReadDirection();
     }
     stop();
-  } else if (turnBy!=0) {
+  } else {
     while (direction!=turnBy) {
-      delay(10)
-      ReadDirection()
+      delay(10);
+      ReadDirection();
     }
   }
 }
@@ -55,8 +55,8 @@ void right(int turnBy=0, boolean turnToExact=false) //turn right
     stop();
   } else if (turnBy!=0){
     while (direction!=turnBy) {
-      delay(10)
-      ReadDirection()
+      delay(10);
+      ReadDirection();
     }
   }
 }
@@ -90,52 +90,41 @@ void straight_right() //drive straight but pull right
   motors.setSpeeds(80, 30);
 }
 
-#include <iostream>
-#include <cmath>
-using namespace std;
+// #include <iostream>
+// #include <cmath>
+// using namespace std;
 
 // Function to calculate the minimum angular distance between two angles
-int circularDistance(int a, int b) {
-    int diff = abs(a - b);
+uint16_t circularDistance(uint16_t a, uint16_t b) {
+    uint16_t diff = abs(a - b);
     return min(diff, 360 - diff);  // Account for the circular nature
 }
 
 // Function to find the closest number in the array to the target number
-int findClosestNumber(int arr[], int size, int target) {
-    int closest = arr[0];
-    int minDistance = circularDistance(arr[0], target);
+uint16_t findClosestNumber(uint16_t arr[], uint16_t size, uint16_t target) {
+    uint16_t closest2 = arr[0];
+    uint16_t minDistance = circularDistance(arr[0], target);
     
-    for (int i = 1; i < size; ++i) {
-        int dist = circularDistance(arr[i], target);
+    for (uint16_t i = 1; i < size; ++i) {
+        uint16_t dist = circularDistance(arr[i], target);
         if (dist < minDistance) {
             minDistance = dist;
-            closest = arr[i];
+            closest2 = arr[i];
         }
     }
     
-    return closest;
+    return closest2;
 }
-
-int main() {
-    int arr[] = {0, 90, 180, 270};  // The array of numbers
-    int target;
-    
-    cout << "Enter a number between 0 and 360: ";
-    cin >> target;
-
-    // Ensure target is between 0 and 359
-    target = target % 360;
-
-    int closest = findClosestNumber(arr, 4, target);
-    cout << "The closest number in the array is: " << closest << endl;
-    
-    return 0;
-}
-
 
 void straighten()
 {
+  Serial.println("agg");
   ReadDirection();
-  uint16_t closest = findClosest(calibrateddirection, 4, direction);
-  if 
+  uint16_t closest = findClosestNumber(calibrateddirection, 4, direction);
+  Serial.println(closest);
+  if (direction-closest < -45 || 0 < direction-closest < 45) {
+    right(closest,true);
+  } else {
+    left(closest,true);
+  }
 }
