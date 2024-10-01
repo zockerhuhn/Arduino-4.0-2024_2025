@@ -59,7 +59,7 @@ void setup()
   //  hier den zu nutzenden I2C Bus einstellen:
   // Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
   // // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
-  // if (!abstandsSensor.begin(NEUE_ADDRESSE, Wire)) {
+  // if (!abstandsSensor.begin(NEUE_ABSTANDSADDRESSE, Wire)) {
   //     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
   //     Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
   // }
