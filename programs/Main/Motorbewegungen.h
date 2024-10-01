@@ -13,7 +13,7 @@ void straight() //drive straight
   motors.setSpeeds(42, 50); //prevent motor drifting
 }
 
-void left(int turnBy=0) //turn left
+void left(int turnBy=0, boolean turnToExact=false) //turn left
 {
   if (digitalRead(motorpin)) {
     return;
@@ -21,7 +21,7 @@ void left(int turnBy=0) //turn left
   motors.flipLeftMotor(true);
   motors.flipRightMotor(true);
   motors.setSpeeds(70, 75);
-  if (turnBy!=0) {
+  if (!turnToExact && turnBy!=0) {
     ReadDirection();
     int initialDirection = direction;
     while (((initialDirection+turnBy)%360)!=direction) {
@@ -29,10 +29,15 @@ void left(int turnBy=0) //turn left
       ReadDirection();
     }
     stop();
+  } else if (turnBy!=0) {
+    while (direction!=turnBy) {
+      delay(10)
+      ReadDirection()
+    }
   }
 }
 
-void right(int turnBy=0) //turn right
+void right(int turnBy=0, boolean turnToExact=false) //turn right
 {
   if (digitalRead(motorpin)) {
     return;
@@ -40,7 +45,7 @@ void right(int turnBy=0) //turn right
   motors.flipLeftMotor(false);
   motors.flipRightMotor(false);
   motors.setSpeeds(70, 75);
-  if (turnBy!=0) {
+  if (!turnToExact && turnBy!= 0) {
     ReadDirection();
     int initialDirection = direction;
     while (((initialDirection-turnBy)%360)!=direction) {
@@ -48,6 +53,11 @@ void right(int turnBy=0) //turn right
       ReadDirection();
     }
     stop();
+  } else if (turnBy!=0){
+    while (direction!=turnBy) {
+      delay(10)
+      ReadDirection()
+    }
   }
 }
 
@@ -99,14 +109,5 @@ void straighten()
 {
   ReadDirection();
   uint16_t closest = findClosest(calibrateddirection, 4, direction);
-  if (0 <= closest - direction <= 45) {
-    left(closest-direction);
-  }
-  else {
-    if (0 >= closest - direction >= -45 ) {
-      right(abs((closest-direction)));
-    } else if (closest - direction < -45) {
-
-    }
-  }
+  if 
 }
