@@ -90,20 +90,48 @@ void straight_right() //drive straight but pull right
   motors.setSpeeds(80, 30);
 }
 
-int findClosest(uint16_t arr[], int size, uint16_t target) {
-  uint16_t closest = arr[0];
-  uint16_t minDiff = std::abs(target - closest);
+#include <iostream>
+#include <cmath>
+using namespace std;
 
-  for (int i = 0; i < size; i++) {
-    uint16_t diff = std::abs(target - closest);
-
-    if (diff < minDiff) {
-      minDiff = diff;
-      closest = arr[i];
-    }
-  }
-  return closest;
+// Function to calculate the minimum angular distance between two angles
+int circularDistance(int a, int b) {
+    int diff = abs(a - b);
+    return min(diff, 360 - diff);  // Account for the circular nature
 }
+
+// Function to find the closest number in the array to the target number
+int findClosestNumber(int arr[], int size, int target) {
+    int closest = arr[0];
+    int minDistance = circularDistance(arr[0], target);
+    
+    for (int i = 1; i < size; ++i) {
+        int dist = circularDistance(arr[i], target);
+        if (dist < minDistance) {
+            minDistance = dist;
+            closest = arr[i];
+        }
+    }
+    
+    return closest;
+}
+
+int main() {
+    int arr[] = {0, 90, 180, 270};  // The array of numbers
+    int target;
+    
+    cout << "Enter a number between 0 and 360: ";
+    cin >> target;
+
+    // Ensure target is between 0 and 359
+    target = target % 360;
+
+    int closest = findClosestNumber(arr, 4, target);
+    cout << "The closest number in the array is: " << closest << endl;
+    
+    return 0;
+}
+
 
 void straighten()
 {
