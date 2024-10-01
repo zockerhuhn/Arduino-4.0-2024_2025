@@ -15,16 +15,20 @@ void kreuzung(bool bothSides) {
 
     bool green1 = false; // right
     bool green2 = false; // left
-    int reading_time = 12;  /*adjust that value*/
+
+    bool stopping = false;
+    bool stopping_next = false;
+    String reflection;
     
-    for (int i = 0; i < reading_time; i++) {
+    while (!(stopping)) {
+      stopping = stopping_next;
       readColor2();
       readColor();
 
       if (calculateColor() && !green1) {
         green1 = true; 
         Serial.print("Found green 1 (right)\t");
-        i = reading_time - 2; // Let the robot check for the other green just one more time
+        stopping_next = true;
         digitalWrite(LED_BUILTIN, LOW);
         delay(20);
         digitalWrite(LED_BUILTIN, HIGH);
@@ -34,7 +38,7 @@ void kreuzung(bool bothSides) {
       if (calculateColor2() && !green2) {
         green2 = true;
         Serial.print("Found green 2 (left)\t");
-        i = reading_time - 2;
+        stopping_next = true;
         digitalWrite(LED_BUILTIN, LOW);
         delay(20);
         digitalWrite(LED_BUILTIN, HIGH);
@@ -42,8 +46,17 @@ void kreuzung(bool bothSides) {
         digitalWrite(LED_BUILTIN, LOW);
       }
 
+      reflection = calculateReflection();
+
+      if (reflection == "noLine" || reflection == "normalLine") {
+        stopping = true;
+      }
+      else {
+        // straighten();
+      }
+      
       if (green1 && green2) {
-        break;
+        stopping = true;
       }
 
       else if (green1 || green2) {
@@ -55,7 +68,8 @@ void kreuzung(bool bothSides) {
       }
 
       delay(10);
-    }
+    } 
+
     digitalWrite(LED_BUILTIN, LOW);
 
 

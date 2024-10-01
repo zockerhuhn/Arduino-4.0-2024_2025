@@ -173,11 +173,11 @@ void loop()
     readColor();
     readColor2();
     while ((rot-250 >= gruen || rot-250 >= blau || rot2-250 >= gruen2 || rot2-250 >= gruen2) && (helligkeit <= colorBrightMaxThreshold || helligkeit2 <= colorBrightMaxThreshold))
-    {
+    { // This should detect red and tell us when to stop, but the detection is not correct
       readColor();
       readColor2();
       stop();
-      Serial.println("red");
+      Serial.println("red"); 
     }
   }
   calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
