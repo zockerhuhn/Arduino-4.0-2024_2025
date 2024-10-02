@@ -1,0 +1,19 @@
+# PRCHECKLIST generated online at https://mibexsoftware.bitbucket.io/checklist-buddy-editor/
+
+# Main check
+--source-except Wettbewerb/** --target main +title+ Test your changes
+  --source-except Wettbewerb/** --target main +comment+ Intersections:
+  --source-except Wettbewerb/** --target main +task+ left green
+  --source-except Wettbewerb/** --target main +task+ right green
+  --source-except Wettbewerb/** --target main +task+ no green
+  --source-except Wettbewerb/** --target main +task+ turn
+  --source-except Wettbewerb/** --target main +comment+ General line following:
+  --source-except Wettbewerb/** --target main +task+ Follow line across gap
+  --source-except Wettbewerb/** --target main +task+ Follow line in 90° curve
+  --source-except Wettbewerb/** --target main +task+ Follow line in multiple 90° curves on one plate
+  --source-except Wettbewerb/** --target main +comment+ Special stuff:
+  --source-except Wettbewerb/** --target main +task+ Stop at red
+  --source-except Wettbewerb/** --target main +task+ Removed all TODO comments
+
++title+ Exploding check
+  +task+ Robo didn't explode
