@@ -53,7 +53,7 @@ void kreuzung(bool bothSides) {
         stopping_in = 3;
       }
       else {
-        // straighten();
+        straighten();
       }
       
       if (green1 && green2) {
@@ -124,10 +124,10 @@ void kreuzung(bool bothSides) {
 
   }
   else { // hit the kreuzung more from a side
-      // motors.flipLeftMotor(true);
-      // motors.flipRightMotor(false);
-      // motors.setSpeeds(35, 37.5);
-      // delay(200);
-      // straighten();
+      motors.flipLeftMotor(true);
+      motors.flipRightMotor(false);
+      motors.setSpeeds(35, 37.5);
+      delay(200);
+      straighten();
   }
 }
