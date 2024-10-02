@@ -29,7 +29,7 @@ void kreuzung(bool bothSides) {
       if (calculateColor() && !green1) {
         green1 = true; 
         Serial.print("Found green 1 (right)\t");
-        stopping_in = 2;
+        stopping_in = 3;
         digitalWrite(LED_BUILTIN, LOW);
         delay(20);
         digitalWrite(LED_BUILTIN, HIGH);
@@ -39,7 +39,7 @@ void kreuzung(bool bothSides) {
       if (calculateColor2() && !green2) {
         green2 = true;
         Serial.print("Found green 2 (left)\t");
-        stopping_in = 2;
+        stopping_in = 3;
         digitalWrite(LED_BUILTIN, LOW);
         delay(20);
         digitalWrite(LED_BUILTIN, HIGH);
