@@ -118,10 +118,8 @@ uint16_t findClosestNumber(uint16_t arr[], uint16_t size, uint16_t target) {
 
 void straighten()
 {
-  Serial.println("agg");
   ReadDirection();
   uint16_t closest = findClosestNumber(calibrateddirection, 4, direction);
-  Serial.println(closest);
   if (direction-closest < -45 || 0 < direction-closest < 45) {
     left(closest,true);
   } else {
