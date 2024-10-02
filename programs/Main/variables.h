@@ -12,7 +12,6 @@ String calculatedReflection;
 uint16_t rot, gruen, blau, helligkeit;
 uint16_t rot2, gruen2, blau2, helligkeit2;
 
-
 //FARBSENSOREN
 /** Sensor sehr schnell einstellen (ungenauer):
  *  Gain 4x fand ich am besten, aber dann sind die Werte so stabil,
@@ -49,3 +48,4 @@ VL53L5CX_ResultsData messDaten;
 #define CMPS12 0x60
 uint16_t direction;
 uint16_t currentdirection;
+uint16_t calibrateddirection[] = {0, 0, 0, 0};

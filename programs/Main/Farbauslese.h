@@ -1,3 +1,6 @@
+//#include "variables.h"
+//#include "Kalibrierung.h"
+
 void readColor() //liest Farbsensor 1 aus und printed Ergebnis
 {
   rgbSensor.getRawData(&rot, &gruen, &blau, &helligkeit);
@@ -19,12 +22,13 @@ void readColor2() //liest Farbsensor 2 aus und printed Ergebnis
 boolean calculateColor() //nimmt letzten ausgelesen Wert von Farbsensor 1 und return ob grün erkannt wurde als bool
 {
   {
-    if ((gruen-150) >= blau && (gruen-150) >= rot && helligkeit <= colorBrightMaxThreshold && helligkeit >= colorBrightMinThreshold)
+    if ((gruen-blueGreenThreshold) >= blau && (gruen-redGreenThreshold) >= rot && helligkeit <= colorBrightMaxThreshold && helligkeit >= colorBrightMinThreshold)
     {
       return true;
     }
     else
     {
+      Serial.println("right:" + String(gruen) + " " + String(blau) + " " + String(rot) + " " + String((gruen-blueGreenThreshold) >= blau) + " " + String((gruen-redGreenThreshold) >= rot) + " " + String(helligkeit <= colorBrightMaxThreshold)  + " " + String(helligkeit >= colorBrightMinThreshold));
       return false;
     }
   }
@@ -33,12 +37,13 @@ boolean calculateColor() //nimmt letzten ausgelesen Wert von Farbsensor 1 und re
 boolean calculateColor2() //nimmt letzten ausgelesen Wert von Farbsensor 2 und returnt ob grün erkannt wurde als bool
 {
   {
-    if ((gruen2-150) >= blau2 && (gruen2-150) >= rot2 && helligkeit2 <= colorBrightMaxThreshold && helligkeit2 >= colorBrightMinThreshold)
+    if ((gruen2-blueGreenThreshold) >= blau2 && (gruen2-redGreenThreshold) >= rot2 && helligkeit2 <= colorBrightMaxThreshold && helligkeit2 >= colorBrightMinThreshold)
     {
       return true;
     }
     else
     {
+      Serial.println("left:" + String(gruen2) + " " + String(blau2) + " " + String(rot2) + " " + String((gruen2-blueGreenThreshold) >= blau2) + " " + String((gruen2-redGreenThreshold) >= rot2) + " " + String(helligkeit2 <= colorBrightMaxThreshold) + " " + String(helligkeit2 >= colorBrightMinThreshold));
       return false;
     }
   }

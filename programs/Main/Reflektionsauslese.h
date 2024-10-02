@@ -45,7 +45,6 @@ String calculateReflection() //read reflection and return processed result
   }
 }
 
-
 void ReadDirection() {
   Wire.beginTransmission(CMPS12);
   Wire.write(0X02);
