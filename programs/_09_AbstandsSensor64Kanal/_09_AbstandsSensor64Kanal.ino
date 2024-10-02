@@ -101,8 +101,8 @@ void loop() {
     delay(100); // damit man auch was erkennt im Serial Monitor
 }
 
-/*const uint16_t VERBINDUNG_VERLOREN = 0;
-uint16_t vorheriger_abstand = VERBINDUNG_VERLOREN;*/
+const uint16_t VERBINDUNG_VERLOREN = 0;
+uint16_t vorheriger_abstand = VERBINDUNG_VERLOREN;
 void readDistances() {
     if (abstandsSensor.isDataReady()) {
         // diese Zeile speicher bereits die Daten ab:
