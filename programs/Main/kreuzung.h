@@ -17,18 +17,19 @@ void kreuzung(bool bothSides) {
     bool green2 = false; // left
 
     bool stopping = false;
-    bool stopping_next = false;
+    int stopping_in = -1;
     String reflection;
     
     while (!(stopping)) {
-      stopping = stopping_next;
+      if (stopping_in > 0) stopping_in--;
+      if (stopping_in == 0) stopping = true;
       readColor2();
       readColor();
 
       if (calculateColor() && !green1) {
         green1 = true; 
         Serial.print("Found green 1 (right)\t");
-        stopping_next = true;
+        stopping_in = 2;
         digitalWrite(LED_BUILTIN, LOW);
         delay(20);
         digitalWrite(LED_BUILTIN, HIGH);
@@ -38,7 +39,7 @@ void kreuzung(bool bothSides) {
       if (calculateColor2() && !green2) {
         green2 = true;
         Serial.print("Found green 2 (left)\t");
-        stopping_next = true;
+        stopping_in = 2;
         digitalWrite(LED_BUILTIN, LOW);
         delay(20);
         digitalWrite(LED_BUILTIN, HIGH);
@@ -48,8 +49,8 @@ void kreuzung(bool bothSides) {
 
       reflection = calculateReflection();
 
-      if (reflection == "noLine" || reflection == "normalLine") {
-        stopping = true;
+      if ((!(reflection == "frontalLine" || reflection == "sideLine")) && stopping_in < 0) {
+        stopping_in = 3;
       }
       else {
         // straighten();
