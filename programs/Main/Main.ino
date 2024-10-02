@@ -156,9 +156,14 @@ void loop()
     colorBrightMinThreshold = min(helligkeit, helligkeit2) - 500;
 
     Serial.println("Thresholds: " + String(blueGreenThreshold) + " " + String(redGreenThreshold) + " " + String(colorBrightMaxThreshold)+ " " + String(colorBrightMinThreshold));
-    // 5x blinken (AN/AUS):
     Serial.println(String(calculateColor()) + " " + String(calculateColor2()));
     delay(1000);
+    ReadDirection();
+    for (int i = 0; i <= 3; i++) {
+      calibrateddirection[i] = (direction + i*90)%360;
+    }
+    Serial.println("calibrated compass with "+ String(calibrateddirection[0]));
+    // 5x blinken (AN/AUS):
     for (int i = 0; i < 5; i++)
     {
       digitalWrite(LED_BUILTIN, HIGH);
