@@ -176,13 +176,13 @@ void loop()
     x = 1;
     readColor();
     readColor2();
-    while ((rot-250 >= gruen || rot-250 >= blau || rot2-250 >= gruen2 || rot2-250 >= gruen2) && (helligkeit <= colorBrightMaxThreshold || helligkeit2 <= colorBrightMaxThreshold))
-    {
-      readColor();
-      readColor2();
-      stop();
-      Serial.println("red");
-    }
+    // while ((rot-250 >= gruen || rot-250 >= blau || rot2-250 >= gruen2 || rot2-250 >= gruen2) && (helligkeit <= colorBrightMaxThreshold || helligkeit2 <= colorBrightMaxThreshold))
+    // {
+    //   readColor();
+    //   readColor2();
+    //   stop();
+    //   Serial.println("red");
+    // }
   }
   calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
   if (calculatedReflection == "frontalLine")    // detected crosssection
