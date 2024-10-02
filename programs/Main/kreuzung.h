@@ -2,106 +2,132 @@
 //#include "Farbauslese.h"
 //#include "Reflektionsauslese.h"
 
-void kreuzung(bool bothsides)
-{
-  Serial.print("\n");
+void kreuzung(bool bothSides) {
+  if (bothSides) { // very probably a crossing where green is
 
-  
-  straight();
-  if (bothsides) {
-    Serial.print("alles schwarz\t");
-    delay(300);
-  }
-  else {
-    Serial.print("einseitig schwarz\t");
-    delay(450);
-  }
-  motors.setSpeeds(25,25);
-  bool green1 = false;
-  bool green2 = false;
-  for (int i = 0; i < 15; i++) {
-    readColor2();
-    readColor();
-    delay(10);  
+    // drive forward slowly, check for greens
+    digitalWrite(LED_BUILTIN, HIGH); // Activate Lamp to see when a Kreuzung is detected
+    
+    motors.flipLeftMotor(false);
+    motors.flipRightMotor(true);
+    motors.setSpeeds((int)(42 * 0.5),(int)(50 * 0.5)); // half the default speed
+    // ERROR this does not suffice for double green because the kreuzung is detected earlier because "green" is seen as black by reflektion
 
-    if (calculateColor()) {
-      green1 = true; 
-      Serial.print("Found green 1 (right)");
-    }
-    if (calculateColor2()) {
-      green2 = true;
-      Serial.print("Found green 2 (left)");
-    }
-    if (green1 || green2) motors.setSpeeds(15,15);
-    if (green1 && green2) break;
-    // (problem) maybe this moves too far
-  } // TODO set motor speeds according to the weird deficiencies they have
-  
+    bool green1 = false; // right
+    bool green2 = false; // left
 
-  if (green1)
-  {
-    Serial.print("rechts");
-    if (green2)
-    {
-      Serial.print("links");
-      turn();
-      delay(150); 
-      while (calculateReflection() == "noLine")
-      {
-        delay(10);
+    bool stopping = false;
+    int stopping_in = -1;
+    String reflection;
+    
+    while (!(stopping)) {
+      if (stopping_in > 0) stopping_in--;
+      if (stopping_in == 0) stopping = true;
+      readColor2();
+      readColor();
+
+      if (calculateColor() && !green1) {
+        green1 = true; 
+        Serial.print("Found green 1 (right)\t");
+        stopping_in = 3;
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(20);
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(20);
+        digitalWrite(LED_BUILTIN, LOW);
       }
+      if (calculateColor2() && !green2) {
+        green2 = true;
+        Serial.print("Found green 2 (left)\t");
+        stopping_in = 3;
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(20);
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(20);
+        digitalWrite(LED_BUILTIN, LOW);
+      }
+
+      reflection = calculateReflection();
+
+      if ((!(reflection == "frontalLine" || reflection == "sideLine")) && stopping_in < 0) {
+        stopping_in = 3;
+      }
+      else {
+        // straighten();
+      }
+      
+      if (green1 && green2) {
+        stopping = true;
+      }
+
+      else if (green1 || green2) {
+        // Stop to indicate that green has been detected
+        digitalWrite(LED_BUILTIN, LOW);
+        stop();
+        delay(250);
+        digitalWrite(LED_BUILTIN, HIGH);
+      }
+
+      delay(10);
+    } 
+
+    digitalWrite(LED_BUILTIN, LOW);
+
+
+    // Handle the recorded greens
+    if (green1 && green2) {
+      // Turn
+      Serial.print("turn\t");
+      right(180);
+
+      // TODO turn to the nearest direction that is indicated as straight by the compass
     }
-    else
-    {
+    else if (green1) {
+      Serial.print("right\t");
+
+      // Drive forward for some time to position the geometric centre above the crossing
       straight();
       delay(600);
-      right();
-      delay(1500);
-      while (calculateReflection() == "noLine")
-      {
-        delay(1);
-      }
+      right(90);
+
     }
-  }
-  else
-  {
-    if (green2)
-    {
-      Serial.print("links");
+    else if (green2) {
+      Serial.print("left\t");
       straight();
       delay(600);
-      left();
-      delay(1500);
-      while (calculateReflection() == "noLine")
-      {
-        delay(1);
-      }
+      left(90);
+
+      Serial.println(calculateReflection());
+      
+    
     }
-    else
-    {
-      // straight();
-      // delay(900);
-      // motors.setSpeeds(0, 0);
-      if (!(calculateReflection() == "noLine"))
-      {
-        // not else lol
-      }
-      else
-      {
+
+    else { // Did not find any green
+      straight();
+      delay(1800); // adjust that waiting time
+
+      if (calculateReflection() == "noLine") {
         // finding line
-        motors.flipLeftMotor(true);
-        motors.flipRightMotor(true);
-        motors.setSpeeds(70, 65); 
-        delay(2000); // turn 90 deg 
+        left(90);
+        
+        // going right "forever"    
         motors.flipLeftMotor(false);
         motors.flipRightMotor(false);
-        motors.setSpeeds(60, 75); // go opposite direction
-        while (calculateReflection() == "noLine")
+        motors.setSpeeds(35, 37.5); // probably accounting for motor deficiencies
+        Serial.print("looping\t");
+        while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
         {
-          Serial.print("\n");
-          Serial.print("suche...");
+          Serial.print("\nsuche...");
         }
       }
     }
+
+  }
+  else { // hit the kreuzung more from a side
+      // motors.flipLeftMotor(true);
+      // motors.flipRightMotor(false);
+      // motors.setSpeeds(35, 37.5);
+      // delay(200);
+      // straighten();
   }
 }

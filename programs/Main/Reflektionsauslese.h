@@ -8,7 +8,8 @@ void read_reflectionandprint() //read relfectionsensor and print result
   Serial.println(); // neue Zeile beginnen
 }
 
-String calculateReflection() //read reflection and return processed result
+String calculateReflection() //read reflection and return processed result 
+// !!! Green also counts as black !!!
 {
   read_reflectionandprint();
   if ((helligkeiten[0] >= reflectionBlackThreshold) && (helligkeiten[5] >= reflectionBlackThreshold))

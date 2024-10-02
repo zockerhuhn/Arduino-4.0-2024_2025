@@ -120,7 +120,8 @@ void loop()
       delay(250);
     }
     // Calibrating should word by calculating an average from multiple values
-    uint16_t average_r, average_g, average_b, average_c,  average_r2, average_g2, average_b2, average_c2 = 0;
+    uint16_t average_r, average_g, average_b, average_c,  average_r2, average_g2, average_b2, average_c2;
+    average_r = average_g = average_b = average_c = average_r2 = average_g2 = average_b2 = average_c2 = 0;
     int total_cycles = 10;
     for (int i = 0; i < total_cycles; i++) 
     {
@@ -176,15 +177,16 @@ void loop()
     x = 1;
     readColor();
     readColor2();
-    // while ((rot-250 >= gruen || rot-250 >= blau || rot2-250 >= gruen2 || rot2-250 >= gruen2) && (helligkeit <= colorBrightMaxThreshold || helligkeit2 <= colorBrightMaxThreshold))
-    // {
-    //   readColor();
-    //   readColor2();
-    //   stop();
-    //   Serial.println("red");
-    // }
+    while ((rot-250 >= gruen || rot-250 >= blau || rot2-250 >= gruen2 || rot2-250 >= gruen2) && (helligkeit <= colorBrightMaxThreshold || helligkeit2 <= colorBrightMaxThreshold))
+    { // This should detect red and tell us when to stop, but the detection is not correct
+      readColor();
+      readColor2();
+      stop();
+      Serial.println("red"); 
+    }
   }
   calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
+  Serial.print("\t" + calculatedReflection);
   if (calculatedReflection == "frontalLine")    // detected crosssection
   {
     kreuzung(true);
