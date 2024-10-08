@@ -51,12 +51,14 @@ void right(int turnBy=0, boolean turnToExact=false) //turn right
     while (((initialDirection-turnBy)%360)!=direction) {
       delay(10);
       ReadDirection();
+      Serial.println(direction);
     }
     stop();
   } else {
     while (direction!=turnBy) {
       delay(10);
       ReadDirection();
+      Serial.println(direction);
     }
   }
 }
