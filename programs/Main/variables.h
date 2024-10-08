@@ -29,9 +29,12 @@ RescueBoardMotors motors = RescueBoardMotors();
 
 
 //ABSTANDSSENSOR
+/** optional: Stoppuhr, um zu Verbindungsverluste zu erkennen */
+bool debT = false; // debT = debug timer, machen wir an falls wir Probleme haben und dann sagt der Timer ob überhaupt Werte ankommen
+const uint16_t VERBINDUNG_VERLOREN = 0;
+uint16_t vorheriger_abstand = VERBINDUNG_VERLOREN;
 SparkFun_VL53L5CX abstandsSensor = SparkFun_VL53L5CX();
 const uint8_t NEUE_ABSTANDSADDRESSE = 0x35;
-bool debT = false; // debT = debug timer, machen wir an falls wir Probleme haben und dann sagt der Timer ob überhaupt Werte ankommen
 typedef struct Einstellungen { // Structs sind schön weil die so wie Listen mit Konstruktor und verschiedenen Datentypen sind
     uint8_t aufloesung;
     uint8_t bildSeitenlaenge;

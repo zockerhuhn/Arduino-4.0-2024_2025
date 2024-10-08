@@ -1,25 +1,13 @@
 #pragma once
-/** optional: Stoppuhr, um zu Verbindungsverluste zu erkennen */
-if(debT){Chrono keineNeuenDatenStoppuhr = Chrono(Chrono::MILLIS, false)}; // noch nicht gestartet 
+
 // !TODO: Setup und Loop löschen und das ganze in eine wirkliche library umwandeln
-void setup() {
 
-    Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
-    
-
-    abstandsSensor.startRanging();
-    if(debT){keineNeuenDatenStoppuhr.start()};
-    Serial.println("Initialisierung abgeschlossen");
-}
-
-const uint16_t VERBINDUNG_VERLOREN = 0;
-uint16_t vorheriger_abstand = VERBINDUNG_VERLOREN;
 void readDistances() {
     if (abstandsSensor.isDataReady()) {
         // diese Zeile speicher bereits die Daten ab:
         if (abstandsSensor.getRangingData(&messDaten)) {
             // alles OK
-            if(debT){keineNeuenDatenStoppuhr.restart()};
+            if(debT){keineNeuenDatenStoppuhr.restart();}
             return;  // rausgehen aus der Funktion, damit wir nicht zum Fehler kommen
         } // else: Fehler
     } // else: wenn es keine neuen Daten gibt, müssen wir sie auch nicht lesen

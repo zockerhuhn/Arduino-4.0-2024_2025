@@ -56,21 +56,25 @@ void setup()
   Wire.begin();           // Bus I2C0
   Wire.setClock(1000000); // 1MHz Kommunikationsgeschwindigkeit
   Wire1.begin();          // Bus I2C1
-  //  hier den zu nutzenden I2C Bus einstellen:
-  // Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
-  // // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
-  // if (!abstandsSensor.begin(NEUE_ABSTANDSADDRESSE, Wire)) {
-  //     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
-  //     Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
-  // }
-  // if (!abstandsSensor.setResolution(einstellungen.aufloesung) ||
-  //     !abstandsSensor.setRangingFrequency(einstellungen.maxMessfrequenz)) {  // siehe oben
-  //         delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
-  //         Serial.println("ToF64 Auflösung oder Messfrequenz konnte nicht geändert werden! Programm Ende.");
-  //         while (1);
-  // }
-  // abstandsSensor.startRanging();
-  // Serial.println("Initialisierung abgeschlossen");
+
+  // ABSTANDSSENSOR-INITIALISIEREN
+  if(debT) {Chrono keineNeuenDatenStoppuhr = Chrono(Chrono::MILLIS, false);}; // Uhr noch nicht gestartet 
+  Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
+  // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
+  if (!abstandsSensor.begin(NEUE_ABSTANDSADDRESSE, Wire)) {
+      delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+      Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
+      while (1);
+  }
+  if (!abstandsSensor.setResolution(einstellungen.aufloesung) ||
+      !abstandsSensor.setRangingFrequency(einstellungen.maxMessfrequenz)) {  // siehe oben
+          delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+          Serial.println("ToF64 Auflösung oder Messfrequenz konnte nicht geändert werden! Programm Ende.");
+          while (1);
+  }
+  abstandsSensor.startRanging();
+  if(debT){keineNeuenDatenStoppuhr.start();}
+  Serial.println("Initialisierung Abstandssensor abgeschlossen");
   if (!rgbSensor.begin(TCS34725_ADDRESS, &Wire))
   {
     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
@@ -87,18 +91,6 @@ void setup()
   sensorLeiste.setSensorPins(SENSOR_LEISTE_PINS, SENSOR_LEISTE_ANZAHL_SENSOREN);
   Serial.println("Initialisierung Reflektionssensor abgeschlossen");
 
-  // ABSTANDSSENSOR-INITIALISIEREN
-  if (!abstandsSensor.begin(NEUE_ABSTANDSADDRESSE, Wire)) { // Fisch: Die dinger werden ausgeführt und dabei nach Fehlern getestet
-    delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
-    Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
-    while (1);
-  }
-  if (!abstandsSensor.setResolution(einstellungen.aufloesung) ||
-    !abstandsSensor.setRangingFrequency(einstellungen.maxMessfrequenz)) {  // siehe oben
-      delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
-      Serial.println("ToF64 Auflösung oder Messfrequenz konnte nicht geändert werden! Programm Ende.");
-      while (1);
-  }
   motors.initialize();
   // falls man global die Motor-Drehrichtung ändern möchte:
   motors.flipLeftMotor(false); // nur notwendig, wenn man true reinschreibt
