@@ -24,16 +24,17 @@ void left(int turnBy=0, boolean turnToExact=false) //turn left
   if (!turnToExact && turnBy!=0) {
     ReadDirection();
     int initialDirection = direction;
-    while (((initialDirection+turnBy)%360)!=direction) {
+    while ((((initialDirection - turnBy) + 360) % 360) != direction) {
       delay(10);
       ReadDirection();
     }
     stop();
-  } else {
+  } else if (turnToExact) {
     while (direction!=turnBy) {
       ReadDirection();
       Serial.println(direction);
     }
+    stop();
   }
 }
 
@@ -45,19 +46,20 @@ void right(int turnBy=0, boolean turnToExact=false) //turn right
   motors.flipLeftMotor(false);
   motors.flipRightMotor(false);
   motors.setSpeeds(70, 75);
-  if (!turnToExact && turnBy!= 0) {
+  if (!turnToExact && turnBy != 0) {
     ReadDirection();
     int initialDirection = direction;
-    while (((initialDirection-turnBy)%360)!=direction) {
+    while (((initialDirection + turnBy) % 360) != direction) {
       delay(10);
       ReadDirection();
     }
     stop();
-  } else {
+  } else if (turnToExact) {
     while (direction!=turnBy) {
       ReadDirection();
       Serial.println(direction);
     }
+    stop();
   }
 }
 
@@ -120,10 +122,10 @@ void straighten()
 {
   ReadDirection();
   uint16_t closest = findClosestNumber(calibrateddirection, 4, direction);
-  Serial.println(String(direction) + " " + String(closest) + " " + String(direction - closest));
+  Serial.println("\nStraighten: " + String(direction) + " " + String(closest) + " " + String(direction - closest));
   if (direction - closest < -45 || (0 < direction - closest && direction - closest < 45)) {
-    right(closest,true);
-  } else {
     left(closest,true);
+  } else {
+    right(closest,true);
   }
 }

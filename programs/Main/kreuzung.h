@@ -79,8 +79,8 @@ void kreuzung(bool bothSides) {
       // Turn
       Serial.print("turn\t");
       right(180);
-
-      // TODO turn to the nearest direction that is indicated as straight by the compass
+      delay(600);
+      straighten();
     }
     else if (green1) {
       Serial.print("right\t");
@@ -89,6 +89,7 @@ void kreuzung(bool bothSides) {
       straight();
       delay(600);
       right(90);
+      delay(1500);
       straighten();
 
     }
@@ -97,6 +98,7 @@ void kreuzung(bool bothSides) {
       straight();
       delay(600);
       left(90);
+      delay(1500);
       straighten();
 
       Serial.println(calculateReflection());
@@ -130,6 +132,6 @@ void kreuzung(bool bothSides) {
       motors.flipRightMotor(false);
       motors.setSpeeds(35, 37.5);
       delay(200);
-      straighten();
+      // straighten();
   }
 }

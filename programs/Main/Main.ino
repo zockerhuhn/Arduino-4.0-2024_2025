@@ -160,9 +160,9 @@ void loop()
     delay(1000);
     ReadDirection();
     for (int i = 0; i <= 3; i++) {
-      calibrateddirection[i] = (direction + i*90)%360;
+      calibrateddirection[i] = (direction + i*90) % 360;
     }
-    Serial.println("calibrated compass with "+ String(calibrateddirection[0]));
+    Serial.println("calibrated compass with "+ String(calibrateddirection[0]) + " " + String(calibrateddirection[1]) + " " + String(calibrateddirection[2]) + " " + String(calibrateddirection[3]));
     // 5x blinken (AN/AUS):
     for (int i = 0; i < 5; i++)
     {
