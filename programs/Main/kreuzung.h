@@ -53,7 +53,7 @@ void kreuzung(bool bothSides) {
         stopping_in = 3;
       }
       else {
-        straighten();
+        // straighten();
       }
       
       if (green1 && green2) {
@@ -89,6 +89,7 @@ void kreuzung(bool bothSides) {
       straight();
       delay(600);
       right(90);
+      straighten();
 
     }
     else if (green2) {
@@ -96,6 +97,7 @@ void kreuzung(bool bothSides) {
       straight();
       delay(600);
       left(90);
+      straighten();
 
       Serial.println(calculateReflection());
       
