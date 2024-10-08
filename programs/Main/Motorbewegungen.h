@@ -31,7 +31,6 @@ void left(int turnBy=0, boolean turnToExact=false) //turn left
     stop();
   } else {
     while (direction!=turnBy) {
-      delay(10);
       ReadDirection();
       Serial.println(direction);
     }
@@ -56,7 +55,6 @@ void right(int turnBy=0, boolean turnToExact=false) //turn right
     stop();
   } else {
     while (direction!=turnBy) {
-      delay(10);
       ReadDirection();
       Serial.println(direction);
     }
