@@ -122,8 +122,9 @@ void straighten()
 {
   ReadDirection();
   uint16_t closest = findClosestNumber(calibrateddirection, 4, direction);
-  Serial.println("\nStraighten: " + String(direction) + " " + String(closest) + " " + String(direction - closest));
-  if (direction - closest < -45 || (0 < direction - closest && direction - closest < 45)) {
+  Serial.println("\nStraighten: " + String(direction) + " " + String(closest) + " " + String((direction - closest + 360) % 360));
+
+  if (((direction - closest + 360) % 360) < 180) {
     left(closest,true);
   } else {
     right(closest,true);

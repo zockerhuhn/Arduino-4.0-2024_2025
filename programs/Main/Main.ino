@@ -186,7 +186,9 @@ void loop()
     }
   }
   calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
-  Serial.print("\t" + calculatedReflection);
+  //Serial.print("\t" + calculatedReflection);
+  ReadDirection();
+  Serial.println("dir: " + String(direction));
   if (calculatedReflection == "frontalLine")    // detected crosssection
   {
     kreuzung(true);
@@ -199,36 +201,36 @@ void loop()
   }
   else if (calculatedReflection == "normalLine") // detected normal line
   {
-    Serial.print("\n");
-    Serial.print("Linie");
+    // Serial.print("\n");
+    // Serial.print("Linie");
     straight();
     y = 0;
   }
   else if (calculatedReflection == "leftLine") // detected a slight left line
   {
-    Serial.print("\n");
-    Serial.print("links");
+    // Serial.print("\n");
+    // Serial.print("links");
     straight_left();
     y = 0;
   }
   else if (calculatedReflection == "rightLine") // detected a slight right line
   {
-    Serial.print("\n");
-    Serial.print("rechts");
+    // Serial.print("\n");
+    // Serial.print("rechts");
     straight_right();
     y = 0;
   }
   else if (calculatedReflection == "hardleftLine") // detected a hard left line
   {
-    Serial.print("\n");
-    Serial.print("links");
+    // Serial.print("\n");
+    // Serial.print("links");
     left();
     y = 0;
   }
   else if (calculatedReflection == "hardrightLine") // detected a hard right line
   {
-    Serial.print("\n");
-    Serial.print("rechts");
+    // Serial.print("\n");
+    // Serial.print("rechts");
     right();
     y = 0;
   }
