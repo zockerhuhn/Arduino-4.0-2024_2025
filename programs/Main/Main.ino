@@ -49,8 +49,19 @@ void setup()
 {
   delay(300);
   pinMode(LED_BUILTIN, OUTPUT);      // Pin D13
-  pinMode(motorpin, INPUT_PULLDOWN); // define pinmode for switch on the side of the bot
+  pinMode(calibrationPin, INPUT_PULLDOWN); // define pinmode for switch on the side of the bot
   pinMode(kalibrierung, INPUT);      // define pinmode for calibration button
+
+  // Set the color LEDS as outputs
+  pinMode(LEDR, OUTPUT);
+  pinMode(LEDG, OUTPUT);
+  pinMode(LEDB, OUTPUT);
+
+  // Turn of any "lingering" LEDs
+  digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(LEDG, LOW);
+  digitalWrite(LEDB, LOW);
+
   Serial.begin(115200);
   // I2C Bus 1x für alle Bus-Teilnehmer initialisieren (sonst crasht das Betriebssystem)
   Wire.begin();           // Bus I2C0
@@ -109,7 +120,7 @@ void loop()
     Serial.println("opfer");
     y = 0;
   }
-  if (digitalRead(motorpin))
+  if (digitalRead(calibrationPin))
   {
     stop();
     for (int i = 0; i < 5; i++)
@@ -189,6 +200,7 @@ void loop()
   //Serial.print("\t" + calculatedReflection);
   ReadDirection();
   Serial.println("dir: " + String(direction));
+  Serial.println(calculatedReflection);
   if (calculatedReflection == "frontalLine")    // detected crosssection
   {
     kreuzung(true);

@@ -3,14 +3,14 @@
 //#include "Reflektionsauslese.h"
 
 void kreuzung(bool bothSides) {
-  if (bothSides) { // very probably a crossing where green is
+  if (!(digitalRead(calibrationPin))) {
+    if (bothSides) { // very probably a crossing where green is
 
     // drive forward slowly, check for greens
     digitalWrite(LED_BUILTIN, HIGH); // Activate Lamp to see when a Kreuzung is detected
     
     motors.flipLeftMotor(false);
     motors.flipRightMotor(true);
-    motors.setSpeeds((int)(42 * 0.5),(int)(50 * 0.5)); // half the default speed
     // ERROR this does not suffice for double green because the kreuzung is detected earlier because "green" is seen as black by reflektion
     // this could be fixed by straightening and just doing it anyway but that is firstly pretty dangerous and secondly straighten doesn't work reliably
 
@@ -24,6 +24,7 @@ void kreuzung(bool bothSides) {
     while (!(stopping)) {
       if (stopping_in > 0) stopping_in--;
       if (stopping_in == 0) stopping = true;
+      motors.setSpeeds((int)(42 * 0.5),(int)(50 * 0.5)); // half the default speed
       readColor2();
       readColor();
 
@@ -31,31 +32,42 @@ void kreuzung(bool bothSides) {
         green1 = true; 
         Serial.print("Found green 1 (right)\t");
         stopping_in = 10;
-        digitalWrite(LED_BUILTIN, LOW);
-        delay(20);
-        digitalWrite(LED_BUILTIN, HIGH);
-        delay(20);
-        digitalWrite(LED_BUILTIN, LOW);
+        digitalWrite(LEDG, LOW);
+        delay(50);
+        digitalWrite(LEDG, HIGH);
+        delay(50);
+        digitalWrite(LEDG, LOW);
       }
       if (calculateColor2() && !green2) {
         green2 = true;
         Serial.print("Found green 2 (left)\t");
         stopping_in = 10;
-        digitalWrite(LED_BUILTIN, LOW);
-        delay(20);
-        digitalWrite(LED_BUILTIN, HIGH);
-        delay(20);
-        digitalWrite(LED_BUILTIN, LOW);
+        digitalWrite(LEDB, LOW);
+        delay(50);
+        digitalWrite(LEDB, HIGH);
+        delay(50);
+        digitalWrite(LEDB, LOW);
       }
 
       reflection = calculateReflection();
 
       if ((!(reflection == "frontalLine" || reflection == "sideLine")) && stopping_in < 0) {
-        stopping_in = 10;
+        stopping_in = 8;
       }
       else {
-        // straighten();
+        // //straighten
       }
+
+      // if (stopping_in > 0) {
+      //   if (green1) digitalWrite(LEDG, LOW);
+      //   if (green2) digitalWrite(LEDB, LOW);
+      //   delay(50);
+      //   if (green1) digitalWrite(LEDG, HIGH);
+      //   if (green2) digitalWrite(LEDB, HIGH);
+      //   delay(50);
+      //   if (green1) digitalWrite(LEDG, LOW);
+      //   if (green2) digitalWrite(LEDB, LOW);
+      // }
       
       if (green1 && green2) { // just doesn'T work sometimes
         stopping = true;
@@ -63,16 +75,16 @@ void kreuzung(bool bothSides) {
 
       else if (green1 || green2) {
         // Stop to indicate that green has been detected
-        digitalWrite(LED_BUILTIN, LOW);
         stop();
         delay(250);
-        digitalWrite(LED_BUILTIN, HIGH);
       }
 
       delay(10);
     } 
 
     digitalWrite(LED_BUILTIN, LOW);
+    digitalWrite(LEDG, LOW);
+    digitalWrite(LEDB, LOW);
 
 
     // Handle the recorded greens
@@ -81,7 +93,7 @@ void kreuzung(bool bothSides) {
       Serial.print("turn\t");
       right(180);
       delay(600);
-      straighten();
+      //straighten
     }
     else if (green1) {
       Serial.print("right\t");
@@ -91,7 +103,7 @@ void kreuzung(bool bothSides) {
       delay(600);
       right(90);
       delay(1500);
-      straighten();
+      //straighten
 
     }
     else if (green2) {
@@ -100,13 +112,10 @@ void kreuzung(bool bothSides) {
       delay(600);
       left(90);
       delay(1500);
-      straighten();
+      //straighten
 
       Serial.println(calculateReflection());
-      
-    
     }
-
     else { // Did not find any green
       straight();
       delay(1800); // adjust that waiting time
@@ -126,20 +135,20 @@ void kreuzung(bool bothSides) {
         }
       }
     }
-
   }
-  else { // hit the kreuzung more from a side
-      motors.flipLeftMotor(true);
-      motors.flipRightMotor(false);
-      motors.setSpeeds(35, 37.5);
-      delay(1000);
-      stop();
-      delay(200);
-      straighten();
-      motors.flipLeftMotor(false);
-      motors.flipRightMotor(true);
-      motors.setSpeeds(35, 37.5);
-      delay(1200);
-      kreuzung(true);
+    else { // hit the kreuzung more from a side
+        motors.flipLeftMotor(true);
+        motors.flipRightMotor(false);
+        motors.setSpeeds(35, 37.5);
+        delay(1000);
+        stop();
+        delay(200);
+        //straighten()
+        motors.flipLeftMotor(false);
+        motors.flipRightMotor(true);
+        motors.setSpeeds(35, 37.5);
+        delay(1200);
+        kreuzung(true);
+    }
   }
 }

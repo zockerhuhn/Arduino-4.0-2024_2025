@@ -23,9 +23,8 @@ Adafruit_TCS34725 rgbSensor2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_60MS, 
 //MOTOREN
 // Dieses Objekt repräsentiert 2 Motor-Kanäle (1..2 Motoren pro Kanal):
 RescueBoardMotors motors = RescueBoardMotors();
-#define motorpin D12
+#define calibrationPin D12
 #define kalibrierung A7
-
 
 //ABSTANDSSENSOR
 SparkFun_VL53L5CX abstandsSensor = SparkFun_VL53L5CX();

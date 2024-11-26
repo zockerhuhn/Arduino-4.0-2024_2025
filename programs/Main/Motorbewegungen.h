@@ -5,7 +5,7 @@ void stop()
 
 void straight(int factor = 1) //drive straight
 {
-  if (digitalRead(motorpin)) {
+  if (digitalRead(calibrationPin)) {
     return;
   }
   motors.flipLeftMotor(false);
@@ -15,7 +15,7 @@ void straight(int factor = 1) //drive straight
 
 void left(int turnBy=0, boolean turnToExact=false) //turn left
 {
-  if (digitalRead(motorpin)) {
+  if (digitalRead(calibrationPin)) {
     return;
   }
   motors.flipLeftMotor(true);
@@ -40,7 +40,7 @@ void left(int turnBy=0, boolean turnToExact=false) //turn left
 
 void right(int turnBy=0, boolean turnToExact=false) //turn right
 {
-  if (digitalRead(motorpin)) {
+  if (digitalRead(calibrationPin)) {
     return;
   }
   motors.flipLeftMotor(false);
@@ -65,7 +65,7 @@ void right(int turnBy=0, boolean turnToExact=false) //turn right
 
 void turn() //turn around
 {
-  if (digitalRead(motorpin)) return;
+  if (digitalRead(calibrationPin)) return;
   motors.flipLeftMotor(false);
   motors.flipRightMotor(false);
   motors.setSpeeds(63, 75);
@@ -74,7 +74,7 @@ void turn() //turn around
 
 void straight_left() //drive straight but pull left
 {
-  if (digitalRead(motorpin)) {
+  if (digitalRead(calibrationPin)) {
     return;
   }
   motors.flipLeftMotor(false);
@@ -84,7 +84,7 @@ void straight_left() //drive straight but pull left
 
 void straight_right() //drive straight but pull right
 {
-  if (digitalRead(motorpin)) {
+  if (digitalRead(calibrationPin)) {
     return;
   }
   motors.flipLeftMotor(false);
