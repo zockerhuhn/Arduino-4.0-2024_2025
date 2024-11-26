@@ -49,8 +49,19 @@ void setup()
 {
   delay(300);
   pinMode(LED_BUILTIN, OUTPUT);      // Pin D13
-  pinMode(motorpin, INPUT_PULLDOWN); // define pinmode for switch on the side of the bot
+  pinMode(calibrationPin, INPUT_PULLDOWN); // define pinmode for switch on the side of the bot
   pinMode(kalibrierung, INPUT);      // define pinmode for calibration button
+
+  // Set the color LEDS as outputs
+  pinMode(LEDR, OUTPUT);
+  pinMode(LEDG, OUTPUT);
+  pinMode(LEDB, OUTPUT);
+
+  // Turn of any "lingering" LEDs
+  digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(LEDG, LOW);
+  digitalWrite(LEDB, LOW);
+
   Serial.begin(115200);
   // I2C Bus 1x für alle Bus-Teilnehmer initialisieren (sonst crasht das Betriebssystem)
   Wire.begin();           // Bus I2C0
@@ -109,7 +120,7 @@ void loop()
     Serial.println("opfer");
     y = 0;
   }
-  if (digitalRead(motorpin))
+  if (digitalRead(calibrationPin))
   {
     stop();
     for (int i = 0; i < 5; i++)
@@ -156,9 +167,14 @@ void loop()
     colorBrightMinThreshold = min(helligkeit, helligkeit2) - 500;
 
     Serial.println("Thresholds: " + String(blueGreenThreshold) + " " + String(redGreenThreshold) + " " + String(colorBrightMaxThreshold)+ " " + String(colorBrightMinThreshold));
-    // 5x blinken (AN/AUS):
     Serial.println(String(calculateColor()) + " " + String(calculateColor2()));
     delay(1000);
+    ReadDirection();
+    for (int i = 0; i <= 3; i++) {
+      calibrateddirection[i] = (direction + i*90) % 360;
+    }
+    Serial.println("calibrated compass with "+ String(calibrateddirection[0]) + " " + String(calibrateddirection[1]) + " " + String(calibrateddirection[2]) + " " + String(calibrateddirection[3]));
+    // 5x blinken (AN/AUS):
     for (int i = 0; i < 5; i++)
     {
       digitalWrite(LED_BUILTIN, HIGH);
@@ -173,15 +189,18 @@ void loop()
     readColor();
     readColor2();
     while ((rot-250 >= gruen || rot-250 >= blau || rot2-250 >= gruen2 || rot2-250 >= gruen2) && (helligkeit <= colorBrightMaxThreshold || helligkeit2 <= colorBrightMaxThreshold))
-    {
+    { // This should detect red and tell us when to stop, but the detection is not correct
       readColor();
       readColor2();
       stop();
-      Serial.println("red");
+      Serial.println("red"); 
     }
   }
   calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
-  Serial.print("\t" + calculatedReflection);
+  //Serial.print("\t" + calculatedReflection);
+  ReadDirection();
+  Serial.println("dir: " + String(direction));
+  Serial.println(calculatedReflection);
   if (calculatedReflection == "frontalLine")    // detected crosssection
   {
     kreuzung(true);
@@ -194,36 +213,36 @@ void loop()
   }
   else if (calculatedReflection == "normalLine") // detected normal line
   {
-    Serial.print("\n");
-    Serial.print("Linie");
+    // Serial.print("\n");
+    // Serial.print("Linie");
     straight();
     y = 0;
   }
   else if (calculatedReflection == "leftLine") // detected a slight left line
   {
-    Serial.print("\n");
-    Serial.print("links");
+    // Serial.print("\n");
+    // Serial.print("links");
     straight_left();
     y = 0;
   }
   else if (calculatedReflection == "rightLine") // detected a slight right line
   {
-    Serial.print("\n");
-    Serial.print("rechts");
+    // Serial.print("\n");
+    // Serial.print("rechts");
     straight_right();
     y = 0;
   }
   else if (calculatedReflection == "hardleftLine") // detected a hard left line
   {
-    Serial.print("\n");
-    Serial.print("links");
+    // Serial.print("\n");
+    // Serial.print("links");
     left();
     y = 0;
   }
   else if (calculatedReflection == "hardrightLine") // detected a hard right line
   {
-    Serial.print("\n");
-    Serial.print("rechts");
+    // Serial.print("\n");
+    // Serial.print("rechts");
     right();
     y = 0;
   }
