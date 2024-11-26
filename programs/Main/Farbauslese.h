@@ -19,7 +19,7 @@ void readColor2() //liest Farbsensor 2 aus und printed Ergebnis
    *  Mit Timeout 5s sehe ich keine False-Negatives mehr: */
 }
 
-boolean calculateColor() //nimmt letzten ausgelesen Wert von Farbsensor 1 und return ob grün erkannt wurde als bool
+boolean calculateColor() //nimmt letzten ausgelesen Wert von Farbsensor 1 und return ob grün erkannt wurde als bool 
 {
   {
     if ((gruen-blueGreenThreshold) >= blau && (gruen-redGreenThreshold) >= rot && helligkeit <= colorBrightMaxThreshold && helligkeit >= colorBrightMinThreshold)

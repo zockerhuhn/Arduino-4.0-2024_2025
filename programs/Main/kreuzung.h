@@ -35,8 +35,8 @@ void kreuzung(bool bothSides) {
         digitalWrite(LEDG, LOW);
         delay(50);
         digitalWrite(LEDG, HIGH);
-        delay(50);
-        digitalWrite(LEDG, LOW);
+        // delay(50);
+        // digitalWrite(LEDG, LOW);
       }
       if (calculateColor2() && !green2) {
         green2 = true;
@@ -45,8 +45,8 @@ void kreuzung(bool bothSides) {
         digitalWrite(LEDB, LOW);
         delay(50);
         digitalWrite(LEDB, HIGH);
-        delay(50);
-        digitalWrite(LEDB, LOW);
+        // delay(50);
+        // digitalWrite(LEDB, LOW);
       }
 
       reflection = calculateReflection();
@@ -80,7 +80,7 @@ void kreuzung(bool bothSides) {
       }
 
       delay(10);
-    } 
+    }
 
     digitalWrite(LED_BUILTIN, LOW);
     digitalWrite(LEDG, LOW);
