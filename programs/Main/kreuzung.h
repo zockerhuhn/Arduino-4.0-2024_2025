@@ -11,8 +11,7 @@ void kreuzung(bool bothSides) {
     
     motors.flipLeftMotor(false);
     motors.flipRightMotor(true);
-    // ERROR this does not suffice for double green because the kreuzung is detected earlier because "green" is seen as black by reflektion
-    // this could be fixed by straightening and just doing it anyway but that is firstly pretty dangerous and secondly straighten doesn't work reliably
+    
 
     bool green1 = false; // right
     bool green2 = false; // left
@@ -58,22 +57,8 @@ void kreuzung(bool bothSides) {
       if ((!(reflection == "frontalLine" || reflection == "sideLine")) && stopping_in < 0) {
         stopping_in = 8;
       }
-      else {
-        // //straighten
-      }
-
-      // if (stopping_in > 0) {
-      //   if (green1) digitalWrite(LEDG, LOW);
-      //   if (green2) digitalWrite(LEDB, LOW);
-      //   delay(50);
-      //   if (green1) digitalWrite(LEDG, HIGH);
-      //   if (green2) digitalWrite(LEDB, HIGH);
-      //   delay(50);
-      //   if (green1) digitalWrite(LEDG, LOW);
-      //   if (green2) digitalWrite(LEDB, LOW);
-      // }
       
-      if (green1 && green2) { // just doesn'T work sometimes
+      if (green1 && green2) {
         stopping = true;
       }
 
@@ -98,7 +83,6 @@ void kreuzung(bool bothSides) {
       Serial.print("turn\t");
       right(180);
       delay(600);
-      //straighten
     }
     else if (green1) {
       Serial.print("right\t");
