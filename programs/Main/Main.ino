@@ -116,8 +116,8 @@ void loop()
 {
   if (y >= 70)
   {
-    opfer();
     Serial.println("opfer");
+    opfer();
     y = 0;
   }
   if (digitalRead(calibrationPin))
@@ -168,12 +168,6 @@ void loop()
 
     Serial.println("Thresholds: " + String(blueGreenThreshold) + " " + String(redGreenThreshold) + " " + String(colorBrightMaxThreshold)+ " " + String(colorBrightMinThreshold));
     Serial.println(String(calculateColor()) + " " + String(calculateColor2()));
-    delay(1000);
-    ReadDirection();
-    for (int i = 0; i <= 3; i++) {
-      calibrateddirection[i] = (direction + i*90) % 360;
-    }
-    Serial.println("calibrated compass with "+ String(calibrateddirection[0]) + " " + String(calibrateddirection[1]) + " " + String(calibrateddirection[2]) + " " + String(calibrateddirection[3]));
     // 5x blinken (AN/AUS):
     for (int i = 0; i < 5; i++)
     {
@@ -183,23 +177,16 @@ void loop()
       delay(250);
     }
   }
-  if (x == 2)
-  {
-    x = 1;
+  readColor();
+  readColor2();
+  while ((rot-250 >= gruen || rot-250 >= blau || rot2-250 >= gruen2 || rot2-250 >= gruen2) && (helligkeit <= colorBrightMaxThreshold || helligkeit2 <= colorBrightMaxThreshold))
+  { // This should detect red and tell us when to stop, but the detection is not correct
     readColor();
     readColor2();
-    while ((rot-250 >= gruen || rot-250 >= blau || rot2-250 >= gruen2 || rot2-250 >= gruen2) && (helligkeit <= colorBrightMaxThreshold || helligkeit2 <= colorBrightMaxThreshold))
-    { // This should detect red and tell us when to stop, but the detection is not correct
-      readColor();
-      readColor2();
-      stop();
-      Serial.println("red"); 
-    }
+    stop();
+    Serial.println("red"); 
   }
   calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
-  //Serial.print("\t" + calculatedReflection);
-  ReadDirection();
-  Serial.println("dir: " + String(direction));
   Serial.println(calculatedReflection);
   if (calculatedReflection == "frontalLine")    // detected crosssection
   {
@@ -213,36 +200,26 @@ void loop()
   }
   else if (calculatedReflection == "normalLine") // detected normal line
   {
-    // Serial.print("\n");
-    // Serial.print("Linie");
     straight();
     y = 0;
   }
   else if (calculatedReflection == "leftLine") // detected a slight left line
   {
-    // Serial.print("\n");
-    // Serial.print("links");
     straight_left();
     y = 0;
   }
   else if (calculatedReflection == "rightLine") // detected a slight right line
   {
-    // Serial.print("\n");
-    // Serial.print("rechts");
     straight_right();
     y = 0;
   }
   else if (calculatedReflection == "hardleftLine") // detected a hard left line
   {
-    // Serial.print("\n");
-    // Serial.print("links");
     left();
     y = 0;
   }
   else if (calculatedReflection == "hardrightLine") // detected a hard right line
   {
-    // Serial.print("\n");
-    // Serial.print("rechts");
     right();
     y = 0;
   }
