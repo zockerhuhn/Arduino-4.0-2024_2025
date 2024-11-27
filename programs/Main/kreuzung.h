@@ -105,25 +105,24 @@ void kreuzung(bool bothSides) {
 
       // Drive forward for some time to position the geometric centre above the crossing
       straight();
-      delay(600);
+      delay(300);
       right(90);
       delay(1500);
-      //straighten
-
+      straight(); // then go straight a bit to avoid seeing a crossing again
+      delay(500);     
     }
     else if (green2) {
       Serial.print("left\t");
       straight();
-      delay(600);
+      delay(300);
       left(90);
       delay(1500);
-      //straighten
-
-      Serial.println(calculateReflection());
+      straight();
+      delay(500);
     }
     else { // Did not find any green
       straight();
-      delay(1800); // adjust that waiting time
+      delay(500); // adjust that waiting time
 
       if (calculateReflection() == "noLine") {
         // finding line
