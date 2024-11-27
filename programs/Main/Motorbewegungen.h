@@ -13,63 +13,42 @@ void straight(int factor = 1) //drive straight
   motors.setSpeeds((int)(42 * factor),(int)(50 * factor)); //prevent motor drifting
 }
 
-void left(int turnBy=0, boolean turnToExact=false) //turn left
+void left(int turnBy=0) //turn left
 {
   if (digitalRead(calibrationPin)) {
     return;
   }
+  ReadDirection();
+  int initialDirection = direction;
   motors.flipLeftMotor(true);
   motors.flipRightMotor(true);
   motors.setSpeeds(70, 75);
-  if (!turnToExact && turnBy!=0) {
-    ReadDirection();
-    int initialDirection = direction;
+  if (turnBy!=0) {
     while ((((initialDirection - turnBy) + 360) % 360) != direction) {
       delay(10);
       ReadDirection();
     }
     stop();
-  } else if (turnToExact) {
-    while (direction!=turnBy) {
-      ReadDirection();
-      Serial.println(direction);
-    }
-    stop();
   }
 }
 
-void right(int turnBy=0, boolean turnToExact=false) //turn right
+void right(int turnBy=0) //turn right
 {
   if (digitalRead(calibrationPin)) {
     return;
   }
+  ReadDirection();
+  int initialDirection = direction;
   motors.flipLeftMotor(false);
   motors.flipRightMotor(false);
   motors.setSpeeds(70, 75);
-  if (!turnToExact && turnBy != 0) {
-    ReadDirection();
-    int initialDirection = direction;
+  if (!turnBy != 0) {
     while (((initialDirection + turnBy) % 360) != direction) {
       delay(10);
       ReadDirection();
     }
     stop();
-  } else if (turnToExact) {
-    while (direction!=turnBy) {
-      ReadDirection();
-      Serial.println(direction);
-    }
-    stop();
   }
-}
-
-void turn() //turn around
-{
-  if (digitalRead(calibrationPin)) return;
-  motors.flipLeftMotor(false);
-  motors.flipRightMotor(false);
-  motors.setSpeeds(63, 75);
-  delay(4000);
 }
 
 void straight_left() //drive straight but pull left
