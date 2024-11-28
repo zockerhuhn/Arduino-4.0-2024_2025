@@ -1,4 +1,3 @@
 void opfer() {
     ReadDirection();
-    straighten();
 }

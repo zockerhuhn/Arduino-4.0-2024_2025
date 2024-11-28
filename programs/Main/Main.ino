@@ -167,6 +167,7 @@ void loop()
     colorBrightMinThreshold = min(helligkeit, helligkeit2) - 500;
 
     Serial.println("Thresholds: " + String(blueGreenThreshold) + " " + String(redGreenThreshold) + " " + String(colorBrightMaxThreshold)+ " " + String(colorBrightMinThreshold));
+    // Serial.println("red vals: " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + "\t " + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2));
     Serial.println(String(calculateColor()) + " " + String(calculateColor2()));
     // 5x blinken (AN/AUS):
     for (int i = 0; i < 5; i++)
@@ -179,7 +180,12 @@ void loop()
   }
   readColor();
   readColor2();
-  while ((rot-250 >= gruen || rot-250 >= blau || rot2-250 >= gruen2 || rot2-250 >= gruen2) && (helligkeit <= colorBrightMaxThreshold || helligkeit2 <= colorBrightMaxThreshold))
+  // red vals: min 1000 red, 250 blue, 250 green, 1500 brightness FOR 2: min 900 red2, 220 blue, 220 green, 800 brightness
+
+  // idea to make: sum of green and blue is smaller than half of red
+  // and maybe limit red brightness a bit?
+
+  while ((rot-600 >= gruen || rot-600 >= blau || rot2-600 >= gruen2 || rot2-600 >= gruen2) && (helligkeit <= colorBrightMaxThreshold + 500 || helligkeit2 <= colorBrightMaxThreshold + 500))
   { // This should detect red and tell us when to stop, but the detection is not correct
     readColor();
     readColor2();
