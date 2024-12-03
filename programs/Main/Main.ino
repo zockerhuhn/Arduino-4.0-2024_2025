@@ -184,14 +184,33 @@ void loop()
 
   // idea to make: sum of green and blue is smaller than half of red
   // and maybe limit red brightness a bit?
-
-  while ((rot-600 >= gruen || rot-600 >= blau || rot2-600 >= gruen2 || rot2-600 >= gruen2) && (helligkeit <= colorBrightMaxThreshold + 500 || helligkeit2 <= colorBrightMaxThreshold + 500))
+  //Serial.println((2 * (blau + gruen) <= rot + 250 && (2 * (blau2 + gruen2) <= rot2 + 250)));
+  while ((2 * (blau + gruen) <= rot + 300 && (2 * (blau2 + gruen2) <= rot2 + 300)) && (helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800))
   { // This should detect red and tell us when to stop, but the detection is not correct
-    readColor();
-    readColor2();
+    digitalWrite(LEDR, HIGH);
     stop();
     Serial.println("red"); 
+    delay(1000);
+    readColor();
+    readColor2();
+    Serial.print(String(2 * (blau + gruen)) + " " + String(rot + 300) + "\t" + String(2 * (blau2 + gruen2)) + " " + String(rot2 + 300) + "\t" + String(helligkeit) + " " + String(helligkeit2) + " " + String(colorBrightMaxThreshold + 800) + "\n");
+    motors.flipLeftMotor(true);
+    motors.flipRightMotor(false);
+    motors.setSpeeds(35, 37.5);
+    delay(200);
+    stop();
+    delay(200);
+    motors.flipLeftMotor(false);
+    motors.flipRightMotor(true);
+    red_counter++;
+    if (red_counter > 3) {
+      while (1) {
+        // stop
+      }
+    }
   }
+
+  digitalWrite(LEDR, LOW);
   calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
   Serial.println(calculatedReflection);
   if (calculatedReflection == "frontalLine")    // detected crosssection
@@ -221,12 +240,12 @@ void loop()
   }
   else if (calculatedReflection == "hardleftLine") // detected a hard left line
   {
-    left();
+    left(25);
     y = 0;
   }
   else if (calculatedReflection == "hardrightLine") // detected a hard right line
   {
-    right();
+    right(25);
     y = 0;
   }
   else if (calculatedReflection == "noLine") // no line detected
@@ -236,6 +255,7 @@ void loop()
     straight();
     y++;
   }
+
   delay(10); // don't max out processor
   x++;
 }

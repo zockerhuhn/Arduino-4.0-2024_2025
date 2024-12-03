@@ -18,6 +18,8 @@ uint16_t rot2, gruen2, blau2, helligkeit2;
  *  dass die Fehlerdetektion immer ausgelöst hat (siehe unten "helligkeitStatischStoppuhr.hasPassed"). */
 Adafruit_TCS34725 rgbSensor = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_60MS, TCS34725_GAIN_4X);
 Adafruit_TCS34725 rgbSensor2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_60MS, TCS34725_GAIN_4X);
+// Counter für wie oft rot hintereinander gesehen wurde
+int red_counter = 0;
 
 
 //MOTOREN
@@ -43,7 +45,7 @@ Einstellungen einstellungen = VIER_MAL_VIER;
 VL53L5CX_ResultsData messDaten;
 
 
-//Kompass Sensor
+//KOMPASSSENSOR
 #define CMPS12 0x60
 uint16_t direction;
 uint16_t currentdirection;

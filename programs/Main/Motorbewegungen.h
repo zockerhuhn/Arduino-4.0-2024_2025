@@ -3,7 +3,7 @@ void stop()
   motors.setSpeeds(0, 0);
 }
 
-void straight(int factor = 1) //drive straight
+void straight(float factor = 1) //drive straight
 {
   if (digitalRead(calibrationPin)) {
     return;
@@ -42,7 +42,7 @@ void right(int turnBy=0) //turn right
   motors.flipLeftMotor(false);
   motors.flipRightMotor(false);
   motors.setSpeeds(70, 75);
-  if (!turnBy != 0) {
+  if (turnBy != 0) {
     while (((initialDirection + turnBy) % 360) != direction) {
       delay(10);
       ReadDirection();

@@ -131,7 +131,6 @@ void kreuzung(bool bothSides) {
         delay(1000);
         stop();
         delay(200);
-        //straighten()
         motors.flipLeftMotor(false);
         motors.flipRightMotor(true);
         motors.setSpeeds(35, 37.5);
