@@ -58,7 +58,6 @@ void setup()
   Wire1.begin();          // Bus I2C1
 
   // ABSTANDSSENSOR-INITIALISIEREN
-  if(debT) {Chrono keineNeuenDatenStoppuhr = Chrono(Chrono::MILLIS, false);}; // Uhr noch nicht gestartet 
   Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
   // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
   if (!abstandsSensor.begin(NEUE_ABSTANDSADDRESSE, Wire)) {

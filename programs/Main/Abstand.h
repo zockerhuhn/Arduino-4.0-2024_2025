@@ -1,7 +1,5 @@
 #pragma once
 
-// !TODO: Setup und Loop löschen und das ganze in eine wirkliche library umwandeln
-
 void readDistances() {
     if (abstandsSensor.isDataReady()) {
         // diese Zeile speicher bereits die Daten ab:
@@ -15,16 +13,16 @@ void readDistances() {
     /* können wir bei Fehlern nutzen, sonst isses unnötig */
     // Fehler:
     if(debT){
-        if (keineNeuenDatenStoppuhr.hasPassed(1000)) {
-            Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten!");
+        if (keineNeuenDatenStoppuhr.hasPassed(1000)) { // eingerückt, weil sonst
+            Serial.println("Abstand: ToF64 Verdrahtung prüfen! Roboter aus- und einschalten!");
         }
     } 
 }
 
 /** Kopiert aus dem Beispiel der Bibliothek: */
 void abstandsWerteLoggen() {
-    //The ST library returns the data transposed from zone mapping shown in datasheet
-    //Pretty-print data with increasing y, decreasing x to reflect reality
+    //The ST library returns the data transposed from zone mapping shown in datasheet -> Datasheet googeln für Sparkfun VL53L5CX, siehe Seite 18 / 38
+    //Pretty-print data with increasing y, decreasing x to reflect reality (weil unten links 0 ist und die zahlen nach oben und nach rechts wachsen )
     for (int y = 0;
          y <= einstellungen.bildSeitenlaenge * (einstellungen.bildSeitenlaenge - 1);
          y += einstellungen.bildSeitenlaenge) {
