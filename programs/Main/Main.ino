@@ -197,9 +197,9 @@ void loop()
     motors.flipLeftMotor(true);
     motors.flipRightMotor(false);
     motors.setSpeeds(35, 37.5);
-    delay(200);
+    delay(400); // TODO change the time to work good
     stop();
-    delay(200);
+    delay(400);
     motors.flipLeftMotor(false);
     motors.flipRightMotor(true);
     red_counter++;
@@ -215,12 +215,17 @@ void loop()
   Serial.println(calculatedReflection);
   if (calculatedReflection == "frontalLine")    // detected crosssection
   {
-    kreuzung(true);
+    kreuzung(true, 0);
     y = 0;
   }
-  else if (calculatedReflection == "sideLine")
+  else if (calculatedReflection == "sideLeftLine")
   {
-    kreuzung(false);
+    kreuzung(false, -1);
+    y = 0;
+  }
+  else if (calculatedReflection == "sideRightLine")
+  {
+    kreuzung(false, 1);
     y = 0;
   }
   else if (calculatedReflection == "normalLine") // detected normal line

@@ -16,9 +16,12 @@ String calculateReflection() //read reflection and return processed result
   {
     return "frontalLine";
   }
-  else if ((helligkeiten[0] >= reflectionBlackThreshold && helligkeiten[1] >= reflectionBlackThreshold && helligkeiten[2] >= reflectionBlackThreshold) || (helligkeiten[3] >= reflectionBlackThreshold && helligkeiten[4] >= reflectionBlackThreshold && helligkeiten[5] >= reflectionBlackThreshold))
+  else if ((helligkeiten[0] >= reflectionBlackThreshold && helligkeiten[1] >= reflectionBlackThreshold && helligkeiten[2] >= reflectionBlackThreshold))
   {
-    return "sideLine";
+    return "sideRightLine";
+  }
+  else if ((helligkeiten[3] >= reflectionBlackThreshold && helligkeiten[4] >= reflectionBlackThreshold && helligkeiten[5] >= reflectionBlackThreshold)) {
+    return "sideLeftLine";
   }
   else if (helligkeiten[5] >= reflectionBlackThreshold)
   {

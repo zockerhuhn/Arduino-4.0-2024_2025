@@ -2,7 +2,7 @@
 //#include "Farbauslese.h"
 //#include "Reflektionsauslese.h"
 
-void kreuzung(bool bothSides) {
+void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) {
   if (!(digitalRead(calibrationPin))) {
     if (bothSides) { // very probably a crossing where green is
 
@@ -23,7 +23,7 @@ void kreuzung(bool bothSides) {
     while (!(stopping)) {
       if (stopping_in > 0) stopping_in--;
       if (stopping_in == 0) stopping = true;
-      motors.setSpeeds((int)(42 * 0.5),(int)(50 * 0.5)); // half the default speed
+      straight(0.5);
       readColor2();
       readColor();
 
@@ -109,18 +109,35 @@ void kreuzung(bool bothSides) {
       delay(500); // adjust that waiting time
 
       if (calculateReflection() == "noLine") {
-        // finding line
-        left(90);
-        
-        // going right "forever"    
-        motors.flipLeftMotor(false);
-        motors.flipRightMotor(false);
-        motors.setSpeeds(35, 37.5); // probably accounting for motor deficiencies
-        Serial.print("looping\t");
-        while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
-        {
-          Serial.print("\nsuche...");
+        if (sides == -1 || sides == 0) {
+          // finding line
+          left(90);
+          
+          // going right "forever"    
+          motors.flipLeftMotor(false);
+          motors.flipRightMotor(false);
+          motors.setSpeeds(35, 37.5); // probably accounting for motor deficiencies
+          Serial.print("looping\t");
+          while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
+          {
+            Serial.print("\nsuche...");
+          }
         }
+        else if (sides == 1) {
+          // finding line
+          right(90);
+          
+          // going right "forever"    
+          motors.flipLeftMotor(true);
+          motors.flipRightMotor(true);
+          motors.setSpeeds(35, 37.5); // probably accounting for motor deficiencies
+          Serial.print("looping\t");
+          while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
+          {
+            Serial.print("\nsuche...");
+          }
+        }
+        
       }
     }
   }
@@ -135,7 +152,7 @@ void kreuzung(bool bothSides) {
         motors.flipRightMotor(true);
         motors.setSpeeds(35, 37.5);
         delay(1200);
-        kreuzung(true);
+        kreuzung(true, sides);
     }
   }
 }
