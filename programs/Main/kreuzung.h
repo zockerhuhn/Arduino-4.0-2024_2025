@@ -91,7 +91,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       straight();
       delay(250);
       right(90);
-      delay(1500);
+      delay(300);
       straight(); // then go straight a bit to avoid seeing a crossing again
       delay(500);     
     }
@@ -100,7 +100,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       straight();
       delay(250);
       left(90);
-      delay(1500);
+      delay(300);
       straight();
       delay(500);
     }
