@@ -51,29 +51,6 @@ void right(int turnBy=0) //turn right
   }
 }
 
-void left_to_line() {
-  // going left until it finds a line  
-  motors.flipLeftMotor(false);
-  motors.flipRightMotor(false);
-  motors.setSpeeds(35, 37.5); // probably accounting for motor deficiencies
-  while (calculateReflection() != "normalLine");
-  // reset motor flips
-  motors.flipLeftMotor(false);
-  motors.flipRightMotor(true);
-
-}
-
-void right_to_line() {
-  // going right until it finds a line  
-  motors.flipLeftMotor(true);
-  motors.flipRightMotor(true);
-  motors.setSpeeds(35, 37.5);
-  while (calculateReflection() != "normalLine");
-  // reset motor flips
-  motors.flipLeftMotor(false);
-  motors.flipRightMotor(true);
-}
-
 void straight_left() //drive straight but pull left
 {
   if (digitalRead(calibrationPin)) {
@@ -92,4 +69,44 @@ void straight_right() //drive straight but pull right
   motors.flipLeftMotor(false);
   motors.flipRightMotor(true);
   motors.setSpeeds(80, 30);
+}
+
+
+void left_to_line() {
+  // going left until it finds a line  
+  motors.flipLeftMotor(true);
+  motors.flipRightMotor(true);
+  motors.setSpeeds(35, 37.5); // probably accounting for motor deficiencies
+  while (calculateReflection() != "normalLine") {
+    if (calculateReflection() == "leftLine") {
+      straight_left();
+      break;
+    } else if (calculateReflection() == "rightLine") {
+      straight_right();
+      break;
+    }
+  }
+  // reset motor flips
+  motors.flipLeftMotor(false);
+  motors.flipRightMotor(true);
+
+}
+
+void right_to_line() {
+  // going right until it finds a line  
+  motors.flipLeftMotor(false);
+  motors.flipRightMotor(false);
+  motors.setSpeeds(35, 37.5);
+  while (calculateReflection() != "normalLine") {
+    if (calculateReflection() == "leftLine") {
+      straight_left();
+      break;
+    } else if (calculateReflection() == "rightLine") {
+      straight_right();
+      break;
+    }
+  }
+  // reset motor flips
+  motors.flipLeftMotor(false);
+  motors.flipRightMotor(true);
 }
