@@ -180,11 +180,6 @@ void loop()
   }
   readColor();
   readColor2();
-  // red vals: min 1000 red, 250 blue, 250 green, 1500 brightness FOR 2: min 900 red2, 220 blue, 220 green, 800 brightness
-
-  // idea to make: sum of green and blue is smaller than half of red
-  // and maybe limit red brightness a bit?
-  //Serial.println((2 * (blau + gruen) <= rot + 250 && (2 * (blau2 + gruen2) <= rot2 + 250)));
   while ((2 * (blau + gruen) <= rot + 300 && (2 * (blau2 + gruen2) <= rot2 + 300)) && (helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800))
   { // This should detect red and tell us when to stop, but the detection is not correct
     digitalWrite(LEDR, HIGH);
@@ -197,7 +192,7 @@ void loop()
     motors.flipLeftMotor(true);
     motors.flipRightMotor(false);
     motors.setSpeeds(35, 37.5);
-    delay(400); // TODO change the time to work good
+    delay(400); // values of delay can be adjusted, but this works pretty good
     stop();
     delay(400);
     motors.flipLeftMotor(false);
