@@ -180,8 +180,7 @@ void loop()
   }
   readColor();
   readColor2();
-  while ((2 * (blau + gruen) <= rot + 300 && (2 * (blau2 + gruen2) <= rot2 + 300)) && (helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800))
-  { // This should detect red and tell us when to stop, but the detection is not correct
+  while ((2 * (blau + gruen) <= rot + 300 && (2 * (blau2 + gruen2) <= rot2 + 300)) && (helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800)) {
     digitalWrite(LEDR, HIGH);
     stop();
     Serial.println("red"); 
