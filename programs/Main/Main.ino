@@ -240,12 +240,12 @@ void loop()
   }
   else if (calculatedReflection == "hardleftLine") // detected a hard left line
   {
-    left(25);
+    left_to_line();
     y = 0;
   }
   else if (calculatedReflection == "hardrightLine") // detected a hard right line
   {
-    right(25);
+    right_to_line();
     y = 0;
   }
   else if (calculatedReflection == "noLine") // no line detected
