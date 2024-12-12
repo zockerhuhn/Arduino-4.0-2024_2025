@@ -16,9 +16,12 @@ String calculateReflection() //read reflection and return processed result
   {
     return "frontalLine";
   }
-  else if ((helligkeiten[0] >= reflectionBlackThreshold && helligkeiten[1] >= reflectionBlackThreshold && helligkeiten[2] >= reflectionBlackThreshold) || (helligkeiten[3] >= reflectionBlackThreshold && helligkeiten[4] >= reflectionBlackThreshold && helligkeiten[5] >= reflectionBlackThreshold))
+  else if ((helligkeiten[0] >= reflectionBlackThreshold && helligkeiten[1] >= reflectionBlackThreshold && helligkeiten[2] >= reflectionBlackThreshold))
   {
-    return "sideLine";
+    return "sideRightLine";
+  }
+  else if ((helligkeiten[3] >= reflectionBlackThreshold && helligkeiten[4] >= reflectionBlackThreshold && helligkeiten[5] >= reflectionBlackThreshold)) {
+    return "sideLeftLine";
   }
   else if (helligkeiten[5] >= reflectionBlackThreshold)
   {
@@ -49,7 +52,11 @@ String calculateReflection() //read reflection and return processed result
 void ReadDirection() {
   Wire.beginTransmission(CMPS12);
   Wire.write(0X02);
-  Wire.endTransmission(false);
-  Wire.requestFrom(CMPS12, 2);
-  direction = (int16_t)(Wire.read()<<8|Wire.read())/10.00; //Two bytes Yaw in range of (0 to 359 degrees)
+  
+  if (Wire.endTransmission(false)) {
+    direction = -1; // set an invalid value when the transmission had an error
+  } else {
+    Wire.requestFrom(CMPS12, 2);
+    direction = (int16_t)(Wire.read()<<8|Wire.read())/10.00; //Two bytes Yaw in range of (0 to 359 degrees)
+  }
 }
