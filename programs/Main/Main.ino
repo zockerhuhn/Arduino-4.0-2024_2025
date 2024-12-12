@@ -47,7 +47,7 @@
 
 void setup()
 {
-  delay(300);
+  delay(5000);                       // Wichtig für den Abstandssensor
   pinMode(LED_BUILTIN, OUTPUT);      // Pin D13
   pinMode(calibrationPin, INPUT_PULLDOWN); // define pinmode for switch on the side of the bot
   pinMode(kalibrierung, INPUT);      // define pinmode for calibration button
@@ -67,21 +67,24 @@ void setup()
   Wire.begin();           // Bus I2C0
   Wire.setClock(1000000); // 1MHz Kommunikationsgeschwindigkeit
   Wire1.begin();          // Bus I2C1
-  //  hier den zu nutzenden I2C Bus einstellen:
-  // Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
-  // // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
-  // if (!abstandsSensor.begin(NEUE_ADDRESSE, Wire)) {
-  //     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
-  //     Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
-  // }
-  // if (!abstandsSensor.setResolution(einstellungen.aufloesung) ||
-  //     !abstandsSensor.setRangingFrequency(einstellungen.maxMessfrequenz)) {  // siehe oben
-  //         delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
-  //         Serial.println("ToF64 Auflösung oder Messfrequenz konnte nicht geändert werden! Programm Ende.");
-  //         while (1);
-  // }
-  // abstandsSensor.startRanging();
-  // Serial.println("Initialisierung abgeschlossen");
+
+  // ABSTANDSSENSOR-INITIALISIEREN
+  Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
+  // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
+  if (!abstandsSensor.begin(NEUE_ABSTANDSADDRESSE, Wire)) {
+      delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+      Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
+      while (1);
+  }
+  if (!abstandsSensor.setResolution(einstellungen.aufloesung) ||
+      !abstandsSensor.setRangingFrequency(einstellungen.maxMessfrequenz)) {  // siehe oben
+          delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+          Serial.println("ToF64 Auflösung oder Messfrequenz konnte nicht geändert werden! Programm Ende.");
+          while (1);
+  }
+  abstandsSensor.startRanging();
+  if(debT){keineNeuenDatenStoppuhr.start();}
+  Serial.println("Initialisierung Abstandssensor abgeschlossen");
   if (!rgbSensor.begin(TCS34725_ADDRESS, &Wire))
   {
     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
@@ -97,6 +100,7 @@ void setup()
   sensorLeiste.setTypeRC();
   sensorLeiste.setSensorPins(SENSOR_LEISTE_PINS, SENSOR_LEISTE_ANZAHL_SENSOREN);
   Serial.println("Initialisierung Reflektionssensor abgeschlossen");
+
   motors.initialize();
   // falls man global die Motor-Drehrichtung ändern möchte:
   motors.flipLeftMotor(false); // nur notwendig, wenn man true reinschreibt
@@ -108,6 +112,8 @@ void setup()
 #include "Farbauslese.h"        //commands for reading and processing colorsensors
 #include "kreuzung.h"      //command for handling crosssections
 #include "Opfer.h"              //Du Opfer
+
+#include "Abstand.h"            // Abstand, noch nicht einsortiert zwischen die restlichen includes
 
 int x = 0;
 int y = 0;
