@@ -197,7 +197,7 @@ void loop()
     if (red_counter > 3) {
       stop();
       delay(8000); // more than the 5 required seconds
-      straigth(-1);
+      straight(-1);
       delay(800);
       break;
     }
