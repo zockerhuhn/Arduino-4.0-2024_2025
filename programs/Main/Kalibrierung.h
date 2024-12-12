@@ -3,6 +3,7 @@ int colorBrightMaxThreshold = 1456; //Maximum brightness threshold for colorsens
 int colorBrightMinThreshold = 330; //Minimum brightness threshold for colorsensors to detect green
 int blueGreenThreshold = 76; // Minimum distance from blue for green values
 int redGreenThreshold = 153; // Minimum distance from red for green values
+int WallScanThreshold = 30;
 
 int reflectionBlackThreshold = 1700;
 

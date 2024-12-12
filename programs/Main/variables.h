@@ -43,9 +43,9 @@ const Einstellungen VIER_MAL_VIER = { VL53L5CX_RESOLUTION_4X4, 4, 60 }; // 4x4: 
 Einstellungen einstellungen = VIER_MAL_VIER;
 // hier speichern wir die 6 TOFsensorwerte ab:
 VL53L5CX_ResultsData messDaten;
+int currentDistance;
 
 
 //KOMPASSSENSOR
 #define CMPS12 0x60
 uint16_t direction;
-uint16_t currentdirection;
