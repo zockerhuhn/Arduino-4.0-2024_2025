@@ -188,19 +188,18 @@ void loop()
     readColor();
     readColor2();
     Serial.print(String(2 * (blau + gruen)) + " " + String(rot + 300) + "\t" + String(2 * (blau2 + gruen2)) + " " + String(rot2 + 300) + "\t" + String(helligkeit) + " " + String(helligkeit2) + " " + String(colorBrightMaxThreshold + 800) + "\n");
-    motors.flipLeftMotor(true);
-    motors.flipRightMotor(false);
-    motors.setSpeeds(35, 37.5);
+    straight(-1); // backwards
     delay(400); // values of delay can be adjusted, but this works pretty good
     stop();
     delay(400);
-    motors.flipLeftMotor(false);
-    motors.flipRightMotor(true);
+    straight();
     red_counter++;
     if (red_counter > 3) {
-      while (1) {
-        // stop
-      }
+      stop();
+      delay(8000); // more than the 5 required seconds
+      straigth(-1);
+      delay(800);
+      break;
     }
   }
 

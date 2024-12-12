@@ -74,39 +74,28 @@ void straight_right() //drive straight but pull right
 
 void left_to_line() {
   // going left until it finds a line  
-  motors.flipLeftMotor(true);
-  motors.flipRightMotor(true);
-  motors.setSpeeds(35, 37.5); // probably accounting for motor deficiencies
-  while (calculateReflection() != "normalLine") {
-    if (calculateReflection() == "leftLine") {
+  left();
+  while ((calculatedReflection = calculateReflection()) != "normalLine") {
+    if (calculatedReflection == "leftLine") {
       straight_left();
       break;
-    } else if (calculateReflection() == "rightLine") {
+    } else if (calculatedReflection == "rightLine") {
       straight_right();
       break;
     }
   }
-  // reset motor flips
-  motors.flipLeftMotor(false);
-  motors.flipRightMotor(true);
-
 }
 
 void right_to_line() {
   // going right until it finds a line  
-  motors.flipLeftMotor(false);
-  motors.flipRightMotor(false);
-  motors.setSpeeds(35, 37.5);
-  while (calculateReflection() != "normalLine") {
-    if (calculateReflection() == "leftLine") {
+  right();
+  while ((calculatedReflection = calculateReflection()) != "normalLine") {
+    if (calculatedReflection == "leftLine") {
       straight_left();
       break;
-    } else if (calculateReflection() == "rightLine") {
+    } else if (calculatedReflection == "rightLine") {
       straight_right();
       break;
     }
   }
-  // reset motor flips
-  motors.flipLeftMotor(false);
-  motors.flipRightMotor(true);
 }
