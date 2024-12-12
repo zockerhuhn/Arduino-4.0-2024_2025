@@ -71,7 +71,7 @@ void setup()
   // ABSTANDSSENSOR-INITIALISIEREN
   Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
   // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
-  if (!abstandsSensor.begin(NEUE_ABSTANDSADDRESSE, Wire)) {
+  if (!abstandsSensor.begin(NEUE_ABSTANDSADDRESSE, Wire1)) {
       delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
       Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
       while (1);
@@ -183,6 +183,9 @@ void loop()
       digitalWrite(LED_BUILTIN, LOW);
       delay(250);
     }
+    // ABSTANDSWERTE LOGGEN
+    modus = ABSTANDS_WERTE_LOGGEN;
+    abstandsWerteLoggen();
   }
   readColor();
   readColor2();
@@ -203,7 +206,7 @@ void loop()
     if (red_counter > 3) {
       stop();
       delay(8000); // more than the 5 required seconds
-      straigth(-1);
+      straight(-1);
       delay(800);
       break;
     }

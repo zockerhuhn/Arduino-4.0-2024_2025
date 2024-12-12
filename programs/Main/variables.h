@@ -45,7 +45,7 @@ typedef struct Einstellungen { // Structs sind schön weil die so wie Listen mit
 const Einstellungen ACHT_MAL_ACHT = { VL53L5CX_RESOLUTION_8X8, 8, 15 }; // 8x8: max 15Hz
 // Vermutlich stabiler
 const Einstellungen VIER_MAL_VIER = { VL53L5CX_RESOLUTION_4X4, 4, 60 }; // 4x4: max 60Hz
-Einstellungen einstellungen = VIER_MAL_VIER;
+Einstellungen einstellungen = ACHT_MAL_ACHT;
 enum Modus {
     /* Werte im Serial Monitor anzeigen. */
     ABSTANDS_WERTE_LOGGEN,
@@ -54,7 +54,7 @@ enum Modus {
 };
 const int SCHWELLENWERT = 100;
 /** hier einstellen, was das Programm mit den Sensorwerten anfangen soll: */
-Modus modus = SCHWELLENWERT_VISUALISIERUNG;
+enum Modus modus = SCHWELLENWERT_VISUALISIERUNG;
 // hier speichern wir die 6 TOFsensorwerte ab:
 VL53L5CX_ResultsData messDaten;
 
