@@ -86,12 +86,18 @@ void setup()
   {
     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
     Serial.println("RGB 1 (rechts) Farbsensor Verdrahtung prüfen!");
+    digitalWrite(LEDR, HIGH);
+    digitalWrite(LEDG, HIGH);
+    while (1);
   }
   Serial.println("Initialisierung Farbe 1 abgeschlossen");
   if (!rgbSensor2.begin(TCS34725_ADDRESS, &Wire1)) // test colorsensor 2
   {
     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
     Serial.println("RGB 2 (links) Farbsensor Verdrahtung prüfen!");
+    digitalWrite(LEDR, HIGH);
+    digitalWrite(LEDB, HIGH);
+    while (1);
   }
   Serial.println("Initialisierung Farbe 2 abgeschlossen");
   sensorLeiste.setTypeRC();
