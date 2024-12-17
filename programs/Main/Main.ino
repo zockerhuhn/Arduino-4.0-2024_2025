@@ -67,37 +67,44 @@ void setup()
   Wire.begin();           // Bus I2C0
   Wire.setClock(1000000); // 1MHz Kommunikationsgeschwindigkeit
   Wire1.begin();          // Bus I2C1
-  //  hier den zu nutzenden I2C Bus einstellen:
-  // Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
-  // // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
-  // if (!abstandsSensor.begin(NEUE_ADDRESSE, Wire)) {
-  //     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
-  //     Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
-  // }
-  // if (!abstandsSensor.setResolution(einstellungen.aufloesung) ||
-  //     !abstandsSensor.setRangingFrequency(einstellungen.maxMessfrequenz)) {  // siehe oben
-  //         delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
-  //         Serial.println("ToF64 Auflösung oder Messfrequenz konnte nicht geändert werden! Programm Ende.");
-  //         while (1);
-  // }
-  // abstandsSensor.startRanging();
-  // Serial.println("Initialisierung abgeschlossen");
+  
+  // ABSTANDSSENSOR-INITIALISIEREN
+  Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
+  // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
+  if (!abstandsSensor.begin(NEUE_ABSTANDSADDRESSE, Wire)) {
+      delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+      Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
+      while (1);
+  }
+  if (!abstandsSensor.setResolution(einstellungen.aufloesung) ||
+      !abstandsSensor.setRangingFrequency(einstellungen.maxMessfrequenz)) {  // siehe oben
+          delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+          Serial.println("ToF64 Auflösung oder Messfrequenz konnte nicht geändert werden! Programm Ende.");
+          while (1);
+  }
+  abstandsSensor.startRanging();
+
+  Serial.println("Initialisierung abgeschlossen");
   if (!rgbSensor.begin(TCS34725_ADDRESS, &Wire))
   {
-    delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
-    Serial.println("RGB 1 (rechts) Farbsensor Verdrahtung prüfen!");
     digitalWrite(LEDR, HIGH);
     digitalWrite(LEDG, HIGH);
-    while (1);
+    delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+    Serial.println("RGB 1 (rechts) Farbsensor Verdrahtung prüfen!");
+    while (!rgbSensor.begin(TCS34725_ADDRESS, &Wire));
+    digitalWrite(LEDR, LOW);
+    digitalWrite(LEDG, LOW);
   }
   Serial.println("Initialisierung Farbe 1 abgeschlossen");
   if (!rgbSensor2.begin(TCS34725_ADDRESS, &Wire1)) // test colorsensor 2
   {
-    delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
-    Serial.println("RGB 2 (links) Farbsensor Verdrahtung prüfen!");
     digitalWrite(LEDR, HIGH);
     digitalWrite(LEDB, HIGH);
-    while (1);
+    delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+    Serial.println("RGB 2 (links) Farbsensor Verdrahtung prüfen!");    
+    while (!rgbSensor2.begin(TCS34725_ADDRESS, &Wire1));
+    digitalWrite(LEDR, LOW);
+    digitalWrite(LEDB, LOW);
   }
   Serial.println("Initialisierung Farbe 2 abgeschlossen");
   sensorLeiste.setTypeRC();
