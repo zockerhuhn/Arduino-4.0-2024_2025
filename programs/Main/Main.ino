@@ -68,6 +68,12 @@ void setup()
   Wire.setClock(1000000); // 1MHz Kommunikationsgeschwindigkeit
   Wire1.begin();          // Bus I2C1
   
+  // REIHENFOLGE:
+  /*
+   - Abstandssensor
+   - Farbsensoren
+  */
+
   // ABSTANDSSENSOR-INITIALISIEREN
   Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
   // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
@@ -173,12 +179,18 @@ void loop()
     average_c2 /= total_cycles;
     
     //somehow calculate how much green deviates from red and blue and thereby calculate the difference threshold
-    blueGreenThreshold = min(average_g - average_b, average_g2 - average_b2) - 50;
-    redGreenThreshold = min(average_g - average_r, average_g2 - average_r2) - 50;
+    // idea: calculate the ratio instead!
+    blueGreenThreshold = min(average_g - average_b, average_g2 - average_b2) - 200;
+    redGreenThreshold = min(average_g - average_r, average_g2 - average_r2) - 200;
 
-    colorBrightMaxThreshold = max(helligkeit, helligkeit2) + 500;
-    colorBrightMinThreshold = min(helligkeit, helligkeit2) - 500;
+    colorBrightMaxThreshold = max(helligkeit, helligkeit2) + 700;
+    colorBrightMinThreshold = min(helligkeit, helligkeit2) - 700;
 
+    // temp: Values: 298 635 418 332 688 465 1359 1483
+    // temp2: (links) 631 1099 728 2467
+    // (rechts) 576 1001 640 2237
+
+    Serial.println("Values: " + String(average_r) + " " + String(average_g) + " " + String(average_b)+ " " + String(average_r2) + " " + String(average_g2) + " " + String(average_b2) + " " + String(helligkeit)+ " " + String(helligkeit2));
     Serial.println("Thresholds: " + String(blueGreenThreshold) + " " + String(redGreenThreshold) + " " + String(colorBrightMaxThreshold)+ " " + String(colorBrightMinThreshold));
     // Serial.println("red vals: " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + "\t " + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2));
     Serial.println(String(calculateColor()) + " " + String(calculateColor2()));

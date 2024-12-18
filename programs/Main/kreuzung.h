@@ -142,16 +142,12 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
     }
   }
     else { // hit the kreuzung more from a side
-        motors.flipLeftMotor(true);
-        motors.flipRightMotor(false);
-        motors.setSpeeds(35, 37.5);
+        straight(-1);
         delay(1000);
         stop();
         delay(200);
-        motors.flipLeftMotor(false);
-        motors.flipRightMotor(true);
-        motors.setSpeeds(35, 37.5);
-        delay(1200);
+        straight(1);
+        delay(800);
         kreuzung(true, sides);
     }
   }
