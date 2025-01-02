@@ -18,12 +18,10 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
 
     bool stopping = false;
     int stopping_in = -1;
-    String reflection;
-    
+    straight(0.5);
     while (!(stopping)) {
       if (stopping_in > 0) stopping_in--;
       if (stopping_in == 0) stopping = true;
-      straight(0.5);
       readColor2();
       readColor();
 
@@ -52,10 +50,11 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
         else digitalWrite(LEDB, HIGH);
       }
 
-      reflection = calculateReflection();
+      calculatedReflection = calculateReflection();
 
-      if ((!(reflection == "frontalLine" || reflection == "sideLine")) && stopping_in < 0) {
-        stopping_in = 8;
+      if ((!(calculatedReflection == "frontalLine" || calculatedReflection == "sideLine")) && stopping_in < 0) {
+        // this seems wrong
+        stopping_in = 12;
       }
       
       if (green1 && green2) {
@@ -66,6 +65,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
         // Stop to indicate that green has been detected
         stop();
         delay(250);
+        straight(0.5);
       }
 
       delay(10);
@@ -143,11 +143,11 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
   }
     else { // hit the kreuzung more from a side
         straight(-1);
-        delay(1000);
+        delay(600);
         stop();
-        delay(200);
+        delay(100);
         straight(1);
-        delay(800);
+        delay(500);
         kreuzung(true, sides);
     }
   }
