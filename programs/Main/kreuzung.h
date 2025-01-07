@@ -8,10 +8,6 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
 
     // drive forward slowly, check for greens
     digitalWrite(LED_BUILTIN, HIGH); // Activate Lamp to see when a Kreuzung is detected
-    
-    motors.flipLeftMotor(false);
-    motors.flipRightMotor(true);
-    
 
     bool green1 = false; // right
     bool green2 = false; // left
@@ -28,7 +24,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       if (calculateColor() && !green1) {
         green1 = true; 
         Serial.print("Found green 1 (right)\t");
-        stopping_in = 9;
+        stopping_in = 7;
         digitalWrite(LEDG, LOW);
         delay(50);
         if (green2) {
@@ -40,7 +36,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       if (calculateColor2() && !green2) {
         green2 = true;
         Serial.print("Found green 2 (left)\t");
-        stopping_in = 9;
+        stopping_in = 7;
         digitalWrite(LEDB, LOW);
         delay(50);
         if (green1) {
@@ -52,9 +48,9 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
 
       calculatedReflection = calculateReflection();
 
-      if ((!(calculatedReflection == "frontalLine" || calculatedReflection == "sideLine")) && stopping_in < 0) {
+      if (!(calculatedReflection == "frontalLine" || calculatedReflection == "sideLine") && stopping_in < 0) {
         // this seems wrong
-        stopping_in = 12;
+        stopping_in = 9;
       }
       
       if (green1 && green2) {
@@ -147,7 +143,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
         stop();
         delay(100);
         straight(1);
-        delay(500);
+        delay(1200);
         kreuzung(true, sides);
     }
   }

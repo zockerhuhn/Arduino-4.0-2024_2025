@@ -82,7 +82,7 @@ void left_to_line() {
   motors.flipLeftMotor(true);
   motors.flipRightMotor(true);
   motors.setSpeeds(70, 75);
-  int turnBy = 350;
+  int turnBy = 330;
   while ((calculatedReflection = calculateReflection()) != "normalLine") {
     delay(10);
     ReadDirection();
@@ -99,7 +99,6 @@ void left_to_line() {
     }
 
   }
-  stop();
 }
 
 void right_to_line() {
@@ -112,7 +111,7 @@ void right_to_line() {
   motors.flipLeftMotor(false);
   motors.flipRightMotor(false);
   motors.setSpeeds(70, 75);
-  int turnBy = 350;
+  int turnBy = 330;
   while ((calculatedReflection = calculateReflection()) != "normalLine") {
     delay(10);
     ReadDirection();
@@ -129,5 +128,4 @@ void right_to_line() {
     }
 
   }
-  stop();
 }
