@@ -9,8 +9,8 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
     // drive forward slowly, check for greens
     digitalWrite(LED_BUILTIN, HIGH); // Activate Lamp to see when a Kreuzung is detected
 
-    bool green1 = false; // right
-    bool green2 = false; // left
+    int green1 = 0; // right
+    int green2 = 0; // left
 
     bool stopping = false;
     int stopping_in = -1;
@@ -21,25 +21,25 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       readColor2();
       readColor();
 
-      if (calculateColor() && !green1) {
-        green1 = true; 
+      if (calculateColor()) {
+        green1 += 1; 
         Serial.print("Found green 1 (right)\t");
         stopping_in = 7;
         digitalWrite(LEDG, LOW);
         delay(50);
-        if (green2) {
+        if (green2 >= 3) {
           digitalWrite(LEDR, HIGH);
           digitalWrite(LEDB, LOW);
         }
         else digitalWrite(LEDG, HIGH);
       }
-      if (calculateColor2() && !green2) {
-        green2 = true;
+      if (calculateColor2()) {
+        green2 += 1;
         Serial.print("Found green 2 (left)\t");
         stopping_in = 7;
         digitalWrite(LEDB, LOW);
         delay(50);
-        if (green1) {
+        if (green1 >= 3) {
           digitalWrite(LEDR, HIGH);
           digitalWrite(LEDG, LOW);
         }
@@ -52,11 +52,11 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
         stopping_in = 6;
       }
       
-      if (green1 && green2) {
+      if (green1 >= 3 && green2 >= 3) {
         stopping = true;
       }
 
-      else if (green1 || green2) {
+      else if (green1 >= 3 || green2 >= 3) {
         // Stop to indicate that green has been detected
         stop();
         delay(250);
@@ -73,13 +73,13 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
 
 
     // Handle the recorded greens
-    if (green1 && green2) {
+    if (green1 >= 3 && green2 >= 3) {
       // Turn
       Serial.print("turn\t");
       right(180);
       delay(600);
     }
-    else if (green1) {
+    else if (green1 >= 3) {
       Serial.print("right\t");
 
       // Drive forward for some time to position the geometric centre above the crossing
@@ -90,7 +90,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       straight(); // then go straight a bit to avoid seeing a crossing again
       delay(500);     
     }
-    else if (green2) {
+    else if (green2 >= 3) {
       Serial.print("left\t");
       straight();
       delay(250);
