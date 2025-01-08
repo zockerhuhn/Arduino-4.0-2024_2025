@@ -27,7 +27,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
         stopping_in = 7;
         digitalWrite(LEDG, LOW);
         delay(50);
-        if (green2 >= 4) {
+        if (green2 >= 3) {
           digitalWrite(LEDR, HIGH);
           digitalWrite(LEDB, LOW);
         }
@@ -39,7 +39,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
         stopping_in = 7;
         digitalWrite(LEDB, LOW);
         delay(50);
-        if (green1 >= 4) {
+        if (green1 >= 3) {
           digitalWrite(LEDR, HIGH);
           digitalWrite(LEDG, LOW);
         }
@@ -52,7 +52,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
         stopping_in = 6;
       }
       
-      if (green1 >= 4 && green2 >= 4) {
+      if (green1 >= 3 && green2 >= 3) {
         stopping = true;
       }
 
@@ -73,13 +73,13 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
 
 
     // Handle the recorded greens
-    if (green1 >= 4 && green2 >= 4) {
+    if (green1 >= 3 && green2 >= 3) {
       // Turn
       Serial.print("turn\t");
       right(180);
       delay(600);
     }
-    else if (green1 >= 4) {
+    else if (green1 >= 3) {
       Serial.print("right\t");
 
       // Drive forward for some time to position the geometric centre above the crossing
@@ -90,7 +90,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       straight(); // then go straight a bit to avoid seeing a crossing again
       delay(800);     
     }
-    else if (green2 >= 4) {
+    else if (green2 >= 3) {
       Serial.print("left\t");
       straight();
       delay(250);
@@ -101,12 +101,12 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
     }
     else { // Did not find any green
       straight();
-      delay(500); // adjust that waiting time
+      delay(800); // adjust that waiting time
 
       if (calculateReflection() == "noLine") {
         if (sides == -1 || sides == 0) {
           // finding line
-          left(90);
+          left_to_line();
           
           // going right "forever"    
           motors.flipLeftMotor(false);
@@ -120,7 +120,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
         }
         else if (sides == 1) {
           // finding line
-          right(90);
+          right_to_line();
           
           // going right "forever"    
           motors.flipLeftMotor(true);
