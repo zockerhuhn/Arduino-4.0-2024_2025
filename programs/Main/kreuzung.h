@@ -27,7 +27,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
         stopping_in = 7;
         digitalWrite(LEDG, LOW);
         delay(50);
-        if (green2 >= 3) {
+        if (green2 >= 4) {
           digitalWrite(LEDR, HIGH);
           digitalWrite(LEDB, LOW);
         }
@@ -39,7 +39,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
         stopping_in = 7;
         digitalWrite(LEDB, LOW);
         delay(50);
-        if (green1 >= 3) {
+        if (green1 >= 4) {
           digitalWrite(LEDR, HIGH);
           digitalWrite(LEDG, LOW);
         }
@@ -52,11 +52,11 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
         stopping_in = 6;
       }
       
-      if (green1 >= 3 && green2 >= 3) {
+      if (green1 >= 4 && green2 >= 4) {
         stopping = true;
       }
 
-      else if (green1 >= 3 || green2 >= 3) {
+      else if (green1 >= 1 || green2 >= 1) {
         // Stop to indicate that green has been detected
         stop();
         delay(250);
@@ -73,13 +73,13 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
 
 
     // Handle the recorded greens
-    if (green1 >= 3 && green2 >= 3) {
+    if (green1 >= 4 && green2 >= 4) {
       // Turn
       Serial.print("turn\t");
       right(180);
       delay(600);
     }
-    else if (green1 >= 3) {
+    else if (green1 >= 4) {
       Serial.print("right\t");
 
       // Drive forward for some time to position the geometric centre above the crossing
@@ -88,16 +88,16 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       right(90);
       delay(300);
       straight(); // then go straight a bit to avoid seeing a crossing again
-      delay(500);     
+      delay(800);     
     }
-    else if (green2 >= 3) {
+    else if (green2 >= 4) {
       Serial.print("left\t");
       straight();
       delay(250);
       left(90);
       delay(300);
       straight();
-      delay(500);
+      delay(800);
     }
     else { // Did not find any green
       straight();

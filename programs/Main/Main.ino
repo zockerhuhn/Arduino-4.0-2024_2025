@@ -230,10 +230,10 @@ void loop()
 
   digitalWrite(LEDR, LOW);
 
-  readColor();readColor2();
-  Serial.println(String(calculateColor2()) + " " + String(calculateColor()) + "(" + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2) + ", " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + ")");
+  // readColor();readColor2();
+  // Serial.println(String(calculateColor2()) + " " + String(calculateColor()) + "(" + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2) + ", " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + ")");
 
-  /*
+  
   calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
   // Serial.println(calculatedReflection);
   if (calculatedReflection == "frontalLine")    // detected crosssection
@@ -283,7 +283,7 @@ void loop()
     straight();
     y++;
   }
-  */
+  
   delay(10); // don't max out processor
   x++;
 }
