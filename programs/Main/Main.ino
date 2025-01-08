@@ -180,18 +180,18 @@ void loop()
     
     //somehow calculate how much green deviates from red and blue and thereby calculate the difference threshold
     // idea: calculate the ratio instead!
-    blueGreenThreshold = min(average_g - average_b, average_g2 - average_b2) - 200;
-    redGreenThreshold = min(average_g - average_r, average_g2 - average_r2) - 200;
+    blueGreenThreshold = average_g - average_b - 200;
+    blueGreenThreshold2 = average_g2 - average_b2 - 200;
+    redGreenThreshold = average_g - average_r - 200;
+    redGreenThreshold2 = average_g2 - average_r2 - 200;
 
-    colorBrightMaxThreshold = max(helligkeit, helligkeit2) + 700;
-    colorBrightMinThreshold = min(helligkeit, helligkeit2) - 700;
+    colorBrightMaxThreshold = max(helligkeit, helligkeit2) + 1500;
+    colorBrightMinThreshold = min(helligkeit, helligkeit2) - 300;
 
-    // temp: Values: 298 635 418 332 688 465 1359 1483
-    // temp2: (links) 631 1099 728 2467
-    // (rechts) 576 1001 640 2237
+    // 738 886 767 2399
 
     Serial.println("Values: " + String(average_r) + " " + String(average_g) + " " + String(average_b)+ " " + String(average_r2) + " " + String(average_g2) + " " + String(average_b2) + " " + String(helligkeit)+ " " + String(helligkeit2));
-    Serial.println("Thresholds: " + String(blueGreenThreshold) + " " + String(redGreenThreshold) + " " + String(colorBrightMaxThreshold)+ " " + String(colorBrightMinThreshold));
+    Serial.println("Thresholds: " + String(blueGreenThreshold) + " " + String(redGreenThreshold) + " " + String(blueGreenThreshold2) + " " + String(redGreenThreshold2) + " " + String(colorBrightMaxThreshold)+ " " + String(colorBrightMinThreshold));
     // Serial.println("red vals: " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + "\t " + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2));
     Serial.println(String(calculateColor()) + " " + String(calculateColor2()));
     // 5x blinken (AN/AUS):
@@ -229,8 +229,13 @@ void loop()
   }
 
   digitalWrite(LEDR, LOW);
+
+  readColor();readColor2();
+  Serial.println(String(calculateColor2()) + " " + String(calculateColor()) + "(" + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2) + ", " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + ")");
+
+  /*
   calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
-  Serial.println(calculatedReflection);
+  // Serial.println(calculatedReflection);
   if (calculatedReflection == "frontalLine")    // detected crosssection
   {
     kreuzung(true, 0);
@@ -278,7 +283,7 @@ void loop()
     straight();
     y++;
   }
-
+  */
   delay(10); // don't max out processor
   x++;
 }
