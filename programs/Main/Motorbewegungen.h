@@ -56,7 +56,7 @@ void straight_left() //drive straight but pull left
   if (digitalRead(calibrationPin)) {
     return;
   }
-  motors.flipLeftMotor(false);
+  motors.flipLeftMotor(true);
   motors.flipRightMotor(true);
   motors.setSpeeds(30, 80);
 }
@@ -67,15 +67,25 @@ void straight_right() //drive straight but pull right
     return;
   }
   motors.flipLeftMotor(false);
-  motors.flipRightMotor(true);
+  motors.flipRightMotor(false);
   motors.setSpeeds(80, 30);
 }
 
 
 void left_to_line() {
   // going left until it finds a line  
-  left();
+  if (digitalRead(calibrationPin)) {
+    return;
+  }
+  ReadDirection();
+  int initialDirection = direction;
+  motors.flipLeftMotor(true);
+  motors.flipRightMotor(true);
+  motors.setSpeeds(70, 75);
+  int turnBy = 330;
   while ((calculatedReflection = calculateReflection()) != "normalLine") {
+    delay(10);
+    ReadDirection();
     if (calculatedReflection == "leftLine") {
       straight_left();
       break;
@@ -83,18 +93,34 @@ void left_to_line() {
       straight_right();
       break;
     }
+    if (((initialDirection + turnBy) % 360) != direction) {
+      break;
+    }
   }
 }
 
 void right_to_line() {
   // going right until it finds a line  
-  right();
+  if (digitalRead(calibrationPin)) {
+    return;
+  }
+  ReadDirection();
+  int initialDirection = direction;
+  motors.flipLeftMotor(false);
+  motors.flipRightMotor(false);
+  motors.setSpeeds(70, 75);
+  int turnBy = 330;
   while ((calculatedReflection = calculateReflection()) != "normalLine") {
+    delay(10);
+    ReadDirection();
     if (calculatedReflection == "leftLine") {
       straight_left();
       break;
     } else if (calculatedReflection == "rightLine") {
       straight_right();
+      break;
+    }
+    if (((initialDirection + turnBy) % 360) != direction) {
       break;
     }
   }

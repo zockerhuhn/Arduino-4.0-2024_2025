@@ -1,4 +1,4 @@
-void read_reflectionandprint() //read relfectionsensor and print result
+void read_reflectionandprint() //read reflectionsensor and print result
 {
   sensorLeiste.read(helligkeiten);
   for (int i = 0; i < SENSOR_LEISTE_ANZAHL_SENSOREN; i++)
@@ -8,10 +8,18 @@ void read_reflectionandprint() //read relfectionsensor and print result
   Serial.println(); // neue Zeile beginnen
 }
 
+
+void read_reflection() //read reflectionsensor
+{
+  sensorLeiste.read(helligkeiten);
+}
+ 
+
 String calculateReflection() //read reflection and return processed result 
 // !!! Green also counts as black !!!
 {
-  read_reflectionandprint();
+  read_reflection();
+  // read_reflectionandprint();
   if ((helligkeiten[0] >= reflectionBlackThreshold) && (helligkeiten[5] >= reflectionBlackThreshold))
   {
     return "frontalLine";
