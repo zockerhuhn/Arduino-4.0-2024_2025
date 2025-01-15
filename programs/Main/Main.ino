@@ -73,24 +73,7 @@ void setup()
    - Abstandssensor
    - Farbsensoren
   */
-
-  // ABSTANDSSENSOR-INITIALISIEREN
-  Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
-  // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
-  if (!abstandsSensor.begin(NEUE_ABSTANDSADDRESSE, Wire)) {
-      delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
-      Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
-      while (1);
-  }
-  if (!abstandsSensor.setResolution(einstellungen.aufloesung) ||
-      !abstandsSensor.setRangingFrequency(einstellungen.maxMessfrequenz)) {  // siehe oben
-          delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
-          Serial.println("ToF64 Auflösung oder Messfrequenz konnte nicht geändert werden! Programm Ende.");
-          while (1);
-  }
-  abstandsSensor.startRanging();
-
-  Serial.println("Initialisierung abgeschlossen");
+  
   if (!rgbSensor.begin(TCS34725_ADDRESS, &Wire))
   {
     digitalWrite(LEDR, HIGH);
