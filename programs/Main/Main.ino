@@ -69,22 +69,26 @@ void setup()
   Wire1.begin();          // Bus I2C1
 
   // ABSTANDSSENSOR-INITIALISIEREN
-  Serial.println("Initialisierung des 64-Kanal ToF kann bis zu 10 Sekunden dauern...");
-  // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
-  if (!abstandsSensor.begin(NEUE_ABSTANDSADDRESSE, Wire1)) {
-      delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
-      Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
-      while (1);
+  Serial.println("Initialisierung des 1-Kanal ToF kann bis zu 10 Sekunden dauern...");
+  abstandsSensor.setBus(&Wire1);
+  abstandsSensor.setAddress(NEUE_ABSTANDSADDRESSE);
+  if (!abstandsSensor.init()) {
+      delay(5000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+      Serial.println("ToF Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
+      // while (1);
   }
-  if (!abstandsSensor.setResolution(einstellungen.aufloesung) ||
-      !abstandsSensor.setRangingFrequency(einstellungen.maxMessfrequenz)) {  // siehe oben
-          delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
-          Serial.println("ToF64 Auflösung oder Messfrequenz konnte nicht geändert werden! Programm Ende.");
-          while (1);
-  }
-  abstandsSensor.startRanging();
-  if(debT){keineNeuenDatenStoppuhr.start();}
+  // Einstellung: Fehler, wenn der Sensor länger als 500ms lang nicht reagiert
+  abstandsSensor.setTimeout(500);
+  // Reichweiter vergrößern (macht den Sensor ungenauer)
+  abstandsSensor.setSignalRateLimit(0.1);
+  abstandsSensor.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 18);
+  abstandsSensor.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14);
+  // lasse Sensor die ganze Zeit an
+  abstandsSensor.startContinuous();
+
+  keineNeuenDatenStoppuhr.start();
   Serial.println("Initialisierung Abstandssensor abgeschlossen");
+  
   if (!rgbSensor.begin(TCS34725_ADDRESS, &Wire))
   {
     delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
@@ -183,10 +187,12 @@ void loop()
       digitalWrite(LED_BUILTIN, LOW);
       delay(250);
     }
+
     // ABSTANDSWERTE LOGGEN
     modus = ABSTANDS_WERTE_LOGGEN;
-    abstandsWerteLoggen();
+    werteLoggen();
   }
+  
   readColor();
   readColor2();
   while ((2 * (blau + gruen) <= rot + 300 && (2 * (blau2 + gruen2) <= rot2 + 300)) && (helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800)) {

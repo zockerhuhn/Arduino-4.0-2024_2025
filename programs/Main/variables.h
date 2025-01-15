@@ -34,18 +34,9 @@ bool debT = false; // debT = debug timer, machen wir an falls wir Probleme beim 
 Chrono keineNeuenDatenStoppuhr = Chrono(Chrono::MILLIS, false); // Uhr noch nicht gestartet 
 const uint16_t VERBINDUNG_VERLOREN = 0;
 uint16_t vorheriger_abstand = VERBINDUNG_VERLOREN;
-SparkFun_VL53L5CX abstandsSensor = SparkFun_VL53L5CX();
-const uint8_t NEUE_ABSTANDSADDRESSE = 0x35 ;
-typedef struct Einstellungen { // Structs sind schön weil die so wie Listen mit Konstruktor und verschiedenen Datentypen sind
-    uint8_t aufloesung;
-    uint8_t bildSeitenlaenge;
-    uint8_t maxMessfrequenz;
-} Einstellungen_t; // null ahnung was das eigentlich macht
-// Könnte "kaputte Pixel" ausgeben:
-const Einstellungen ACHT_MAL_ACHT = { VL53L5CX_RESOLUTION_8X8, 8, 15 }; // 8x8: max 15Hz
-// Vermutlich stabiler
-const Einstellungen VIER_MAL_VIER = { VL53L5CX_RESOLUTION_4X4, 4, 60 }; // 4x4: max 60Hz
-Einstellungen einstellungen = ACHT_MAL_ACHT;
+VL53L0X abstandsSensor = VL53L0X();
+const uint8_t NEUE_ABSTANDSADDRESSE = 0x30;
+
 enum Modus {
     /* Werte im Serial Monitor anzeigen. */
     ABSTANDS_WERTE_LOGGEN,
@@ -55,8 +46,11 @@ enum Modus {
 const int SCHWELLENWERT = 100;
 /** hier einstellen, was das Programm mit den Sensorwerten anfangen soll: */
 enum Modus modus = SCHWELLENWERT_VISUALISIERUNG;
-// hier speichern wir die 6 TOFsensorwerte ab:
-VL53L5CX_ResultsData messDaten;
+
+// hier speichern wir 10 TOFsensorwerte ab:
+int abstandsWerte[10];
+int abstandsWert;
+
 
 //KOMPASSSENSOR
 #define CMPS12 0x60
