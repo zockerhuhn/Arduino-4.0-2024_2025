@@ -113,10 +113,11 @@ void readDistances() {
         } // else: Fehler
     } // else: wenn es keine neuen Daten gibt, müssen wir sie auch nicht lesen
 
+    /* können wir bei Fehlern nutzen, sonst isses unnötig */
     // Fehler:
     if (keineNeuenDatenStoppuhr.hasPassed(1000)) {
         Serial.println("ToF64 Verdrahtung prüfen! Roboter aus- und einschalten!");
-    }
+    } 
 }
 
 /** Kopiert aus dem Beispiel der Bibliothek: */

@@ -47,7 +47,7 @@
 
 void setup()
 {
-  delay(300);
+  delay(5000);                       // Wichtig für den Abstandssensor
   pinMode(LED_BUILTIN, OUTPUT);      // Pin D13
   pinMode(calibrationPin, INPUT_PULLDOWN); // define pinmode for switch on the side of the bot
   pinMode(kalibrierung, INPUT);      // define pinmode for calibration button
@@ -67,12 +67,34 @@ void setup()
   Wire.begin();           // Bus I2C0
   Wire.setClock(1000000); // 1MHz Kommunikationsgeschwindigkeit
   Wire1.begin();          // Bus I2C1
-  
+
   // REIHENFOLGE:
   /*
    - Abstandssensor
    - Farbsensoren
   */
+  
+  // ABSTANDSSENSOR-INITIALISIEREN
+  Serial.println("Initialisierung des 1-Kanal ToF kann bis zu 10 Sekunden dauern...");
+  abstandsSensor.setBus(&Wire);
+  abstandsSensor.setAddress(NEUE_ABSTANDSADDRESSE);
+  if (!abstandsSensor.init()) {
+      delay(5000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
+      Serial.println("ToF Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
+      while (1);
+  }
+  // Einstellung: Fehler, wenn der Sensor länger als 500ms lang nicht reagiert
+  abstandsSensor.setTimeout(500);
+  // Reichweiter vergrößern (macht den Sensor ungenauer)
+  abstandsSensor.setSignalRateLimit(0.1);
+  abstandsSensor.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 18);
+  abstandsSensor.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14);
+  // lasse Sensor die ganze Zeit an
+  abstandsSensor.startContinuous();
+
+  Serial.println("Initialisierung Abstandssensor abgeschlossen");
+
+
   
   if (!rgbSensor.begin(TCS34725_ADDRESS, &Wire))
   {
@@ -99,6 +121,7 @@ void setup()
   sensorLeiste.setTypeRC();
   sensorLeiste.setSensorPins(SENSOR_LEISTE_PINS, SENSOR_LEISTE_ANZAHL_SENSOREN);
   Serial.println("Initialisierung Reflektionssensor abgeschlossen");
+
   motors.initialize();
   // falls man global die Motor-Drehrichtung ändern möchte:
   motors.flipLeftMotor(false); // nur notwendig, wenn man true reinschreibt
@@ -110,6 +133,8 @@ void setup()
 #include "Farbauslese.h"        //commands for reading and processing colorsensors
 #include "kreuzung.h"      //command for handling crosssections
 #include "Opfer.h"              //Du Opfer
+
+#include "Abstand.h"            // Abstand, noch nicht einsortiert zwischen die restlichen includes
 
 int x = 0;
 int y = 0;
@@ -161,7 +186,6 @@ void loop()
     average_b2 /= total_cycles;
     average_c2 /= total_cycles;
     
-    //somehow calculate how much green deviates from red and blue and thereby calculate the difference threshold
     // idea: calculate the ratio instead!
     blueGreenThreshold = average_g - average_b - 200;
     blueGreenThreshold2 = average_g2 - average_b2 - 200;
@@ -175,6 +199,7 @@ void loop()
 
     Serial.println("Values: " + String(average_r) + " " + String(average_g) + " " + String(average_b)+ " " + String(average_r2) + " " + String(average_g2) + " " + String(average_b2) + " " + String(helligkeit)+ " " + String(helligkeit2));
     Serial.println("Thresholds: " + String(blueGreenThreshold) + " " + String(redGreenThreshold) + " " + String(blueGreenThreshold2) + " " + String(redGreenThreshold2) + " " + String(colorBrightMaxThreshold)+ " " + String(colorBrightMinThreshold));
+
     // Serial.println("red vals: " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + "\t " + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2));
     Serial.println(String(calculateColor()) + " " + String(calculateColor2()));
     // 5x blinken (AN/AUS):
@@ -185,6 +210,11 @@ void loop()
       digitalWrite(LED_BUILTIN, LOW);
       delay(250);
     }
+
+    // ABSTANDSWERTE LOGGEN
+    modus = ABSTANDS_WERTE_LOGGEN;
+    readDistance();
+    werteLoggen();
   }
   readColor();
   readColor2();
@@ -212,10 +242,8 @@ void loop()
   }
 
   digitalWrite(LEDR, LOW);
-
   // readColor();readColor2();
   // Serial.println(String(calculateColor2()) + " " + String(calculateColor()) + "(" + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2) + ", " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + ")");
-
   
   calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
   // Serial.println(calculatedReflection);
@@ -266,7 +294,6 @@ void loop()
     straight();
     y++;
   }
-  
   delay(10); // don't max out processor
   x++;
 }

@@ -168,6 +168,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
     }
   }
     else { // hit the kreuzung more from a side
+
         straight(-1);
         delay(600);
         stop();

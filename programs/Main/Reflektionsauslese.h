@@ -8,6 +8,7 @@ void read_reflectionandprint() //read reflectionsensor and print result
   Serial.println(); // neue Zeile beginnen
 }
 
+
 void read_reflection() //read reflectionsensor
 {
   sensorLeiste.read(helligkeiten);

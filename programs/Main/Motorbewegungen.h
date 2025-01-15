@@ -93,11 +93,9 @@ void left_to_line() {
       straight_right();
       break;
     }
-
     if (((initialDirection + turnBy) % 360) != direction) {
       break;
     }
-
   }
 }
 
@@ -122,10 +120,8 @@ void right_to_line() {
       straight_right();
       break;
     }
-
     if (((initialDirection + turnBy) % 360) != direction) {
       break;
     }
-
   }
 }
