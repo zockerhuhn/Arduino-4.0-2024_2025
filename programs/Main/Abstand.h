@@ -24,20 +24,18 @@ void readDistance() {
     if (!abstandsSensor.timeoutOccurred()) {
         abstandsWert = abstandsSensor.readRangeContinuousMillimeters();
         // statt 65535 kann es auch passieren, dass sich der Wert einfach nicht mehr ändert
-        if (abstandsWert != 65535 && !keineNeuenDatenStoppuhr.hasPassed(1000)) {
+        if (abstandsWert != 65535) {
             // alles OK
             if (vorheriger_abstand != abstandsWert) {
                 // merken: der Wert hat sich verändert
                 vorheriger_abstand = abstandsWert;
-                keineNeuenDatenStoppuhr.restart();
             }
             return; // rausgehen aus der Funktion, damit wir nicht zum Fehler kommen
         }
     }
     // Fehler:
     abstandsWert = VERBINDUNG_VERLOREN;
-    keineNeuenDatenStoppuhr.restart(); // um bei Wackelkontakt Wiederverbindung zu erlauben
-    Serial.println("ToF Verdrahtung prüfen! Roboter aus- und einschalten!");
+    Serial.println("ToF Verdrahtung prüfen! Roboter aus- und einschalten! " + String(abstandsSensor.readRangeContinuousMillimeters()));
 }
 
 int tenAverage(int *array) {

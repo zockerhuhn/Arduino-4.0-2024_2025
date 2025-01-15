@@ -31,7 +31,6 @@ RescueBoardMotors motors = RescueBoardMotors();
 //ABSTANDSSENSOR
 /** optional: Stoppuhr, um zu Verbindungsverluste zu erkennen */
 bool debT = false; // debT = debug timer, machen wir an falls wir Probleme beim Abstandssensor haben und dann sagt der Timer ob überhaupt Werte ankommen
-Chrono keineNeuenDatenStoppuhr = Chrono(Chrono::MILLIS, false); // Uhr noch nicht gestartet 
 const uint16_t VERBINDUNG_VERLOREN = 0;
 uint16_t vorheriger_abstand = VERBINDUNG_VERLOREN;
 VL53L0X abstandsSensor = VL53L0X();

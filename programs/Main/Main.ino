@@ -70,12 +70,12 @@ void setup()
 
   // ABSTANDSSENSOR-INITIALISIEREN
   Serial.println("Initialisierung des 1-Kanal ToF kann bis zu 10 Sekunden dauern...");
-  abstandsSensor.setBus(&Wire1);
+  abstandsSensor.setBus(&Wire);
   abstandsSensor.setAddress(NEUE_ABSTANDSADDRESSE);
   if (!abstandsSensor.init()) {
       delay(5000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
       Serial.println("ToF Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
-      // while (1);
+      while (1);
   }
   // Einstellung: Fehler, wenn der Sensor länger als 500ms lang nicht reagiert
   abstandsSensor.setTimeout(500);
@@ -86,7 +86,6 @@ void setup()
   // lasse Sensor die ganze Zeit an
   abstandsSensor.startContinuous();
 
-  keineNeuenDatenStoppuhr.start();
   Serial.println("Initialisierung Abstandssensor abgeschlossen");
   
   if (!rgbSensor.begin(TCS34725_ADDRESS, &Wire))
@@ -190,6 +189,7 @@ void loop()
 
     // ABSTANDSWERTE LOGGEN
     modus = ABSTANDS_WERTE_LOGGEN;
+    readDistance();
     werteLoggen();
   }
   
