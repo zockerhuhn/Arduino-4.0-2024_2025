@@ -3,7 +3,7 @@
 //#include "Reflektionsauslese.h"
 
 void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) {
-  if (!(digitalRead(calibrationPin))) {
+  if (!(digitalRead(motorPin))) {
     if (bothSides) { // very probably a crossing where green is
 
     // drive forward slowly, check for greens
@@ -64,6 +64,10 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       }
 
       delay(10);
+      if (digitalRead(motorPin)) {
+        stop();
+        return;
+      }
     }
 
     digitalWrite(LED_BUILTIN, LOW);
@@ -115,6 +119,11 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
             delay(10);
             ReadDirection();
             if (calculateReflection() == "normalLine") break;
+            
+            if (digitalRead(motorPin)) {
+              stop();
+              return;
+            }
           }
           stop();
           straight();
@@ -129,6 +138,10 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
             while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
             {
               Serial.print("\nsuche...");
+              if (digitalRead(motorPin)) {
+                stop();
+                return;
+              }
             }
           }
           
@@ -145,6 +158,11 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
             delay(10);
             ReadDirection();
             if (calculateReflection() == "normalLine") break;
+
+            if (digitalRead(motorPin)) {
+              stop();
+              return;
+            }
           }
           stop();
           straight();
@@ -159,6 +177,10 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
             while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
             {
               Serial.print("\nsuche...");
+              if (digitalRead(motorPin)) {
+                stop();
+                return;
+              }
             }
           }
           

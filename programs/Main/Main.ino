@@ -49,8 +49,8 @@ void setup()
 {
   delay(5000);                       // Wichtig für den Abstandssensor
   pinMode(LED_BUILTIN, OUTPUT);      // Pin D13
-  pinMode(calibrationPin, INPUT_PULLDOWN); // define pinmode for switch on the side of the bot
-  pinMode(kalibrierung, INPUT);      // define pinmode for calibration button
+  pinMode(motorPin, INPUT_PULLDOWN); // define pinmode for switch on the side of the bot
+  pinMode(calibrationPin, INPUT);      // define pinmode for calibration button
 
   // Set the color LEDS as outputs
   pinMode(LEDR, OUTPUT);
@@ -147,6 +147,9 @@ void loop()
     opfer();
     y = 0;
   }
+
+  Serial.print(digitalRead(calibrationPin));Serial.print("\t");Serial.print(digitalRead(motorPin));;Serial.print("\n");
+
   if (digitalRead(calibrationPin))
   {
     stop();
@@ -215,9 +218,8 @@ void loop()
     modus = ABSTANDS_WERTE_LOGGEN;
     readDistance();
     werteLoggen();
-
-    Serial.println(digitalRead(kalibrierung));
   }
+  
   readColor();
   readColor2();
   while ((2 * (blau + gruen) <= rot + 300 && (2 * (blau2 + gruen2) <= rot2 + 300)) && (helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800)) {
@@ -240,6 +242,11 @@ void loop()
       straight(-1);
       delay(800);
       break;
+    }
+
+    if (digitalRead(motorPin)) {
+      stop();
+      return;
     }
   }
 
