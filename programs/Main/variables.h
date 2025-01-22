@@ -26,7 +26,7 @@ int red_counter = 0;
 // Dieses Objekt repräsentiert 2 Motor-Kanäle (1..2 Motoren pro Kanal):
 RescueBoardMotors motors = RescueBoardMotors();
 #define calibrationPin D12
-#define kalibrierung A7
+#define kalibrierung A6
 
 //ABSTANDSSENSOR
 /** optional: Stoppuhr, um zu Verbindungsverluste zu erkennen */

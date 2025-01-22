@@ -25,7 +25,7 @@ void left(int turnBy=0) //turn left
   motors.setSpeeds(70, 75);
   if (turnBy!=0) {
     while ((((initialDirection - turnBy) + 360) % 360) != direction) {
-      delay(10);
+      delay(1);
       ReadDirection();
     }
     stop();
@@ -44,7 +44,7 @@ void right(int turnBy=0) //turn right
   motors.setSpeeds(70, 75);
   if (turnBy != 0) {
     while (((initialDirection + turnBy) % 360) != direction) {
-      delay(10);
+      delay(1);
       ReadDirection();
     }
     stop();

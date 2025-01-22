@@ -215,6 +215,8 @@ void loop()
     modus = ABSTANDS_WERTE_LOGGEN;
     readDistance();
     werteLoggen();
+
+    Serial.println(digitalRead(kalibrierung));
   }
   readColor();
   readColor2();
