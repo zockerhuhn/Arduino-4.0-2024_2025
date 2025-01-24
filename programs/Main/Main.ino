@@ -142,8 +142,9 @@ int y = 0;
 
 void loop()
 {
-  if (y >= 70)
+  if (y >= 100)
   {
+    stop(); // temp!!!
     Serial.println("opfer");
     opfer();
     y = 0;
@@ -233,7 +234,7 @@ void loop()
     delay(100);
     // readDistance();
     // werteLoggen();
-    
+
     // read_reflectionandprint();
   }
 
