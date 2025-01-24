@@ -231,8 +231,10 @@ void loop()
     digitalWrite(LEDB, LOW);
 
     delay(100);
-    readDistance();
-    werteLoggen();
+    // readDistance();
+    // werteLoggen();
+    
+    // read_reflectionandprint();
   }
 
   else {

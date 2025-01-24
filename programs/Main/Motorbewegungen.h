@@ -151,70 +151,80 @@ void right_to_line(int turnBy = 330) {
 void abstand_umfahren() {
   digitalWrite(LED_BUILTIN, HIGH);
   if (digitalRead(motorPin)) {
-      stop();
-      return;
+    stop();
+    for (int i = 0; i < 5; i++) abstandsWerte[i] = 65535;
+    return;
     }
 
   right();
   if (digitalRead(motorPin)) {
-      stop();
-      return;
+    stop();
+    for (int i = 0; i < 5; i++) abstandsWerte[i] = 65535;
+    return;
   }
   delay(2000);
 
   straight();
   if (digitalRead(motorPin)) {
-      stop();
-      return;
+    stop();
+    for (int i = 0; i < 5; i++) abstandsWerte[i] = 65535;
+    return;
   }
   delay(4000);
   
 
   left();
   if (digitalRead(motorPin)) {
-      stop();
-      return;
+    stop();
+    for (int i = 0; i < 5; i++) abstandsWerte[i] = 65535;
+    return;
   }
   delay(2000);
 
   straight();
 
   if (digitalRead(motorPin)) {
-      stop();
-      return;
+    stop();
+    for (int i = 0; i < 5; i++) abstandsWerte[i] = 65535;
+    return;
   }
   delay(6500);
   
 
   left();
   if (digitalRead(motorPin)) {
-      stop();
-      return;
+    stop();
+    for (int i = 0; i < 5; i++) abstandsWerte[i] = 65535;
+    return;
   }
   delay(2000);
 
   straight();
 
   if (digitalRead(motorPin)) {
-      stop();
-      return;
+    stop();
+    for (int i = 0; i < 5; i++) abstandsWerte[i] = 65535;
+    return;
   }
   while ((calculatedReflection = calculateReflection()) == "noLine") {
     if (digitalRead(motorPin)) {
-        stop();
-        return;
+      stop();
+      for (int i = 0; i < 5; i++) abstandsWerte[i] = 65535;
+      return;
     }
   }
 
   if (digitalRead(motorPin)) {
-      stop();
-      return;
+    stop();
+    for (int i = 0; i < 5; i++) abstandsWerte[i] = 65535;
+    return;
   }
   delay(1500);
 
   if (digitalRead(motorPin)) {
-      stop();
-      return;
+    stop();
+    for (int i = 0; i < 5; i++) abstandsWerte[i] = 65535;
+    return;
   }
   right_to_line(180);
 
