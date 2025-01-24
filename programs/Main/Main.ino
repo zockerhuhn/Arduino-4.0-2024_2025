@@ -153,72 +153,75 @@ void loop()
 
   if (digitalRead(calibrationPin))
   {
-    stop();
-    for (int i = 0; i < 5; i++)
-    { // 5x blinken (AN/AUS):
-      digitalWrite(LED_BUILTIN, HIGH);
-      delay(250);
-      digitalWrite(LED_BUILTIN, LOW);
-      delay(250);
+    delay(1000);
+    if (digitalRead(calibrationPin)) {
+      stop();
+      for (int i = 0; i < 5; i++)
+      { // 5x blinken (AN/AUS):
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(250);
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(250);
+      }
+      // Calibrating should word by calculating an average from multiple values
+      uint16_t average_r, average_g, average_b, average_c,  average_r2, average_g2, average_b2, average_c2;
+      average_r = average_g = average_b = average_c = average_r2 = average_g2 = average_b2 = average_c2 = 0;
+      int total_cycles = 10;
+      for (int i = 0; i < total_cycles; i++) 
+      {
+        readColor();
+        readColor2();
+
+        average_r += rot;
+        average_g += gruen;
+        average_b += blau;
+        average_c += helligkeit;
+
+        average_r2 += rot2;
+        average_g2 += gruen2;
+        average_b2 += blau2;
+        average_c2 += helligkeit2;
+      }
+      // calculate average values for both sensors
+      average_r /= total_cycles;
+      average_g /= total_cycles;
+      average_b /= total_cycles;
+      average_c /= total_cycles;
+      average_r2 /= total_cycles;
+      average_g2 /= total_cycles;
+      average_b2 /= total_cycles;
+      average_c2 /= total_cycles;
+      
+      // idea: calculate the ratio instead!
+      blueGreenThreshold = average_g - average_b - 200;
+      blueGreenThreshold2 = average_g2 - average_b2 - 200;
+      redGreenThreshold = average_g - average_r - 200;
+      redGreenThreshold2 = average_g2 - average_r2 - 200;
+
+      colorBrightMaxThreshold = max(helligkeit, helligkeit2) + 1500;
+      colorBrightMinThreshold = min(helligkeit, helligkeit2) - 300;
+
+      // 738 886 767 2399
+
+      Serial.println("Values: " + String(average_r) + " " + String(average_g) + " " + String(average_b)+ " " + String(average_r2) + " " + String(average_g2) + " " + String(average_b2) + " " + String(helligkeit)+ " " + String(helligkeit2));
+      Serial.println("Thresholds: " + String(blueGreenThreshold) + " " + String(redGreenThreshold) + " " + String(blueGreenThreshold2) + " " + String(redGreenThreshold2) + " " + String(colorBrightMaxThreshold)+ " " + String(colorBrightMinThreshold));
+
+      // Serial.println("red vals: " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + "\t " + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2));
+      Serial.println(String(calculateColor()) + " " + String(calculateColor2()));
+      // 5x blinken (AN/AUS):
+      for (int i = 0; i < 5; i++)
+      {
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(250);
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(250);
+      }
+
+      // ABSTANDSWERTE LOGGEN
+      modus = ABSTANDS_WERTE_LOGGEN;
+      readDistance();
+      werteLoggen();
     }
-    // Calibrating should word by calculating an average from multiple values
-    uint16_t average_r, average_g, average_b, average_c,  average_r2, average_g2, average_b2, average_c2;
-    average_r = average_g = average_b = average_c = average_r2 = average_g2 = average_b2 = average_c2 = 0;
-    int total_cycles = 10;
-    for (int i = 0; i < total_cycles; i++) 
-    {
-      readColor();
-      readColor2();
-
-      average_r += rot;
-      average_g += gruen;
-      average_b += blau;
-      average_c += helligkeit;
-
-      average_r2 += rot2;
-      average_g2 += gruen2;
-      average_b2 += blau2;
-      average_c2 += helligkeit2;
-    }
-    // calculate average values for both sensors
-    average_r /= total_cycles;
-    average_g /= total_cycles;
-    average_b /= total_cycles;
-    average_c /= total_cycles;
-    average_r2 /= total_cycles;
-    average_g2 /= total_cycles;
-    average_b2 /= total_cycles;
-    average_c2 /= total_cycles;
-    
-    // idea: calculate the ratio instead!
-    blueGreenThreshold = average_g - average_b - 200;
-    blueGreenThreshold2 = average_g2 - average_b2 - 200;
-    redGreenThreshold = average_g - average_r - 200;
-    redGreenThreshold2 = average_g2 - average_r2 - 200;
-
-    colorBrightMaxThreshold = max(helligkeit, helligkeit2) + 1500;
-    colorBrightMinThreshold = min(helligkeit, helligkeit2) - 300;
-
-    // 738 886 767 2399
-
-    Serial.println("Values: " + String(average_r) + " " + String(average_g) + " " + String(average_b)+ " " + String(average_r2) + " " + String(average_g2) + " " + String(average_b2) + " " + String(helligkeit)+ " " + String(helligkeit2));
-    Serial.println("Thresholds: " + String(blueGreenThreshold) + " " + String(redGreenThreshold) + " " + String(blueGreenThreshold2) + " " + String(redGreenThreshold2) + " " + String(colorBrightMaxThreshold)+ " " + String(colorBrightMinThreshold));
-
-    // Serial.println("red vals: " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + "\t " + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2));
-    Serial.println(String(calculateColor()) + " " + String(calculateColor2()));
-    // 5x blinken (AN/AUS):
-    for (int i = 0; i < 5; i++)
-    {
-      digitalWrite(LED_BUILTIN, HIGH);
-      delay(250);
-      digitalWrite(LED_BUILTIN, LOW);
-      delay(250);
-    }
-
-    // ABSTANDSWERTE LOGGEN
-    modus = ABSTANDS_WERTE_LOGGEN;
-    readDistance();
-    werteLoggen();
   }
 
    if (digitalRead(motorPin)) {
@@ -229,7 +232,7 @@ void loop()
 
     delay(100);
     readDistance();
-    werteLoggen();
+    // werteLoggen();
   }
 
   else {
@@ -252,7 +255,7 @@ void loop()
 
     // ABSTANDSSZEUG
     readDistance(); 
-    if (abstandsWert <= 90) {
+    if (abstandsWert <= 80) {
       abstand_umfahren();
     }
 

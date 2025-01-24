@@ -22,7 +22,7 @@
 int findAverage(int *array, int size) {
   int avg = 0;
   for (int i = 0; i < size; i++) {
-    if (array[i] < 8000 && array[i] > 60) {
+    if (array[i] < 8000 && array[i] > 10) {
       avg += array[i];
     }
     else {
@@ -45,6 +45,7 @@ void move_arr_back(int *array, int size) {
 void readDistance() {
     if (!abstandsSensor.timeoutOccurred()) {
         abstandsWert = abstandsSensor.readRangeContinuousMillimeters();
+        // werteLoggen();
         // statt 65535 kann es auch passieren, dass sich der Wert einfach nicht mehr ändert
         if (abstandsWert != 65535) {
             // alles OK

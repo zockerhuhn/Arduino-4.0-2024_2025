@@ -16,8 +16,8 @@ void straight(float factor = 1) //drive straight
 
 void left(int turnBy=0) //turn left
 {
+  stop();
   if (digitalRead(motorPin)) {
-    stop();
     return;
   }
   ReadDirection();
@@ -40,8 +40,8 @@ void left(int turnBy=0) //turn left
 
 void right(int turnBy=0) //turn right
 {
+  stop();
   if (digitalRead(motorPin)) {
-    stop();
     return;
   }
   ReadDirection();
@@ -149,17 +149,70 @@ void right_to_line(int turnBy = 330) {
 }
 
 void abstand_umfahren() {
-  straight(-1);
-  delay(500);
-  right(90);
+  if (digitalRead(motorPin)) {
+      stop();
+      return;
+    }
+
+  right();
+  if (digitalRead(motorPin)) {
+      stop();
+      return;
+  }
+  delay(2000);
+
   straight();
-  delay(3200);
-  left(86);
+  if (digitalRead(motorPin)) {
+      stop();
+      return;
+  }
+  delay(4000);
+  
+
+  left();
+  if (digitalRead(motorPin)) {
+      stop();
+      return;
+  }
+  delay(2000);
+
   straight();
-  delay(7000);
-  left(65);
+
+  if (digitalRead(motorPin)) {
+      stop();
+      return;
+  }
+  delay(6500);
+  
+
+  left();
+  if (digitalRead(motorPin)) {
+      stop();
+      return;
+  }
+  delay(2000);
+
   straight();
-  delay(3700);
+
+  if (digitalRead(motorPin)) {
+      stop();
+      return;
+  }
+  while ((calculatedReflection = calculateReflection()) == "noLine") {
+    if (digitalRead(motorPin)) {
+        stop();
+        return;
+    }
+  }
+
+  if (digitalRead(motorPin)) {
+      stop();
+      return;
+  }
+  delay(1500);
+
   right_to_line(180);
-  for (int i = 0; i < 10; i++) abstandsWerte[i] = 65535;
+
+
+  for (int i = 0; i < 5; i++) abstandsWerte[i] = 65535;
 }
