@@ -258,6 +258,7 @@ void loop()
   }
 
   digitalWrite(LEDR, LOW);
+  red_counter = 0;
   // readColor();readColor2();
   // Serial.println(String(calculateColor2()) + " " + String(calculateColor()) + "(" + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2) + ", " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + ")");
   
