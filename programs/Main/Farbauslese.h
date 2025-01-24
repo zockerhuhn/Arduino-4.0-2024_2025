@@ -37,7 +37,8 @@ boolean calculateColor() //nimmt letzten ausgelesen Wert von Farbsensor 1 und re
 boolean calculateColor2() //nimmt letzten ausgelesen Wert von Farbsensor 2 und returnt ob grün erkannt wurde als bool
 {
   {
-    if ((gruen2-blueGreenThreshold) >= blau2 && (gruen2-redGreenThreshold) >= rot2 && helligkeit2 <= colorBrightMaxThreshold && helligkeit2 >= colorBrightMinThreshold)
+
+    if ((gruen2-blueGreenThreshold2) >= blau2 && (gruen2-redGreenThreshold2) >= rot2 && helligkeit2 <= colorBrightMaxThreshold && helligkeit2 >= colorBrightMinThreshold)
     {
       return true;
     }

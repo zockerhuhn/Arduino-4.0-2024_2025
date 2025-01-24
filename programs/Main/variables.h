@@ -18,31 +18,35 @@ uint16_t rot2, gruen2, blau2, helligkeit2;
  *  dass die Fehlerdetektion immer ausgelöst hat (siehe unten "helligkeitStatischStoppuhr.hasPassed"). */
 Adafruit_TCS34725 rgbSensor = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_60MS, TCS34725_GAIN_4X);
 Adafruit_TCS34725 rgbSensor2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_60MS, TCS34725_GAIN_4X);
-// Counter für wie oft rot hintereinander gesehen wurde
-int red_counter = 0;
 
 
 //MOTOREN
 // Dieses Objekt repräsentiert 2 Motor-Kanäle (1..2 Motoren pro Kanal):
 RescueBoardMotors motors = RescueBoardMotors();
-#define calibrationPin D12
-#define kalibrierung A7
+#define motorPin D12
+#define calibrationPin A6
 
 //ABSTANDSSENSOR
-SparkFun_VL53L5CX abstandsSensor = SparkFun_VL53L5CX();
-const uint8_t NEUE_ABSTANDSADDRESSE = 0x35;
-typedef struct Einstellungen {
-    uint8_t aufloesung;
-    uint8_t bildSeitenlaenge;
-    uint8_t maxMessfrequenz;
-} Einstellungen_t;
-// Bei meinem Sensor habe ich hier ein paar "kaputte Pixel":
-const Einstellungen ACHT_MAL_ACHT = { VL53L5CX_RESOLUTION_8X8, 8, 15 }; // 8x8: max 15Hz
-// Bei meinem Sensor sieht hier alles gut aus:
-const Einstellungen VIER_MAL_VIER = { VL53L5CX_RESOLUTION_4X4, 4, 60 }; // 4x4: max 60Hz
-Einstellungen einstellungen = VIER_MAL_VIER;
-// hier speichern wir die 6 TOFsensorwerte ab:
-VL53L5CX_ResultsData messDaten;
+/** optional: Stoppuhr, um zu Verbindungsverluste zu erkennen */
+bool debT = false; // debT = debug timer, machen wir an falls wir Probleme beim Abstandssensor haben und dann sagt der Timer ob überhaupt Werte ankommen
+const uint16_t VERBINDUNG_VERLOREN = 0;
+uint16_t vorheriger_abstand = VERBINDUNG_VERLOREN;
+VL53L0X abstandsSensor = VL53L0X();
+const uint8_t NEUE_ABSTANDSADDRESSE = 0x30;
+
+enum Modus {
+    /* Werte im Serial Monitor anzeigen. */
+    ABSTANDS_WERTE_LOGGEN,
+    /* Sensor gehen eine Fläche richten (z.B. Monitor) und in weniger als SCHWELLENWERT mm etwas davor halten.  */
+    SCHWELLENWERT_VISUALISIERUNG,
+};
+const int SCHWELLENWERT = 100;
+/** hier einstellen, was das Programm mit den Sensorwerten anfangen soll: */
+enum Modus modus = SCHWELLENWERT_VISUALISIERUNG;
+
+// hier speichern wir 10 TOFsensorwerte ab:
+int abstandsWerte[5] = {65535, 65535, 65535, 65535, 65535}; // , 65535, 65535, 65535, 65535, 65535
+int abstandsWert;
 
 
 //KOMPASSSENSOR
