@@ -59,6 +59,7 @@ void setup()
 
   // Turn of any "lingering" LEDs
   digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(LEDR, LOW);
   digitalWrite(LEDG, LOW);
   digitalWrite(LEDB, LOW);
 
@@ -148,7 +149,13 @@ void loop()
     y = 0;
   }
 
-  Serial.print(digitalRead(calibrationPin));Serial.print("\t");Serial.print(digitalRead(motorPin));;Serial.print("\n");
+  // Serial.print(digitalRead(calibrationPin));Serial.print("\t");Serial.print(digitalRead(motorPin));;Serial.print("\n");
+  if (digitalRead(motorPin)) {
+    digitalWrite(LED_BUILTIN, LOW);
+    digitalWrite(LEDR, LOW);
+    digitalWrite(LEDG, LOW);
+    digitalWrite(LEDB, LOW);
+  }
 
   if (digitalRead(calibrationPin))
   {
