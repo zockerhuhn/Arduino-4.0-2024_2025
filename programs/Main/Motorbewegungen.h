@@ -150,3 +150,17 @@ void right_to_line() {
     }
   }
 }
+
+void abstand_umfahren() {
+  right(90);
+  straight();
+  delay(3000);
+  left(92);
+  straight();
+  delay(6500);
+  left(90);
+  straight();
+  delay(3500);
+  right(90);
+  for (int i = 0; i < 5; i++) abstandsWerte[i] = 65535;
+}

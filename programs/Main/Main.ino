@@ -150,12 +150,6 @@ void loop()
   }
 
   // Serial.print(digitalRead(calibrationPin));Serial.print("\t");Serial.print(digitalRead(motorPin));;Serial.print("\n");
-  if (digitalRead(motorPin)) {
-    digitalWrite(LED_BUILTIN, LOW);
-    digitalWrite(LEDR, LOW);
-    digitalWrite(LEDG, LOW);
-    digitalWrite(LEDB, LOW);
-  }
 
   if (digitalRead(calibrationPin))
   {
@@ -226,73 +220,92 @@ void loop()
     readDistance();
     werteLoggen();
   }
-  
-  readColor();
-  readColor2();
-  while ((2 * (blau + gruen) <= rot + 300 && (2 * (blau2 + gruen2) <= rot2 + 300)) && (helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800)) {
-    digitalWrite(LEDR, HIGH);
-    stop();
-    Serial.println("red"); 
-    delay(8000); // More than 5 seconds
 
-    if (digitalRead(motorPin)) {
+   if (digitalRead(motorPin)) {
+    digitalWrite(LED_BUILTIN, LOW);
+    digitalWrite(LEDR, LOW);
+    digitalWrite(LEDG, LOW);
+    digitalWrite(LEDB, LOW);
+
+    delay(100);
+    werteLoggen();
+  }
+
+  else {
+    readColor();
+    readColor2();
+    while ((2 * (blau + gruen) <= rot + 300 && (2 * (blau2 + gruen2) <= rot2 + 300)) && (helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800)) {
+      digitalWrite(LEDR, HIGH);
       stop();
-      return;
+      Serial.println("red"); 
+      delay(8000); // More than 5 seconds
+
+      if (digitalRead(motorPin)) {
+        stop();
+        return;
+      }
     }
+    digitalWrite(LEDR, LOW);
+    // readColor();readColor2();
+    // Serial.println(String(calculateColor2()) + " " + String(calculateColor()) + "(" + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2) + ", " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + ")");
+
+    // ABSTANDSSZEUG
+    readDistance(); 
+    if (abstandsWert <= 80) {
+      abstand_umfahren();
+    }
+
+
+    calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
+    // Serial.println(calculatedReflection);
+    if (calculatedReflection == "frontalLine")    // detected crosssection
+    {
+      kreuzung(true, 0);
+      y = 0;
+    }
+    else if (calculatedReflection == "sideLeftLine")
+    {
+      kreuzung(false, -1);
+      y = 0;
+    }
+    else if (calculatedReflection == "sideRightLine")
+    {
+      kreuzung(false, 1);
+      y = 0;
+    }
+    else if (calculatedReflection == "normalLine") // detected normal line
+    {
+      straight();
+      y = 0;
+    }
+    else if (calculatedReflection == "leftLine") // detected a slight left line
+    {
+      straight_left();
+      y = 0;
+    }
+    else if (calculatedReflection == "rightLine") // detected a slight right line
+    {
+      straight_right();
+      y = 0;
+    }
+    else if (calculatedReflection == "hardleftLine") // detected a hard left line
+    {
+      left_to_line();
+      y = 0;
+    }
+    else if (calculatedReflection == "hardrightLine") // detected a hard right line
+    {
+      right_to_line();
+      y = 0;
+    }
+    else if (calculatedReflection == "noLine") // no line detected
+    {
+      Serial.print("\n");
+      Serial.print("keine Linie...");
+      straight();
+      y++;
+    }
+    delay(10); // don't max out processor
+    x++;
   }
-  digitalWrite(LEDR, LOW);
-  // readColor();readColor2();
-  // Serial.println(String(calculateColor2()) + " " + String(calculateColor()) + "(" + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2) + ", " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + ")");
-  
-  calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
-  // Serial.println(calculatedReflection);
-  if (calculatedReflection == "frontalLine")    // detected crosssection
-  {
-    kreuzung(true, 0);
-    y = 0;
-  }
-  else if (calculatedReflection == "sideLeftLine")
-  {
-    kreuzung(false, -1);
-    y = 0;
-  }
-  else if (calculatedReflection == "sideRightLine")
-  {
-    kreuzung(false, 1);
-    y = 0;
-  }
-  else if (calculatedReflection == "normalLine") // detected normal line
-  {
-    straight();
-    y = 0;
-  }
-  else if (calculatedReflection == "leftLine") // detected a slight left line
-  {
-    straight_left();
-    y = 0;
-  }
-  else if (calculatedReflection == "rightLine") // detected a slight right line
-  {
-    straight_right();
-    y = 0;
-  }
-  else if (calculatedReflection == "hardleftLine") // detected a hard left line
-  {
-    left_to_line();
-    y = 0;
-  }
-  else if (calculatedReflection == "hardrightLine") // detected a hard right line
-  {
-    right_to_line();
-    y = 0;
-  }
-  else if (calculatedReflection == "noLine") // no line detected
-  {
-    Serial.print("\n");
-    Serial.print("keine Linie...");
-    straight();
-    y++;
-  }
-  delay(10); // don't max out processor
-  x++;
 }
