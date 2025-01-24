@@ -228,6 +228,7 @@ void loop()
     digitalWrite(LEDB, LOW);
 
     delay(100);
+    readDistance();
     werteLoggen();
   }
 
@@ -251,7 +252,7 @@ void loop()
 
     // ABSTANDSSZEUG
     readDistance(); 
-    if (abstandsWert <= 80) {
+    if (abstandsWert <= 90) {
       abstand_umfahren();
     }
 

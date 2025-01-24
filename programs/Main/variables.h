@@ -45,7 +45,7 @@ const int SCHWELLENWERT = 100;
 enum Modus modus = SCHWELLENWERT_VISUALISIERUNG;
 
 // hier speichern wir 10 TOFsensorwerte ab:
-int abstandsWerte[5] = {65535, 65535, 65535, 65535, 65535};
+int abstandsWerte[5] = {65535, 65535, 65535, 65535, 65535}; // , 65535, 65535, 65535, 65535, 65535
 int abstandsWert;
 
 

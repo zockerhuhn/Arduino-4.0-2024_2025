@@ -19,18 +19,25 @@
 //     } 
 // }
 
-int fiveAverage(int *array) {
+int findAverage(int *array, int size) {
   int avg = 0;
-  for (int i = 0; i < 5; i++) avg += array[i];
-  return avg / 5;
+  for (int i = 0; i < size; i++) {
+    if (array[i] < 8000 && array[i] > 60) {
+      avg += array[i];
+    }
+    else {
+      return max(array[i], 8190);
+    }
+  }
+  return avg / size;
 }
 
 void werteLoggen() {
     Serial.println("abstandsWert: " + String(abstandsWert));
 }
 
-void move_arr_back(int *array) {
-  for (int i = 1; i < 5; i++) {
+void move_arr_back(int *array, int size) {
+  for (int i = 1; i < size; i++) {
     array[i-1] = array[i];
   }
 }
@@ -45,10 +52,10 @@ void readDistance() {
                 // merken: der Wert hat sich verändert
                 vorheriger_abstand = abstandsWert;
             }
-            move_arr_back(abstandsWerte);
+            move_arr_back(abstandsWerte, 5);
             abstandsWerte[4] = abstandsWert;
 
-            abstandsWert = fiveAverage(abstandsWerte);
+            abstandsWert = findAverage(abstandsWerte, 5);
             return; // rausgehen aus der Funktion, damit wir nicht zum Fehler kommen
         }
     }

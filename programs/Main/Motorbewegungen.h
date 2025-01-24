@@ -107,7 +107,7 @@ void left_to_line() {
       straight_right();
       break;
     }
-    if (((initialDirection + turnBy) % 360) != direction) {
+    if (((initialDirection + turnBy) % 360) == direction) {
       break;
     }
 
@@ -118,7 +118,7 @@ void left_to_line() {
   }
 }
 
-void right_to_line() {
+void right_to_line(int turnBy = 330) {
   // going right until it finds a line  
   if (digitalRead(motorPin)) {
     stop();
@@ -126,10 +126,7 @@ void right_to_line() {
   }
   ReadDirection();
   int initialDirection = direction;
-  motors.flipLeftMotor(false);
-  motors.flipRightMotor(false);
-  motors.setSpeeds(70, 75);
-  int turnBy = 330;
+  right();
   while ((calculatedReflection = calculateReflection()) != "normalLine") {
     delay(10);
     ReadDirection();
@@ -140,7 +137,7 @@ void right_to_line() {
       straight_right();
       break;
     }
-    if (((initialDirection + turnBy) % 360) != direction) {
+    if (((initialDirection + turnBy) % 360) == direction) {
       break;
     }
 
@@ -152,15 +149,17 @@ void right_to_line() {
 }
 
 void abstand_umfahren() {
+  straight(-1);
+  delay(500);
   right(90);
   straight();
-  delay(3000);
-  left(92);
+  delay(3200);
+  left(86);
   straight();
-  delay(6500);
-  left(90);
+  delay(7000);
+  left(65);
   straight();
-  delay(3500);
-  right(90);
-  for (int i = 0; i < 5; i++) abstandsWerte[i] = 65535;
+  delay(3700);
+  right_to_line(180);
+  for (int i = 0; i < 10; i++) abstandsWerte[i] = 65535;
 }
