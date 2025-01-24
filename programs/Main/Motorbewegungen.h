@@ -149,6 +149,7 @@ void right_to_line(int turnBy = 330) {
 }
 
 void abstand_umfahren() {
+  digitalWrite(LED_BUILTIN, HIGH);
   if (digitalRead(motorPin)) {
       stop();
       return;
@@ -211,8 +212,12 @@ void abstand_umfahren() {
   }
   delay(1500);
 
+  if (digitalRead(motorPin)) {
+      stop();
+      return;
+  }
   right_to_line(180);
 
-
   for (int i = 0; i < 5; i++) abstandsWerte[i] = 65535;
+  digitalWrite(LED_BUILTIN, LOW);
 }

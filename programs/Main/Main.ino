@@ -232,7 +232,7 @@ void loop()
 
     delay(100);
     readDistance();
-    // werteLoggen();
+    werteLoggen();
   }
 
   else {
@@ -255,6 +255,7 @@ void loop()
 
     // ABSTANDSSZEUG
     readDistance(); 
+    werteLoggen();
     if (abstandsWert <= 80) {
       abstand_umfahren();
     }
