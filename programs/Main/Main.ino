@@ -233,32 +233,14 @@ void loop()
     digitalWrite(LEDR, HIGH);
     stop();
     Serial.println("red"); 
-    delay(1000);
-    readColor();
-    readColor2();
-    Serial.print(String(2 * (blau + gruen)) + " " + String(rot + 300) + "\t" + String(2 * (blau2 + gruen2)) + " " + String(rot2 + 300) + "\t" + String(helligkeit) + " " + String(helligkeit2) + " " + String(colorBrightMaxThreshold + 800) + "\n");
-    straight(-1); // backwards
-    delay(400); // values of delay can be adjusted, but this works pretty good
-    stop();
-    delay(400);
-    straight();
-    red_counter++;
-    if (red_counter > 3) {
-      stop();
-      delay(8000); // more than the 5 required seconds
-      straight(-1);
-      delay(800);
-      break;
-    }
+    delay(8000); // More than 5 seconds
 
     if (digitalRead(motorPin)) {
       stop();
       return;
     }
   }
-
   digitalWrite(LEDR, LOW);
-  red_counter = 0;
   // readColor();readColor2();
   // Serial.println(String(calculateColor2()) + " " + String(calculateColor()) + "(" + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2) + ", " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + ")");
   

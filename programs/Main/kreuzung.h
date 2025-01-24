@@ -24,7 +24,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       if (calculateColor()) {
         green1 += 1; 
         Serial.print("Found green 1 (right)\t");
-        stopping_in = 5;
+        stopping_in = 4;
         digitalWrite(LEDG, LOW);
         delay(50);
         if (green2 >= 2) {
@@ -36,7 +36,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       if (calculateColor2()) {
         green2 += 1;
         Serial.print("Found green 2 (left)\t");
-        stopping_in = 5;
+        stopping_in = 4;
         digitalWrite(LEDB, LOW);
         delay(50);
         if (green1 >= 2) {
@@ -88,7 +88,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
 
       // Drive forward for some time to position the geometric centre above the crossing
       straight();
-      delay(250);
+      delay(100);
       right(90);
       delay(300);
       straight(); // then go straight a bit to avoid seeing a crossing again
@@ -97,7 +97,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
     else if (green2 >= 2) {
       Serial.print("left\t");
       straight();
-      delay(250);
+      delay(100);
       left(90);
       delay(300);
       straight();
@@ -105,7 +105,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
     }
     else { // Did not find any green
       straight();
-      delay(800); // adjust that waiting time
+      delay(400); // adjust that waiting time
 
       if (calculateReflection() == "noLine") {
         if (sides == -1 || sides == 0) {
