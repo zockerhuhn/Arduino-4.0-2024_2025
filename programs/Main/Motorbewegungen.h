@@ -5,7 +5,8 @@ void stop()
 
 void straight(float factor = 1) //drive straight
 {
-  if (digitalRead(calibrationPin)) {
+  if (digitalRead(motorPin)) {
+    stop();
     return;
   }
   motors.flipLeftMotor(false);
@@ -15,7 +16,8 @@ void straight(float factor = 1) //drive straight
 
 void left(int turnBy=0) //turn left
 {
-  if (digitalRead(calibrationPin)) {
+  if (digitalRead(motorPin)) {
+    stop();
     return;
   }
   ReadDirection();
@@ -25,8 +27,12 @@ void left(int turnBy=0) //turn left
   motors.setSpeeds(70, 75);
   if (turnBy!=0) {
     while ((((initialDirection - turnBy) + 360) % 360) != direction) {
-      delay(10);
+      delay(1);
       ReadDirection();
+      if (digitalRead(motorPin)) {
+        stop();
+        return;
+      }
     }
     stop();
   }
@@ -34,7 +40,8 @@ void left(int turnBy=0) //turn left
 
 void right(int turnBy=0) //turn right
 {
-  if (digitalRead(calibrationPin)) {
+  if (digitalRead(motorPin)) {
+    stop();
     return;
   }
   ReadDirection();
@@ -44,8 +51,12 @@ void right(int turnBy=0) //turn right
   motors.setSpeeds(70, 75);
   if (turnBy != 0) {
     while (((initialDirection + turnBy) % 360) != direction) {
-      delay(10);
+      delay(1);
       ReadDirection();
+      if (digitalRead(motorPin)) {
+        stop();
+        return;
+      }
     }
     stop();
   }
@@ -53,7 +64,8 @@ void right(int turnBy=0) //turn right
 
 void straight_left() //drive straight but pull left
 {
-  if (digitalRead(calibrationPin)) {
+  if (digitalRead(motorPin)) {
+    stop();
     return;
   }
   motors.flipLeftMotor(true);
@@ -63,7 +75,8 @@ void straight_left() //drive straight but pull left
 
 void straight_right() //drive straight but pull right
 {
-  if (digitalRead(calibrationPin)) {
+  if (digitalRead(motorPin)) {
+    stop();
     return;
   }
   motors.flipLeftMotor(false);
@@ -74,7 +87,8 @@ void straight_right() //drive straight but pull right
 
 void left_to_line() {
   // going left until it finds a line  
-  if (digitalRead(calibrationPin)) {
+  if (digitalRead(motorPin)) {
+    stop();
     return;
   }
   ReadDirection();
@@ -96,12 +110,18 @@ void left_to_line() {
     if (((initialDirection + turnBy) % 360) != direction) {
       break;
     }
+
+    if (digitalRead(motorPin)) {
+      stop();
+      return;
+    }
   }
 }
 
 void right_to_line() {
   // going right until it finds a line  
-  if (digitalRead(calibrationPin)) {
+  if (digitalRead(motorPin)) {
+    stop();
     return;
   }
   ReadDirection();
@@ -122,6 +142,11 @@ void right_to_line() {
     }
     if (((initialDirection + turnBy) % 360) != direction) {
       break;
+    }
+
+    if (digitalRead(motorPin)) {
+      stop();
+      return;
     }
   }
 }

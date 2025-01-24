@@ -49,8 +49,8 @@ void setup()
 {
   delay(5000);                       // Wichtig für den Abstandssensor
   pinMode(LED_BUILTIN, OUTPUT);      // Pin D13
-  pinMode(calibrationPin, INPUT_PULLDOWN); // define pinmode for switch on the side of the bot
-  pinMode(kalibrierung, INPUT);      // define pinmode for calibration button
+  pinMode(motorPin, INPUT_PULLDOWN); // define pinmode for switch on the side of the bot
+  pinMode(calibrationPin, INPUT);      // define pinmode for calibration button
 
   // Set the color LEDS as outputs
   pinMode(LEDR, OUTPUT);
@@ -59,6 +59,7 @@ void setup()
 
   // Turn of any "lingering" LEDs
   digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(LEDR, LOW);
   digitalWrite(LEDG, LOW);
   digitalWrite(LEDB, LOW);
 
@@ -147,6 +148,15 @@ void loop()
     opfer();
     y = 0;
   }
+
+  // Serial.print(digitalRead(calibrationPin));Serial.print("\t");Serial.print(digitalRead(motorPin));;Serial.print("\n");
+  if (digitalRead(motorPin)) {
+    digitalWrite(LED_BUILTIN, LOW);
+    digitalWrite(LEDR, LOW);
+    digitalWrite(LEDG, LOW);
+    digitalWrite(LEDB, LOW);
+  }
+
   if (digitalRead(calibrationPin))
   {
     stop();
@@ -216,31 +226,20 @@ void loop()
     readDistance();
     werteLoggen();
   }
+  
   readColor();
   readColor2();
   while ((2 * (blau + gruen) <= rot + 300 && (2 * (blau2 + gruen2) <= rot2 + 300)) && (helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800)) {
     digitalWrite(LEDR, HIGH);
     stop();
     Serial.println("red"); 
-    delay(1000);
-    readColor();
-    readColor2();
-    Serial.print(String(2 * (blau + gruen)) + " " + String(rot + 300) + "\t" + String(2 * (blau2 + gruen2)) + " " + String(rot2 + 300) + "\t" + String(helligkeit) + " " + String(helligkeit2) + " " + String(colorBrightMaxThreshold + 800) + "\n");
-    straight(-1); // backwards
-    delay(400); // values of delay can be adjusted, but this works pretty good
-    stop();
-    delay(400);
-    straight();
-    red_counter++;
-    if (red_counter > 3) {
+    delay(8000); // More than 5 seconds
+
+    if (digitalRead(motorPin)) {
       stop();
-      delay(8000); // more than the 5 required seconds
-      straight(-1);
-      delay(800);
-      break;
+      return;
     }
   }
-
   digitalWrite(LEDR, LOW);
   // readColor();readColor2();
   // Serial.println(String(calculateColor2()) + " " + String(calculateColor()) + "(" + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2) + ", " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + ")");

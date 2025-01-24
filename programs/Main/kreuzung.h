@@ -3,7 +3,7 @@
 //#include "Reflektionsauslese.h"
 
 void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) {
-  if (!(digitalRead(calibrationPin))) {
+  if (!(digitalRead(motorPin))) {
     if (bothSides) { // very probably a crossing where green is
 
     // drive forward slowly, check for greens
@@ -24,7 +24,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       if (calculateColor()) {
         green1 += 1; 
         Serial.print("Found green 1 (right)\t");
-        stopping_in = 5;
+        stopping_in = 4;
         digitalWrite(LEDG, LOW);
         delay(50);
         if (green2 >= 2) {
@@ -36,7 +36,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       if (calculateColor2()) {
         green2 += 1;
         Serial.print("Found green 2 (left)\t");
-        stopping_in = 5;
+        stopping_in = 4;
         digitalWrite(LEDB, LOW);
         delay(50);
         if (green1 >= 2) {
@@ -64,6 +64,10 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       }
 
       delay(10);
+      if (digitalRead(motorPin)) {
+        stop();
+        return;
+      }
     }
 
     digitalWrite(LED_BUILTIN, LOW);
@@ -84,7 +88,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
 
       // Drive forward for some time to position the geometric centre above the crossing
       straight();
-      delay(250);
+      delay(100);
       right(90);
       delay(300);
       straight(); // then go straight a bit to avoid seeing a crossing again
@@ -93,7 +97,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
     else if (green2 >= 2) {
       Serial.print("left\t");
       straight();
-      delay(250);
+      delay(100);
       left(90);
       delay(300);
       straight();
@@ -101,7 +105,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
     }
     else { // Did not find any green
       straight();
-      delay(800); // adjust that waiting time
+      delay(400); // adjust that waiting time
 
       if (calculateReflection() == "noLine") {
         if (sides == -1 || sides == 0) {
@@ -115,6 +119,11 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
             delay(10);
             ReadDirection();
             if (calculateReflection() == "normalLine") break;
+            
+            if (digitalRead(motorPin)) {
+              stop();
+              return;
+            }
           }
           stop();
           straight();
@@ -129,6 +138,10 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
             while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
             {
               Serial.print("\nsuche...");
+              if (digitalRead(motorPin)) {
+                stop();
+                return;
+              }
             }
           }
           
@@ -145,6 +158,11 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
             delay(10);
             ReadDirection();
             if (calculateReflection() == "normalLine") break;
+
+            if (digitalRead(motorPin)) {
+              stop();
+              return;
+            }
           }
           stop();
           straight();
@@ -159,6 +177,10 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
             while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
             {
               Serial.print("\nsuche...");
+              if (digitalRead(motorPin)) {
+                stop();
+                return;
+              }
             }
           }
           

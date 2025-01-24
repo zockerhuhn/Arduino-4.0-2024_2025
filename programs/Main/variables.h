@@ -18,15 +18,13 @@ uint16_t rot2, gruen2, blau2, helligkeit2;
  *  dass die Fehlerdetektion immer ausgelöst hat (siehe unten "helligkeitStatischStoppuhr.hasPassed"). */
 Adafruit_TCS34725 rgbSensor = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_60MS, TCS34725_GAIN_4X);
 Adafruit_TCS34725 rgbSensor2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_60MS, TCS34725_GAIN_4X);
-// Counter für wie oft rot hintereinander gesehen wurde
-int red_counter = 0;
 
 
 //MOTOREN
 // Dieses Objekt repräsentiert 2 Motor-Kanäle (1..2 Motoren pro Kanal):
 RescueBoardMotors motors = RescueBoardMotors();
-#define calibrationPin D12
-#define kalibrierung A7
+#define motorPin D12
+#define calibrationPin A6
 
 //ABSTANDSSENSOR
 /** optional: Stoppuhr, um zu Verbindungsverluste zu erkennen */
