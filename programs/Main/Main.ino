@@ -142,9 +142,8 @@ int y = 0;
 
 void loop()
 {
-  if (y >= 100)
+  if (y >= 70)
   {
-    stop(); // temp!!!
     Serial.println("opfer");
     opfer();
     y = 0;
@@ -231,7 +230,7 @@ void loop()
     digitalWrite(LEDG, LOW);
     digitalWrite(LEDB, LOW);
 
-    delay(100);
+    // delay(100);
     // readDistance();
     // werteLoggen();
 
