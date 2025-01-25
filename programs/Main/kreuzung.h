@@ -90,8 +90,8 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       delay(100);
       right(90);
       delay(300);
-      straight(1.6); // then go straight a bit to avoid seeing a crossing again
-      delay(300);     
+      straight(1.8); // then go straight a bit to avoid seeing a crossing again
+      delay(200);     
     }
     else if (green2 >= 2) {
       Serial.print("left\t");
@@ -99,8 +99,8 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       delay(100);
       left(90);
       delay(300);
-      straight(1.6);
-      delay(300);
+      straight(1.8);
+      delay(200);
     }
     else { // Did not find any green
       straight();
@@ -111,9 +111,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
           // finding line
           ReadDirection();
           int initialDirection = direction;
-          motors.flipLeftMotor(true);
-          motors.flipRightMotor(true);
-          motors.setSpeeds(70, 75);
+          left();
           while ((((initialDirection - 90) + 360) % 360) != direction) {
             delay(10);
             ReadDirection();
@@ -130,9 +128,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
 
           if (calculateReflection() != "normalLine") {
             // going right "forever"    
-            motors.flipLeftMotor(false);
-            motors.flipRightMotor(false);
-            motors.setSpeeds(35, 37.5); // probably accounting for motor deficiencies
+            right();
             Serial.print("looping\t");
             while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
             {
@@ -150,9 +146,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
           // finding line
           ReadDirection();
           int initialDirection = direction;
-          motors.flipLeftMotor(false);
-          motors.flipRightMotor(false);
-          motors.setSpeeds(70, 75);
+          right();
           while (((initialDirection + 90) % 360) != direction) {
             delay(10);
             ReadDirection();
@@ -169,9 +163,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
           
           if (calculateReflection() != "normalLine") {
             // going right "forever"    
-            motors.flipLeftMotor(true);
-            motors.flipRightMotor(true);
-            motors.setSpeeds(35, 37.5); // probably accounting for motor deficiencies
+            left();
             Serial.print("looping\t");
             while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
             {
