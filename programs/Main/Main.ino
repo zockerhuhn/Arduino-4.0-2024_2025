@@ -287,7 +287,7 @@ void loop()
     }
     else if (calculatedReflection == "normalLine") // detected normal line
     {
-      straight(2);
+      straight(1.6);
       y = 0;
     }
     else if (calculatedReflection == "leftLine") // detected a slight left line
