@@ -24,7 +24,7 @@ void opfer() {
         stop();
         return;
       }
-      delay(400);
+      delay(1000);
 
       stop();
       if ((calculatedReflection = calculateReflection()) != "noLine") return;
