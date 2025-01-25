@@ -142,11 +142,13 @@ int y = 0;
 
 void loop()
 {
-  if (y >= 70)
+  if (y >= 50)
   {
     Serial.println("opfer");
     opfer();
     y = 0;
+    straight();
+    delay(3000);
   }
 
   // Serial.print(digitalRead(calibrationPin));Serial.print("\t");Serial.print(digitalRead(motorPin));;Serial.print("\n");
