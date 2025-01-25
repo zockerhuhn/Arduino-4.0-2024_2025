@@ -142,12 +142,16 @@ int y = 0;
 
 void loop()
 {
-  if (y >= 100)
+  if (y >= 35)
   {
-    stop(); // temp!!!
     Serial.println("opfer");
     opfer();
+    digitalWrite(LEDR, LOW);
+    digitalWrite(LEDG, LOW);
+    digitalWrite(LEDB, LOW);
     y = 0;
+    straight();
+    delay(3000);
   }
 
   // Serial.print(digitalRead(calibrationPin));Serial.print("\t");Serial.print(digitalRead(motorPin));;Serial.print("\n");
@@ -231,30 +235,26 @@ void loop()
     digitalWrite(LEDG, LOW);
     digitalWrite(LEDB, LOW);
 
-    delay(100);
+    // delay(100);
     // readDistance();
     // werteLoggen();
 
     // read_reflectionandprint();
+
+    readColor();
+    readColor2();
+    Serial.println("red vals: " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + "\t " + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2)  + "\t" + String(colorBrightMaxThreshold + 800));
+    for (int i = 0; i < 4; i++) Serial.print(String(old_colour[i]) + " ");
+    Serial.print("\t");
+    for (int i = 0; i < 4; i++) Serial.print(String(old_colour2[i]) + " ");
+    Serial.print("\t");
+    Serial.print(String(valid_red() && valid_red2()) + " " + String(helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800) + " ");
+    if ((valid_red() && valid_red2()) && (helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800)) Serial.print("REEEEEEEEED");
+    Serial.println();
   }
 
   else {
-    readColor();
-    readColor2();
-    while ((2 * (blau + gruen) <= rot + 300 && (2 * (blau2 + gruen2) <= rot2 + 300)) && (helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800)) {
-      digitalWrite(LEDR, HIGH);
-      stop();
-      Serial.println("red"); 
-      delay(8000); // More than 5 seconds
-
-      if (digitalRead(motorPin)) {
-        stop();
-        return;
-      }
-    }
-    digitalWrite(LEDR, LOW);
-    // readColor();readColor2();
-    // Serial.println(String(calculateColor2()) + " " + String(calculateColor()) + "(" + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2) + ", " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + ")");
+    is_red();
 
     // ABSTANDSSZEUG
     readDistance(); 
@@ -262,7 +262,6 @@ void loop()
     if (abstandsWert <= 80) {
       abstand_umfahren();
     }
-
 
     calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
     // Serial.println(calculatedReflection);
@@ -283,7 +282,7 @@ void loop()
     }
     else if (calculatedReflection == "normalLine") // detected normal line
     {
-      straight();
+      straight(1.4);
       y = 0;
     }
     else if (calculatedReflection == "leftLine") // detected a slight left line
@@ -310,9 +309,11 @@ void loop()
     {
       Serial.print("\n");
       Serial.print("keine Linie...");
-      straight();
+      straight(1.4);
       y++;
     }
+
+
     delay(10); // don't max out processor
     x++;
   }

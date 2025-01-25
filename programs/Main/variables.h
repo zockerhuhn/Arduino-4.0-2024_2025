@@ -12,6 +12,9 @@ String calculatedReflection;
 uint16_t rot, gruen, blau, helligkeit;
 uint16_t rot2, gruen2, blau2, helligkeit2;
 
+uint16_t old_colour[4];
+uint16_t old_colour2[4];
+
 //FARBSENSOREN
 /** Sensor sehr schnell einstellen (ungenauer):
  *  Gain 4x fand ich am besten, aber dann sind die Werte so stabil,
