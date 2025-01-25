@@ -146,6 +146,9 @@ void loop()
   {
     Serial.println("opfer");
     opfer();
+    digitalWrite(LEDR, LOW);
+    digitalWrite(LEDG, LOW);
+    digitalWrite(LEDB, LOW);
     y = 0;
     straight();
     delay(3000);
@@ -284,7 +287,7 @@ void loop()
     }
     else if (calculatedReflection == "normalLine") // detected normal line
     {
-      straight();
+      straight(2);
       y = 0;
     }
     else if (calculatedReflection == "leftLine") // detected a slight left line

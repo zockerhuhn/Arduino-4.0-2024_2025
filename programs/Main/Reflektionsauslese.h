@@ -35,10 +35,6 @@ String calculateReflection() //read reflection and return processed result
   {
     return "hardleftLine";
   }
-  else if (helligkeiten[0] >= reflectionBlackThreshold)
-  {
-    return "hardrightLine";
-  }
   else if (helligkeiten[4] >= reflectionBlackThreshold)
   {
     return "leftLine";
@@ -46,6 +42,10 @@ String calculateReflection() //read reflection and return processed result
   else if (helligkeiten[1] >= reflectionBlackThreshold)
   {
     return "rightLine";
+  }
+  else if (helligkeiten[0] >= reflectionBlackThreshold)
+  {
+    return "hardrightLine";
   }
   else if ((helligkeiten[2] >= reflectionBlackThreshold) || (helligkeiten[3] >= reflectionBlackThreshold))
   {

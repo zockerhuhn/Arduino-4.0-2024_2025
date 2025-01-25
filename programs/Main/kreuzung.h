@@ -81,7 +81,6 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       // Turn
       Serial.print("turn\t");
       right(180);
-      delay(600);
     }
     else if (green1 >= 2) {
       Serial.print("right\t");
@@ -91,8 +90,8 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       delay(100);
       right(90);
       delay(300);
-      straight(); // then go straight a bit to avoid seeing a crossing again
-      delay(500);     
+      straight(2); // then go straight a bit to avoid seeing a crossing again
+      delay(250);     
     }
     else if (green2 >= 2) {
       Serial.print("left\t");
