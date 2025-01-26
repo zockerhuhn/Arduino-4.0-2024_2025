@@ -18,9 +18,9 @@ void read_reflection() //read reflectionsensor
 String calculateReflection() //read reflection and return processed result 
 // !!! Green also counts as black !!!
 {
-  read_reflection();
-  // read_reflectionandprint();
-  if ((helligkeiten[0] >= reflectionBlackThreshold) && (helligkeiten[5] >= reflectionBlackThreshold))
+  // read_reflection();
+  read_reflectionandprint();
+  if ((helligkeiten[0] >= reflectionBlackThreshold || helligkeiten[1] >= reflectionBlackThreshold) && (helligkeiten[5] >= reflectionBlackThreshold || helligkeiten[4] >= reflectionBlackThreshold))
   {
     return "frontalLine";
   }

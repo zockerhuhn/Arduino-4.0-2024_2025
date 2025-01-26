@@ -24,7 +24,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       if (calculateColor()) {
         green1 += 1; 
         Serial.print("Found green 1 (right)\t");
-        stopping_in = 4;
+        stopping_in = 2;
         digitalWrite(LEDG, LOW);
         delay(50);
         if (green2 >= 2) {
@@ -36,7 +36,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       if (calculateColor2()) {
         green2 += 1;
         Serial.print("Found green 2 (left)\t");
-        stopping_in = 4;
+        stopping_in = 2;
         digitalWrite(LEDB, LOW);
         delay(50);
         if (green1 >= 2) {
@@ -56,12 +56,12 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
         stopping = true;
       }
 
-      else if (green1 >= 1 || green2 >= 1) {
-        // Stop to indicate that green has been detected
-        stop();
-        delay(250);
-        straight(0.5);
-      }
+      // else if (green1 >= 1 || green2 >= 1) {
+      //   // Stop to indicate that green has been detected
+      //   stop();
+      //   delay(250);
+      //   straight(0.5);
+      // }
 
       delay(10);
       if (digitalRead(motorPin)) {
@@ -89,7 +89,6 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       straight();
       delay(100);
       right(90);
-      delay(300);
       straight(1.8); // then go straight a bit to avoid seeing a crossing again
       delay(200);     
     }
@@ -98,13 +97,12 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       straight();
       delay(100);
       left(90);
-      delay(300);
       straight(1.8);
       delay(200);
     }
     else { // Did not find any green
-      straight();
-      delay(400); // adjust that waiting time
+      // straight();
+      // delay(400); // adjust that waiting time
 
       if (calculateReflection() == "noLine") {
         if (sides == -1 || sides == 0) {

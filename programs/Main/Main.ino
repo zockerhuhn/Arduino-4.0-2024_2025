@@ -239,7 +239,8 @@ void loop()
     // readDistance();
     // werteLoggen();
 
-    // read_reflectionandprint();
+    Serial.println(calculateReflection());
+    delay(100);
 
     // readColor();
     // readColor2();
@@ -273,17 +274,19 @@ void loop()
     }
     else if (calculatedReflection == "sideLeftLine")
     {
-      kreuzung(false, -1);
+      // kreuzung(false, -1);
+      left_to_line();
       y = 0;
     }
     else if (calculatedReflection == "sideRightLine")
     {
-      kreuzung(false, 1);
+      // kreuzung(false, 1);
+      right_to_line();
       y = 0;
     }
     else if (calculatedReflection == "normalLine") // detected normal line
     {
-      straight(1.8);
+      straight(2);
       y = 0;
     }
     else if (calculatedReflection == "leftLine") // detected a slight left line
@@ -310,7 +313,7 @@ void loop()
     {
       Serial.print("\n");
       Serial.print("keine Linie...");
-      straight(1.8);
+      straight(2);
       y++;
     }
 
@@ -319,3 +322,4 @@ void loop()
     x++;
   }
 }
+//gyatt

@@ -1,3 +1,5 @@
+#include "Abstand.h"
+
 void stop()
 {
   motors.setSpeeds(0, 0);
@@ -97,7 +99,7 @@ void left_to_line() {
   motors.flipRightMotor(true);
   motors.setSpeeds(70, 75);
   int turnBy = 330;
-  while ((calculatedReflection = calculateReflection()) != "normalLine") {
+  while ((calculatedReflection = calculateReflection()) == "noLine") {
     delay(10);
     ReadDirection();
     if (calculatedReflection == "leftLine") {
@@ -127,7 +129,7 @@ void right_to_line(int turnBy = 330) {
   ReadDirection();
   int initialDirection = direction;
   right();
-  while ((calculatedReflection = calculateReflection()) != "normalLine") {
+  while ((calculatedReflection = calculateReflection()) == "noLine") {
     delay(10);
     ReadDirection();
     if (calculatedReflection == "leftLine") {
@@ -155,6 +157,14 @@ void abstand_umfahren() {
     for (int i = 0; i < 5; i++) abstandsWerte[i] = 65535;
     return;
     }
+
+  straight(-1);
+  while (abstandsWert < 90) {
+    readDistance();
+    delay(10);
+  }
+  stop();
+
 
   right();
   if (digitalRead(motorPin)) {
@@ -206,6 +216,8 @@ void abstand_umfahren() {
     for (int i = 0; i < 5; i++) abstandsWerte[i] = 65535;
     return;
   }
+
+  delay(1200);
   while ((calculatedReflection = calculateReflection()) == "noLine") {
     if (digitalRead(motorPin)) {
       stop();
