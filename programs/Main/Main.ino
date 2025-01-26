@@ -241,16 +241,17 @@ void loop()
 
     // read_reflectionandprint();
 
-    readColor();
-    readColor2();
-    Serial.println("red vals: " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + "\t " + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2)  + "\t" + String(colorBrightMaxThreshold + 800));
-    for (int i = 0; i < 4; i++) Serial.print(String(old_colour[i]) + " ");
-    Serial.print("\t");
-    for (int i = 0; i < 4; i++) Serial.print(String(old_colour2[i]) + " ");
-    Serial.print("\t");
-    Serial.print(String(valid_red() && valid_red2()) + " " + String(helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800) + " ");
-    if ((valid_red() && valid_red2()) && (helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800)) Serial.print("REEEEEEEEED");
-    Serial.println();
+    // readColor();
+    // readColor2();
+    // Serial.println("red vals: " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + "\t " + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2)  + "\t" + String(colorBrightMaxThreshold + 800));
+    // for (int i = 0; i < 4; i++) Serial.print(String(old_colour[i]) + " ");
+    // Serial.print("\t");
+    // for (int i = 0; i < 4; i++) Serial.print(String(old_colour2[i]) + " ");
+    // Serial.print("\t");
+    // Serial.print(String(valid_red() && valid_red2()) + " " + String(helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800) + " ");
+    // if ((valid_red() && valid_red2()) && (helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800)) Serial.print("REEEEEEEEED");
+    // Serial.println();
+
   }
 
   else {
@@ -282,7 +283,7 @@ void loop()
     }
     else if (calculatedReflection == "normalLine") // detected normal line
     {
-      straight(1.4);
+      straight(1.8);
       y = 0;
     }
     else if (calculatedReflection == "leftLine") // detected a slight left line
@@ -309,7 +310,7 @@ void loop()
     {
       Serial.print("\n");
       Serial.print("keine Linie...");
-      straight(1.4);
+      straight(1.8);
       y++;
     }
 
