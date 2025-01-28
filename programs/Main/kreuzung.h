@@ -56,13 +56,6 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
         stopping = true;
       }
 
-      // else if (green1 >= 1 || green2 >= 1) {
-      //   // Stop to indicate that green has been detected
-      //   stop();
-      //   delay(250);
-      //   straight(0.5);
-      // }
-
       delay(10);
       if (digitalRead(motorPin)) {
         stop();
@@ -101,9 +94,6 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       delay(200);
     }
     else { // Did not find any green
-      // straight();
-      // delay(400); // adjust that waiting time
-
       if (calculateReflection() == "noLine") {
         if (sides == -1 || sides == 0) {
           // finding line
