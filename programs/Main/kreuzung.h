@@ -14,7 +14,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
 
     bool stopping = false;
     int stopping_in = -1;
-    straight(0.5);
+    straight();
     while (!(stopping)) {
       if (stopping_in > 0) stopping_in--;
       if (stopping_in == 0) stopping = true;
@@ -49,7 +49,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       calculatedReflection = calculateReflection();
 
       if (!(calculatedReflection == "frontalLine" || calculatedReflection == "sideLine") && stopping_in < 0) {
-        stopping_in = 5;
+        stopping_in = 3;
       }
       
       if (green1 >= 2 && green2 >= 2) {
