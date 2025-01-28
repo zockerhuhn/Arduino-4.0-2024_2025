@@ -239,18 +239,20 @@ void loop()
     // readDistance();
     // werteLoggen();
 
-    // read_reflectionandprint();
+    Serial.println(calculateReflection());
+    delay(100);
 
-    readColor();
-    readColor2();
-    Serial.println("red vals: " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + "\t " + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2)  + "\t" + String(colorBrightMaxThreshold + 800));
-    for (int i = 0; i < 4; i++) Serial.print(String(old_colour[i]) + " ");
-    Serial.print("\t");
-    for (int i = 0; i < 4; i++) Serial.print(String(old_colour2[i]) + " ");
-    Serial.print("\t");
-    Serial.print(String(valid_red() && valid_red2()) + " " + String(helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800) + " ");
-    if ((valid_red() && valid_red2()) && (helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800)) Serial.print("REEEEEEEEED");
-    Serial.println();
+    // readColor();
+    // readColor2();
+    // Serial.println("red vals: " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + "\t " + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2)  + "\t" + String(colorBrightMaxThreshold + 800));
+    // for (int i = 0; i < 4; i++) Serial.print(String(old_colour[i]) + " ");
+    // Serial.print("\t");
+    // for (int i = 0; i < 4; i++) Serial.print(String(old_colour2[i]) + " ");
+    // Serial.print("\t");
+    // Serial.print(String(valid_red() && valid_red2()) + " " + String(helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800) + " ");
+    // if ((valid_red() && valid_red2()) && (helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800)) Serial.print("REEEEEEEEED");
+    // Serial.println();
+
   }
 
   else {
@@ -272,17 +274,19 @@ void loop()
     }
     else if (calculatedReflection == "sideLeftLine")
     {
-      kreuzung(false, -1);
+      // kreuzung(false, -1);
+      left_to_line();
       y = 0;
     }
     else if (calculatedReflection == "sideRightLine")
     {
-      kreuzung(false, 1);
+      // kreuzung(false, 1);
+      right_to_line();
       y = 0;
     }
     else if (calculatedReflection == "normalLine") // detected normal line
     {
-      straight(1.4);
+      straight(2);
       y = 0;
     }
     else if (calculatedReflection == "leftLine") // detected a slight left line
@@ -309,7 +313,7 @@ void loop()
     {
       Serial.print("\n");
       Serial.print("keine Linie...");
-      straight(1.4);
+      straight(2);
       y++;
     }
 
@@ -318,3 +322,4 @@ void loop()
     x++;
   }
 }
+//gyatt
