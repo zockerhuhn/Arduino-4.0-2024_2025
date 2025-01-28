@@ -51,6 +51,13 @@ enum Modus modus = SCHWELLENWERT_VISUALISIERUNG;
 int abstandsWerte[5] = {65535, 65535, 65535, 65535, 65535}; // , 65535, 65535, 65535, 65535, 65535
 int abstandsWert;
 
+// Track what side was last seen
+enum Sides {
+  MIDDLE,
+  LEFT_SIDE,
+  RIGHT_SIDE,
+}
+enum Sides last_side = MIDDLE;
 
 //KOMPASSSENSOR
 #define CMPS12 0x60

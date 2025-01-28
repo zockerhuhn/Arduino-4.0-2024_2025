@@ -269,48 +269,61 @@ void loop()
     // Serial.println(calculatedReflection);
     if (calculatedReflection == "frontalLine")    // detected crosssection
     {
-      kreuzung(true, 0);
+      if (last_side == LEFT_SIDE) {
+        kreuzung(true, -1);
+      }
+      if (last_side == RIGHT_SIDE) {
+        kreuzung(true, 1);
+      }
+      else kreuzung(true, 0);
+      
       y = 0;
     }
     else if (calculatedReflection == "sideLeftLine")
     {
-      // kreuzung(false, -1);
+      last_side = LEFT_SIDE;
       left_to_line();
       y = 0;
     }
     else if (calculatedReflection == "sideRightLine")
     {
-      // kreuzung(false, 1);
+      last_side = RIGHT_SIDE;
       right_to_line();
       y = 0;
     }
     else if (calculatedReflection == "normalLine") // detected normal line
     {
+      last_side = MIDDLE;
       straight(2);
       y = 0;
     }
     else if (calculatedReflection == "leftLine") // detected a slight left line
     {
+      last_side = LEFT_SIDE;
       straight_left();
       y = 0;
     }
     else if (calculatedReflection == "rightLine") // detected a slight right line
     {
+      last_side = RIGHT_SIDE;
       straight_right();
       y = 0;
     }
     else if (calculatedReflection == "hardleftLine") // detected a hard left line
     {
+      last_side = LEFT_SIDE;
       left_to_line();
       y = 0;
     }
     else if (calculatedReflection == "hardrightLine") // detected a hard right line
     {
+      last_side = RIGHT_SIDE;
       right_to_line();
       y = 0;
     }
     else if (calculatedReflection == "noLine") // no line detected
     {
+      last_side = MIDDLE;
       Serial.print("\n");
       Serial.print("keine Linie...");
       straight(2);
