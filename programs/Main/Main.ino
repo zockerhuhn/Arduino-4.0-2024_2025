@@ -257,9 +257,25 @@ void loop()
   else {
     redHandling();
 
+    if (last_side == LEFT_SIDE) {
+      digitalWrite(LEDR, HIGH);
+      digitalWrite(LEDG, HIGH);
+      digitalWrite(LEDB, LOW);
+    }
+    if (last_side == RIGHT_SIDE) {
+      digitalWrite(LEDR, HIGH);
+      digitalWrite(LEDG, LOW);
+      digitalWrite(LEDB, HIGH);
+    }
+    if (last_side == MIDDLE) {
+      digitalWrite(LEDR, LOW);
+      digitalWrite(LEDG, LOW);
+      digitalWrite(LEDB, LOW);
+    }
+
     // ABSTANDSSZEUG
-    readDistance(); 
-    logDistance();
+    // readDistance(); 
+    // logDistance();
     if (distance_val <= obstacle_threshold) {
       abstand_umfahren();
     }
@@ -275,7 +291,7 @@ void loop()
         kreuzung(true, 1);
       }
       else kreuzung(true, 0);
-      
+      last_side = MIDDLE;
       y = 0;
     }
     else if (calculatedReflection == "sideLeftLine")

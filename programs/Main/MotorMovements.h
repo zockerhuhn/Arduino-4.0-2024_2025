@@ -18,7 +18,7 @@ void straight(float factor = 1) //drive straight
   motors.setSpeeds((int)(42 * factor),(int)(50 * factor)); //prevent motor drifting
 }
 
-void left(int turnBy=0) //turn left
+void left(int turnBy=0, float speed = 1) //turn left
 {
   stop();
   if (digitalRead(motorPin)) {
@@ -28,7 +28,7 @@ void left(int turnBy=0) //turn left
   int initialDirection = direction;
   motors.flipLeftMotor(true);
   motors.flipRightMotor(true);
-  motors.setSpeeds(70, 75);
+  motors.setSpeeds((int)(70 * speed), (int)(75 * speed));
   if (turnBy!=0) {
     while ((((initialDirection - turnBy) + 360) % 360) != direction) {
       delay(1);
@@ -42,7 +42,7 @@ void left(int turnBy=0) //turn left
   }
 }
 
-void right(int turnBy=0) //turn right
+void right(int turnBy=0, float speed = 1) //turn right
 {
   stop();
   if (digitalRead(motorPin)) {
@@ -52,7 +52,7 @@ void right(int turnBy=0) //turn right
   int initialDirection = direction;
   motors.flipLeftMotor(false);
   motors.flipRightMotor(false);
-  motors.setSpeeds(70, 75);
+  motors.setSpeeds(70 * speed, 75 * speed);
   if (turnBy != 0) {
     while (((initialDirection + turnBy) % 360) != direction) {
       delay(1);
@@ -66,7 +66,7 @@ void right(int turnBy=0) //turn right
   }
 }
 
-void straight_left() //drive straight but pull left
+void straight_left(float speed = 1) //drive straight but pull left
 {
   if (digitalRead(motorPin)) {
     stop();
@@ -74,10 +74,10 @@ void straight_left() //drive straight but pull left
   }
   motors.flipLeftMotor(true);
   motors.flipRightMotor(true);
-  motors.setSpeeds(30, 80);
+  motors.setSpeeds((int)(30 * speed), (int)(80 * speed));
 }
 
-void straight_right() //drive straight but pull right
+void straight_right(float speed = 1) //drive straight but pull right
 {
   if (digitalRead(motorPin)) {
     stop();
@@ -85,11 +85,11 @@ void straight_right() //drive straight but pull right
   }
   motors.flipLeftMotor(false);
   motors.flipRightMotor(false);
-  motors.setSpeeds(80, 30);
+  motors.setSpeeds((int)(80 * speed), (int)(30 * speed));
 }
 
 
-void left_to_line() {
+void left_to_line(int turnBy = 330) {
   // going left until it finds a line  
   if (digitalRead(motorPin)) {
     stop();
@@ -97,10 +97,7 @@ void left_to_line() {
   }
   readDirection();
   int initialDirection = direction;
-  motors.flipLeftMotor(true);
-  motors.flipRightMotor(true);
-  motors.setSpeeds(70, 75);
-  int turnBy = 330;
+  left();
   while ((calculatedReflection = calculateReflection()) == "noLine") {
     delay(10);
     readDirection();
