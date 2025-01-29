@@ -1,6 +1,4 @@
-//#include "Motorbewegungen.h"
-//#include "Farbauslese.h"
-//#include "Reflektionsauslese.h"
+#pragma once
 
 void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) {
   if (!(digitalRead(motorPin))) {
@@ -9,8 +7,8 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
     // drive forward slowly, check for greens
     digitalWrite(LED_BUILTIN, HIGH); // Activate Lamp to see when a Kreuzung is detected
 
-    int green1 = 0; // right
-    int green2 = 0; // left
+    int green_occurences1 = 0; // right
+    int green_occurences2 = 0; // left
 
     bool stopping = false;
     int stopping_in = -1;
@@ -21,25 +19,25 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       readColor2();
       readColor();
 
-      if (calculateColor()) {
-        green1 += 1; 
+      if (isGreen()) {
+        green_occurences1 += 1; 
         Serial.print("Found green 1 (right)\t");
         stopping_in = 2;
         digitalWrite(LEDG, LOW);
         delay(50);
-        if (green2 >= 2) {
+        if (green_occurences2 >= 2) {
           digitalWrite(LEDR, HIGH);
           digitalWrite(LEDB, LOW);
         }
         else digitalWrite(LEDG, HIGH);
       }
-      if (calculateColor2()) {
-        green2 += 1;
+      if (isGreen2()) {
+        green_occurences2 += 1;
         Serial.print("Found green 2 (left)\t");
         stopping_in = 2;
         digitalWrite(LEDB, LOW);
         delay(50);
-        if (green1 >= 2) {
+        if (green_occurences1 >= 2) {
           digitalWrite(LEDR, HIGH);
           digitalWrite(LEDG, LOW);
         }
@@ -52,7 +50,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
         stopping_in = 3;
       }
       
-      if (green1 >= 2 && green2 >= 2) {
+      if (green_occurences1 >= 2 && green_occurences2 >= 2) {
         stopping = true;
       }
 
@@ -70,12 +68,12 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
 
 
     // Handle the recorded greens
-    if (green1 >= 2 && green2 >= 2) {
+    if (green_occurences1 >= 2 && green_occurences2 >= 2) {
       // Turn
       Serial.print("turn\t");
       right(180);
     }
-    else if (green1 >= 2) {
+    else if (green_occurences1 >= 2) {
       Serial.print("right\t");
 
       // Drive forward for some time to position the geometric centre above the crossing
@@ -85,7 +83,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       straight(1.8); // then go straight a bit to avoid seeing a crossing again
       delay(200);     
     }
-    else if (green2 >= 2) {
+    else if (green_occurences2 >= 2) {
       Serial.print("left\t");
       straight();
       delay(100);
@@ -97,12 +95,12 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       if (calculateReflection() == "noLine") {
         if (sides == -1 || sides == 0) {
           // finding line
-          ReadDirection();
+          readDirection();
           int initialDirection = direction;
           left();
           while ((((initialDirection - 90) + 360) % 360) != direction) {
             delay(10);
-            ReadDirection();
+            readDirection();
             if (calculateReflection() == "normalLine") break;
             
             if (digitalRead(motorPin)) {
@@ -121,6 +119,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
             while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
             {
               Serial.print("\nsuche...");
+              delay(10);
               if (digitalRead(motorPin)) {
                 stop();
                 return;
@@ -132,12 +131,12 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
         }
         else if (sides == 1) {
           // finding line
-          ReadDirection();
+          readDirection();
           int initialDirection = direction;
           right();
           while (((initialDirection + 90) % 360) != direction) {
             delay(10);
-            ReadDirection();
+            readDirection();
             if (calculateReflection() == "normalLine") break;
 
             if (digitalRead(motorPin)) {

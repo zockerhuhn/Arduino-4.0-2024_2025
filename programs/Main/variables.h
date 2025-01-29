@@ -1,16 +1,16 @@
 //REFLEKTIONSSENSOREN
 int varrechts = 0;
 int varlinks = 0;
-const uint8_t SENSOR_LEISTE_ANZAHL_SENSOREN = 6;
-const uint8_t SENSOR_LEISTE_PINS[] = {D6, D0, D1, D7, D8, D9};
+const uint8_t SENSOR_BAR_NUM_SENSORS = 6;
+const uint8_t SENSOR_BAR_PINS[] = {D6, D0, D1, D7, D8, D9};
 // hier speichern wir die 6 Reflektionssensorwerte ab:
-uint16_t helligkeiten[SENSOR_LEISTE_ANZAHL_SENSOREN];
-QTRSensors sensorLeiste = QTRSensors();
+uint16_t reflectance_array[SENSOR_BAR_NUM_SENSORS];
+QTRSensors reflectanceSensor = QTRSensors();
 String calculatedReflection;
 // hier speichern wir die Farbsensorwerte ab:
 // Roh-Werte (Es gibt auch kalibierte Werte, aber die sind sehr langsam auszulesen):
-uint16_t rot, gruen, blau, helligkeit;
-uint16_t rot2, gruen2, blau2, helligkeit2;
+uint16_t red, green, blue, brightness;
+uint16_t red2, green2, blue2, brightness2;
 
 uint16_t old_colour[4];
 uint16_t old_colour2[4];
@@ -22,6 +22,8 @@ uint16_t old_colour2[4];
 Adafruit_TCS34725 rgbSensor = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_60MS, TCS34725_GAIN_4X);
 Adafruit_TCS34725 rgbSensor2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_60MS, TCS34725_GAIN_4X);
 
+// Declaring values for calibration, will be reset
+uint16_t average_r, average_g, average_b, average_c,  average_r2, average_g2, average_b2, average_c2;
 
 //MOTOREN
 // Dieses Objekt repräsentiert 2 Motor-Kanäle (1..2 Motoren pro Kanal):
@@ -30,26 +32,16 @@ RescueBoardMotors motors = RescueBoardMotors();
 #define calibrationPin A6
 
 //ABSTANDSSENSOR
-/** optional: Stoppuhr, um zu Verbindungsverluste zu erkennen */
-bool debT = false; // debT = debug timer, machen wir an falls wir Probleme beim Abstandssensor haben und dann sagt der Timer ob überhaupt Werte ankommen
-const uint16_t VERBINDUNG_VERLOREN = 0;
-uint16_t vorheriger_abstand = VERBINDUNG_VERLOREN;
-VL53L0X abstandsSensor = VL53L0X();
-const uint8_t NEUE_ABSTANDSADDRESSE = 0x30;
+const uint16_t LOST_CONNECTION = 0;
+uint16_t last_distance_val = LOST_CONNECTION;
+VL53L0X tofSensor = VL53L0X();
+const uint8_t NEW_TOF_ADDRESS = 0x30;
 
-enum Modus {
-    /* Werte im Serial Monitor anzeigen. */
-    ABSTANDS_WERTE_LOGGEN,
-    /* Sensor gehen eine Fläche richten (z.B. Monitor) und in weniger als SCHWELLENWERT mm etwas davor halten.  */
-    SCHWELLENWERT_VISUALISIERUNG,
-};
-const int SCHWELLENWERT = 100;
-/** hier einstellen, was das Programm mit den Sensorwerten anfangen soll: */
-enum Modus modus = SCHWELLENWERT_VISUALISIERUNG;
+// hier speichern wir 5 TOF-Sensorwerte ab:
+int distance_array[5] = {65535, 65535, 65535, 65535, 65535}; // , 65535, 65535, 65535, 65535, 65535
+int distance_val;
 
-// hier speichern wir 10 TOFsensorwerte ab:
-int abstandsWerte[5] = {65535, 65535, 65535, 65535, 65535}; // , 65535, 65535, 65535, 65535, 65535
-int abstandsWert;
+int obstacle_threshold = 80;
 
 // Track what side was last seen
 enum Sides {
@@ -62,4 +54,4 @@ enum Sides last_side = MIDDLE;
 //KOMPASSSENSOR
 #define CMPS12 0x60
 uint16_t direction;
-uint16_t currentdirection;
+uint16_t current_direction;

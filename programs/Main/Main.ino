@@ -5,7 +5,7 @@
  * !!! Immer darauf achten, dass unten in der Statusleiste...
  *     ... das richtige Arduino Board eingestellt ist
  *     ... das richtige "Sketch File" ausgewählt ist (das ändert sich nämlich nicht automatisch)
- *     ... die richtige C/C++ Konfiguration eingestellt ist (sonst gibt es noch mehr "rote swiggels")
+ *     ... die richtige C/C++ Konfiguration eingestellt ist (sonst gibt es noch mehr "rede swiggels")
  *
  * :: Externen RGB Farbsensor auslesen ::
  * :: Serial Plotter ausprobieren ::
@@ -41,9 +41,9 @@
  * an den selben Bus anschließen.
 */
 
-#include "includes.h"     //all libraries
-#include "variables.h"    //all declarations and variables
-#include "Kalibrierung.h" //calibration values for reflectionsensor and colorsensors
+#include "includes.h"     // all libraries
+#include "variables.h"    // all declarations and variables
+#include "Calibration.h" // calibration values for reflection sensors, color sensors and potentially compass sensor
 
 void setup()
 {
@@ -77,21 +77,21 @@ void setup()
   
   // ABSTANDSSENSOR-INITIALISIEREN
   Serial.println("Initialisierung des 1-Kanal ToF kann bis zu 10 Sekunden dauern...");
-  abstandsSensor.setBus(&Wire);
-  abstandsSensor.setAddress(NEUE_ABSTANDSADDRESSE);
-  if (!abstandsSensor.init()) {
+  tofSensor.setBus(&Wire);
+  tofSensor.setAddress(NEW_TOF_ADDRESS);
+  if (!tofSensor.init()) {
       delay(5000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
       Serial.println("ToF Verdrahtung prüfen! Roboter aus- und einschalten! Programm Ende.");
       while (1);
   }
   // Einstellung: Fehler, wenn der Sensor länger als 500ms lang nicht reagiert
-  abstandsSensor.setTimeout(500);
+  tofSensor.setTimeout(500);
   // Reichweiter vergrößern (macht den Sensor ungenauer)
-  abstandsSensor.setSignalRateLimit(0.1);
-  abstandsSensor.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 18);
-  abstandsSensor.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14);
+  tofSensor.setSignalRateLimit(0.1);
+  tofSensor.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 18);
+  tofSensor.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14);
   // lasse Sensor die ganze Zeit an
-  abstandsSensor.startContinuous();
+  tofSensor.startContinuous();
 
   Serial.println("Initialisierung Abstandssensor abgeschlossen");
 
@@ -119,8 +119,8 @@ void setup()
     digitalWrite(LEDB, LOW);
   }
   Serial.println("Initialisierung Farbe 2 abgeschlossen");
-  sensorLeiste.setTypeRC();
-  sensorLeiste.setSensorPins(SENSOR_LEISTE_PINS, SENSOR_LEISTE_ANZAHL_SENSOREN);
+  reflectanceSensor.setTypeRC();
+  reflectanceSensor.setSensorPins(SENSOR_BAR_PINS, SENSOR_BAR_NUM_SENSORS);
   Serial.println("Initialisierung Reflektionssensor abgeschlossen");
 
   motors.initialize();
@@ -129,13 +129,14 @@ void setup()
   motors.flipRightMotor(true); // nur notwendig, wenn man true reinschreibt
 }
 
-#include "Reflektionsauslese.h" //commands for reading and processing reflectionsensor
-#include "Motorbewegungen.h"    //predefined motor movements
-#include "Farbauslese.h"        //commands for reading and processing colorsensors
-#include "kreuzung.h"      //command for handling crosssections
+#include "Reflectance.h" // commands for reading and processing reflectionsensor
+#include "Compass.h" // commands for a compass
+#include "MotorMovements.h"    //predefined motor movements
+#include "Colour.h"        //commands for reading and processing colorsensors
+#include "Kreuzung.h"      //command for handling crosssections
 #include "Opfer.h"              //Du Opfer
 
-#include "Abstand.h"            // Abstand, noch nicht einsortiert zwischen die restlichen includes
+#include "Distance.h"            // Abstand, noch nicht einsortiert zwischen die restlichen includes
 
 int x = 0;
 int y = 0;
@@ -169,7 +170,6 @@ void loop()
         delay(250);
       }
       // Calibrating should word by calculating an average from multiple values
-      uint16_t average_r, average_g, average_b, average_c,  average_r2, average_g2, average_b2, average_c2;
       average_r = average_g = average_b = average_c = average_r2 = average_g2 = average_b2 = average_c2 = 0;
       int total_cycles = 10;
       for (int i = 0; i < total_cycles; i++) 
@@ -177,15 +177,15 @@ void loop()
         readColor();
         readColor2();
 
-        average_r += rot;
-        average_g += gruen;
-        average_b += blau;
-        average_c += helligkeit;
+        average_r += red;
+        average_g += green;
+        average_b += blue;
+        average_c += brightness;
 
-        average_r2 += rot2;
-        average_g2 += gruen2;
-        average_b2 += blau2;
-        average_c2 += helligkeit2;
+        average_r2 += red2;
+        average_g2 += green2;
+        average_b2 += blue2;
+        average_c2 += brightness2;
       }
       // calculate average values for both sensors
       average_r /= total_cycles;
@@ -203,16 +203,16 @@ void loop()
       redGreenThreshold = average_g - average_r - 200;
       redGreenThreshold2 = average_g2 - average_r2 - 200;
 
-      colorBrightMaxThreshold = max(helligkeit, helligkeit2) + 1500;
-      colorBrightMinThreshold = min(helligkeit, helligkeit2) - 300;
+      colorBrightMaxThreshold = max(brightness, brightness2) + 1500;
+      colorBrightMinThreshold = min(brightness, brightness2) - 300;
 
       // 738 886 767 2399
 
-      Serial.println("Values: " + String(average_r) + " " + String(average_g) + " " + String(average_b)+ " " + String(average_r2) + " " + String(average_g2) + " " + String(average_b2) + " " + String(helligkeit)+ " " + String(helligkeit2));
+      Serial.println("Values: " + String(average_r) + " " + String(average_g) + " " + String(average_b)+ " " + String(average_r2) + " " + String(average_g2) + " " + String(average_b2) + " " + String(brightness)+ " " + String(brightness2));
       Serial.println("Thresholds: " + String(blueGreenThreshold) + " " + String(redGreenThreshold) + " " + String(blueGreenThreshold2) + " " + String(redGreenThreshold2) + " " + String(colorBrightMaxThreshold)+ " " + String(colorBrightMinThreshold));
 
-      // Serial.println("red vals: " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + "\t " + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2));
-      Serial.println(String(calculateColor()) + " " + String(calculateColor2()));
+      // Serial.println("red vals: " + String(red) + " " + String(green) + " " + String(blue) + " " + String(brightness) + "\t " + String(red2) + " " + String(green2) + " " + String(blue2) + " " + String(brightness2));
+      Serial.println(String(isGreen()) + " " + String(isGreen2()));
       // 5x blinken (AN/AUS):
       for (int i = 0; i < 5; i++)
       {
@@ -223,9 +223,8 @@ void loop()
       }
 
       // ABSTANDSWERTE LOGGEN
-      modus = ABSTANDS_WERTE_LOGGEN;
       readDistance();
-      werteLoggen();
+      logDistance();
     }
   }
 
@@ -244,24 +243,24 @@ void loop()
 
     // readColor();
     // readColor2();
-    // Serial.println("red vals: " + String(rot) + " " + String(gruen) + " " + String(blau) + " " + String(helligkeit) + "\t " + String(rot2) + " " + String(gruen2) + " " + String(blau2) + " " + String(helligkeit2)  + "\t" + String(colorBrightMaxThreshold + 800));
+    // Serial.println("red vals: " + String(red) + " " + String(green) + " " + String(blue) + " " + String(brightness) + "\t " + String(red2) + " " + String(green2) + " " + String(blue2) + " " + String(brightness2)  + "\t" + String(colorBrightMaxThreshold + 800));
     // for (int i = 0; i < 4; i++) Serial.print(String(old_colour[i]) + " ");
     // Serial.print("\t");
     // for (int i = 0; i < 4; i++) Serial.print(String(old_colour2[i]) + " ");
     // Serial.print("\t");
-    // Serial.print(String(valid_red() && valid_red2()) + " " + String(helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800) + " ");
-    // if ((valid_red() && valid_red2()) && (helligkeit <= colorBrightMaxThreshold + 800 || helligkeit2 <= colorBrightMaxThreshold + 800)) Serial.print("REEEEEEEEED");
+    // Serial.print(String(valid_red() && valid_red2()) + " " + String(brightness <= colorBrightMaxThreshold + 800 || brightness2 <= colorBrightMaxThreshold + 800) + " ");
+    // if ((valid_red() && valid_red2()) && (brightness <= colorBrightMaxThreshold + 800 || brightness2 <= colorBrightMaxThreshold + 800)) Serial.print("REEEEEEEEED");
     // Serial.println();
 
   }
 
   else {
-    is_red();
+    redHandling();
 
     // ABSTANDSSZEUG
     readDistance(); 
-    werteLoggen();
-    if (abstandsWert <= 80) {
+    logDistance();
+    if (distance_val <= obstacle_threshold) {
       abstand_umfahren();
     }
 
