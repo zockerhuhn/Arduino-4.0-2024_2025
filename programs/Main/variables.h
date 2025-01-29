@@ -56,7 +56,7 @@ enum Sides {
   MIDDLE,
   LEFT_SIDE,
   RIGHT_SIDE,
-}
+};
 enum Sides last_side = MIDDLE;
 
 //KOMPASSSENSOR
