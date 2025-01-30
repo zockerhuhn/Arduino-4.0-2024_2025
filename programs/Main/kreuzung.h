@@ -22,7 +22,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       if (isGreen()) {
         green_occurences1 += 1; 
         Serial.print("Found green 1 (right)\t");
-        stopping_in = 2;
+        stopping_in = 3;
         digitalWrite(LEDG, LOW);
         delay(50);
         if (green_occurences2 >= 2) {
@@ -34,7 +34,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       if (isGreen2()) {
         green_occurences2 += 1;
         Serial.print("Found green 2 (left)\t");
-        stopping_in = 2;
+        stopping_in = 3;
         digitalWrite(LEDB, LOW);
         delay(50);
         if (green_occurences1 >= 2) {
@@ -47,12 +47,14 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
       calculatedReflection = calculateReflection();
 
       if (!(calculatedReflection == "frontalLine" || calculatedReflection == "sideLine") && stopping_in < 0) {
-        stopping_in = 3;
+        stopping_in = 2;
       }
       
-      if (green_occurences1 >= 2 && green_occurences2 >= 2) {
-        stopping = true;
-      }
+      if (green_occurences1 >= 2 && green_occurences2 >= 2) stopping = true;
+
+      if (green_occurences1 >= 5 && green_occurences2 < 2)  stopping = true;
+
+      if (green_occurences2 >= 5 && green_occurences1 < 2)  stopping = true;
 
       delay(10);
       if (digitalRead(motorPin)) {
@@ -71,23 +73,20 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
     if (green_occurences1 >= 2 && green_occurences2 >= 2) {
       // Turn
       Serial.print("turn\t");
-      right(180);
+      right(180, 2);
     }
     else if (green_occurences1 >= 2) {
       Serial.print("right\t");
 
-      // Drive forward for some time to position the geometric centre above the crossing
-      straight();
-      delay(100);
-      right(90);
+      // Robot should be about above the geometric centre
+      right(90, 1.8);
       straight(1.8); // then go straight a bit to avoid seeing a crossing again
       delay(200);     
     }
     else if (green_occurences2 >= 2) {
       Serial.print("left\t");
-      straight();
-      delay(100);
-      left(90);
+
+      left(90, 1.8);
       straight(1.8);
       delay(200);
     }
@@ -98,7 +97,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
           readDirection();
           int initialDirection = direction;
           left();
-          while ((((initialDirection - 90) + 360) % 360) != direction) {
+          while ((((initialDirection - 80) + 360) % 360) != direction) {
             delay(10);
             readDirection();
             if (calculateReflection() == "normalLine") break;
@@ -126,15 +125,13 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
               }
             }
           }
-          
-          
         }
         else if (sides == 1) {
           // finding line
           readDirection();
           int initialDirection = direction;
           right();
-          while (((initialDirection + 90) % 360) != direction) {
+          while (((initialDirection + 80) % 360) != direction) {
             delay(10);
             readDirection();
             if (calculateReflection() == "normalLine") break;
@@ -161,9 +158,7 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
               }
             }
           }
-          
         }
-        
       }
     }
   }

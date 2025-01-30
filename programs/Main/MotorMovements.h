@@ -7,7 +7,7 @@ void stop()
   motors.setSpeeds(0, 0);
 }
 
-void straight(float factor = 1) //drive straight
+void straight(float speed = 1) //drive straight
 {
   if (digitalRead(motorPin)) {
     stop();
@@ -15,7 +15,7 @@ void straight(float factor = 1) //drive straight
   }
   motors.flipLeftMotor(false);
   motors.flipRightMotor(true);
-  motors.setSpeeds((int)(42 * factor),(int)(50 * factor)); //prevent motor drifting
+  motors.setSpeeds((int)(42 * speed),(int)(50 * speed)); //prevent motor drifting
 }
 
 void left(int turnBy=0, float speed = 1) //turn left

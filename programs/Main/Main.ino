@@ -141,19 +141,16 @@ void setup()
 
 #include "Distance.h"            // Abstand, noch nicht einsortiert zwischen die restlichen includes
 
-int x = 0;
-int y = 0;
-
 void loop()
 {
-  if (y >= 35)
+  if (no_line_cycle_count >= 35)
   {
     Serial.println("opfer");
     opfer();
     digitalWrite(LEDR, LOW);
     digitalWrite(LEDG, LOW);
     digitalWrite(LEDB, LOW);
-    y = 0;
+    no_line_cycle_count = 0;
     straight();
     delay(3000);
   }
@@ -281,21 +278,21 @@ void loop()
   else {
     redHandling();
 
-    if (last_side == LEFT_SIDE) {
-      digitalWrite(LEDR, HIGH);
-      digitalWrite(LEDG, HIGH);
-      digitalWrite(LEDB, LOW);
-    }
-    if (last_side == RIGHT_SIDE) {
-      digitalWrite(LEDR, HIGH);
-      digitalWrite(LEDG, LOW);
-      digitalWrite(LEDB, HIGH);
-    }
-    if (last_side == MIDDLE) {
-      digitalWrite(LEDR, LOW);
-      digitalWrite(LEDG, LOW);
-      digitalWrite(LEDB, LOW);
-    }
+    // if (last_side == LEFT_SIDE) {
+    //   digitalWrite(LEDR, HIGH);
+    //   digitalWrite(LEDG, HIGH);
+    //   digitalWrite(LEDB, LOW);
+    // }
+    // if (last_side == RIGHT_SIDE) {
+    //   digitalWrite(LEDR, HIGH);
+    //   digitalWrite(LEDG, LOW);
+    //   digitalWrite(LEDB, HIGH);
+    // }
+    // if (last_side == MIDDLE) {
+    //   digitalWrite(LEDR, LOW);
+    //   digitalWrite(LEDG, LOW);
+    //   digitalWrite(LEDB, LOW);
+    // }
 
     readDistance();
     if (distance_val <= obstacle_threshold) {
@@ -303,7 +300,9 @@ void loop()
     }
 
     calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
-    Serial.println(calculatedReflection);
+    Serial.println(calculatedReflection); 
+    if (calculatedReflection != "noLine") no_line_cycle_count = 0;
+
     if (calculatedReflection == "frontalLine") { // detected crosssection 
       if (last_side == LEFT_SIDE) {
         kreuzung(true, -1);
@@ -313,55 +312,52 @@ void loop()
       }
       else kreuzung(true, 0);
       last_side = MIDDLE;
-      y = 0;
     }
+
     else if (calculatedReflection == "sideLeftLine") {
       last_side = LEFT_SIDE;
       left_to_line();
-      y = 0;
     }
+
     else if (calculatedReflection == "sideRightLine") {
       last_side = RIGHT_SIDE;
       right_to_line();
-      y = 0;
     }
+
     else if (calculatedReflection == "normalLine") { // detected normal line
       last_side = MIDDLE;
       straight(1.8);
-      y = 0;
     }
+
     else if (calculatedReflection == "leftLine") { // detected a slight left line
       last_side = LEFT_SIDE;
-      straight_left();
-      y = 0;
+      left_to_line();
     }
+
     else if (calculatedReflection == "rightLine") { // detected a slight right line
       last_side = RIGHT_SIDE;
-      straight_right();
-      y = 0;
+      right_to_line();
     }
+
     else if (calculatedReflection == "hardleftLine") { // detected a hard left line
       last_side = LEFT_SIDE;
       left_to_line();
-      y = 0;
     }
+
     else if (calculatedReflection == "hardrightLine") { // detected a hard right line
-    
       last_side = RIGHT_SIDE;
       right_to_line();
-      y = 0;
     }
+
     else if (calculatedReflection == "noLine") {// no line detected
       last_side = MIDDLE;
       // Serial.print("\n");
       // Serial.print("keine Linie...");
       straight(1.8);
-      y++;
+      no_line_cycle_count++;
     }
 
-
     delay(10); // don't max out processor
-    x++;
   }
 }
 //gyatt

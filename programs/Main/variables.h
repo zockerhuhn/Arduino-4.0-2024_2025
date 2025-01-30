@@ -66,3 +66,9 @@ enum DebugMode {
   LOG_LINE,
 };
 enum DebugMode debug = DONT_LOG;
+
+// Kreuzungslogic
+int last_kreuzung = 0; // TODO implement this so kreuzung doesn't trigger immediately after another kreuzung
+
+// Opferlogic
+int no_line_cycle_count = 0;
