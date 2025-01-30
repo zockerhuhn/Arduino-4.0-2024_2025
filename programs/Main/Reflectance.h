@@ -1,7 +1,7 @@
 #pragma once
 
-void logReflection() // print reflection sensor values
-{
+void logReflection() { // print reflection sensor values
+  Serial.print("Reflectance Array Values: ");
   for (int i = 0; i < SENSOR_BAR_NUM_SENSORS; i++)
   {
     Serial.print(String(reflectance_array[i]) + '\t'); // alles in eine Zeile
@@ -10,15 +10,12 @@ void logReflection() // print reflection sensor values
 }
 
 
-void readReflection() //read reflectionsensor
-{
+void readReflection() { //read reflectionsensor
   reflectanceSensor.read(reflectance_array);
 }
  
 
-String calculateReflection() //read reflection and return processed result 
-// !!! Green also counts as black !!!
-{
+String calculateReflection() { //read reflection and return processed result 
   readReflection();
   // logReflection();
   if ((reflectance_array[0] >= reflectionBlackThreshold || reflectance_array[1] >= reflectionBlackThreshold) && (reflectance_array[5] >= reflectionBlackThreshold || reflectance_array[4] >= reflectionBlackThreshold))

@@ -43,6 +43,12 @@ int distance_val;
 
 int obstacle_threshold = 80;
 
+//KOMPASSSENSOR
+#define CMPS12 0x60
+uint16_t direction;
+uint16_t current_direction;
+
+
 // Track what side was last seen
 enum Sides {
   MIDDLE,
@@ -51,7 +57,12 @@ enum Sides {
 };
 enum Sides last_side = MIDDLE;
 
-//KOMPASSSENSOR
-#define CMPS12 0x60
-uint16_t direction;
-uint16_t current_direction;
+// Debug modes:
+enum DebugMode {
+  DONT_LOG,
+  LOG_DISTANCE,
+  LOG_COLOUR,
+  LOG_REFLECTANCE,
+  LOG_LINE,
+};
+enum DebugMode debug = DONT_LOG;

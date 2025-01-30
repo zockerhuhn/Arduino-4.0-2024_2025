@@ -26,7 +26,7 @@ void moveArrBack(int *array, int size) {
 void readDistance() {
     if (!tofSensor.timeoutOccurred()) {
         distance_val = tofSensor.readRangeContinuousMillimeters();
-        // logDistanceVals();
+        // logDistance();
         // statt 65535 kann es auch passieren, dass sich der Wert einfach nicht mehr ändert
         if (distance_val != 65535) {
             // alles OK
