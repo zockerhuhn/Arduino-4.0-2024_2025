@@ -162,7 +162,7 @@ void loop()
 
   if (digitalRead(calibrationPin))
   {
-    delay(1000);
+    delay(500);
     if (digitalRead(calibrationPin)) {
       stop();
       for (int i = 0; i < 5; i++)
@@ -239,9 +239,12 @@ void loop()
     // Set distance array to invalid value
     for (int i = 0; i < 5; i++) distance_array[i] = 65535;
 
+    // Reset colour:
+    for (int i = 0; i < 4; i++) old_colour[i] = 0;
+    for (int i = 0; i < 4; i++) old_colour2[i] = 0;
 
 
-    // 
+    // Debugging
     switch (debug) {
       case DONT_LOG:
         delay(10);
@@ -294,15 +297,13 @@ void loop()
       digitalWrite(LEDB, LOW);
     }
 
-    // ABSTANDSSZEUG
-    // readDistance(); 
-    // logDistance();
+    readDistance();
     if (distance_val <= obstacle_threshold) {
       abstand_umfahren();
     }
 
     calculatedReflection = calculateReflection(); // read the reflectionsensor and save the result in a variable to avoid changing values while processing
-    // Serial.println(calculatedReflection);
+    Serial.println(calculatedReflection);
     if (calculatedReflection == "frontalLine") { // detected crosssection 
       if (last_side == LEFT_SIDE) {
         kreuzung(true, -1);
@@ -352,8 +353,8 @@ void loop()
     }
     else if (calculatedReflection == "noLine") {// no line detected
       last_side = MIDDLE;
-      Serial.print("\n");
-      Serial.print("keine Linie...");
+      // Serial.print("\n");
+      // Serial.print("keine Linie...");
       straight(1.8);
       y++;
     }

@@ -115,10 +115,10 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
           if (calculateReflection() != "normalLine") {
             // going right "forever"    
             right();
-            Serial.print("looping\t");
+            // Serial.print("looping\t");
             while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
             {
-              Serial.print("\nsuche...");
+              // Serial.print("\nsuche...");
               delay(10);
               if (digitalRead(motorPin)) {
                 stop();
