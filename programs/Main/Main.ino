@@ -243,12 +243,16 @@ void loop()
 
     // 
     switch (debug) {
-      case LOG_DISTANCE: {
+      case DONT_LOG:
+        delay(10);
+        break;
+
+      case LOG_DISTANCE: 
         readDistance();
         logDistance();
-      }
+        break;
         
-      case LOG_COLOUR: {
+      case LOG_COLOUR: 
         readColor();
         readColor2();
         Serial.println("red vals: " + String(red) + " " + String(green) + " " + String(blue) + " " + String(brightness) + "\t " + String(red2) + " " + String(green2) + " " + String(blue2) + " " + String(brightness2)  + "\t" + String(colorBrightMaxThreshold + 800));
@@ -259,15 +263,15 @@ void loop()
         Serial.print(String(isRed() && isRed2()) + " " + String(brightness <= colorBrightMaxThreshold + 800 || brightness2 <= colorBrightMaxThreshold + 800) + " ");
         if ((isRed() && isRed2()) && (brightness <= colorBrightMaxThreshold + 800 || brightness2 <= colorBrightMaxThreshold + 800)) Serial.print("REEEEEEEEED");
         Serial.println();
-      }
+        break;
 
-      case LOG_REFLECTANCE: {
-       logReflection();
-      }
+      case LOG_REFLECTANCE: 
+        logReflection();
+        break;
 
-      case LOG_LINE: {
+      case LOG_LINE: 
         Serial.println("Seen line: " + calculateReflection());
-      }
+        break;
     }
   }
 
