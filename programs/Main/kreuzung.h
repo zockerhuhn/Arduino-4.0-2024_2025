@@ -1,9 +1,7 @@
 #pragma once
 
-void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) {
+void kreuzung(int sides /*- 1 is left, 0 is none, 1 is right*/) {
   if (!(digitalRead(motorPin))) {
-    if (bothSides) { // very probably a crossing where green is
-
     // drive forward slowly, check for greens
     digitalWrite(LED_BUILTIN, HIGH); // Activate Lamp to see when a Kreuzung is detected
 
@@ -160,17 +158,6 @@ void kreuzung(bool bothSides, int sides /*- 1 is left, 0 is none, 1 is right*/) 
           }
         }
       }
-    }
-  }
-    else { // hit the kreuzung more from a side
-
-        straight(-1);
-        delay(600);
-        stop();
-        delay(100);
-        straight(1);
-        delay(1200);
-        kreuzung(true, sides);
     }
   }
 }

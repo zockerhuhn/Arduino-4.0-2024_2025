@@ -59,13 +59,13 @@ enum Sides last_side = MIDDLE;
 
 // Debug modes:
 enum DebugMode {
-  DONT_LOG,
+  LOG_NOTHING,
   LOG_DISTANCE,
   LOG_COLOUR,
   LOG_REFLECTANCE,
   LOG_LINE,
 };
-enum DebugMode debug = DONT_LOG;
+enum DebugMode debug = LOG_NOTHING;
 
 // Kreuzungslogic
 int last_kreuzung = 0; // TODO implement this so kreuzung doesn't trigger immediately after another kreuzung

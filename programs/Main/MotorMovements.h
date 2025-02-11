@@ -72,9 +72,10 @@ void straight_left(float speed = 1) //drive straight but pull left
     stop();
     return;
   }
-  motors.flipLeftMotor(false);
+  // Configuration for left
+  motors.flipLeftMotor(true);
   motors.flipRightMotor(true);
-  motors.setSpeeds((int)(20 * speed), (int)(100 * speed));
+  motors.setSpeeds((int)(40 * speed), (int)(100 * speed));
 }
 
 void straight_right(float speed = 1) //drive straight but pull right
@@ -83,9 +84,10 @@ void straight_right(float speed = 1) //drive straight but pull right
     stop();
     return;
   }
+  // Configuration for right
   motors.flipLeftMotor(false);
-  motors.flipRightMotor(true);
-  motors.setSpeeds((int)(100 * speed), (int)(20 * speed));
+  motors.flipRightMotor(false);
+  motors.setSpeeds((int)(100 * speed), (int)(40 * speed));
 }
 
 

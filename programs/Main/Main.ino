@@ -159,7 +159,7 @@ void loop()
 
   if (digitalRead(calibrationPin))
   {
-    delay(500);
+    delay(250);
     if (digitalRead(calibrationPin)) {
       stop();
       for (int i = 0; i < 5; i++)
@@ -243,8 +243,7 @@ void loop()
 
     // Debugging
     switch (debug) {
-      case DONT_LOG:
-        delay(10);
+      case LOG_NOTHING:
         break;
 
       case LOG_DISTANCE: 
@@ -304,24 +303,20 @@ void loop()
     if (calculatedReflection != "noLine") no_line_cycle_count = 0;
 
     if (calculatedReflection == "frontalLine") { // detected crosssection 
-      if (last_side == LEFT_SIDE) {
-        kreuzung(true, -1);
-      }
-      if (last_side == RIGHT_SIDE) {
-        kreuzung(true, 1);
-      }
-      else kreuzung(true, 0);
+      if (last_side == LEFT_SIDE) kreuzung(-1);
+      if (last_side == RIGHT_SIDE) kreuzung(1);
+      else kreuzung(0);
       last_side = MIDDLE;
     }
 
     else if (calculatedReflection == "sideLeftLine") {
       last_side = LEFT_SIDE;
-      left_to_line();
+      straight_left(1.2);
     }
 
     else if (calculatedReflection == "sideRightLine") {
       last_side = RIGHT_SIDE;
-      right_to_line();
+      straight_right(1.2);
     }
 
     else if (calculatedReflection == "normalLine") { // detected normal line
