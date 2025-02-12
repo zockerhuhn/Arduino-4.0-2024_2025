@@ -20,9 +20,9 @@ void kreuzung(int sides /*- 1 is left, 0 is none, 1 is right*/) {
       if (isGreen()) {
         green_occurences1 += 1; 
         Serial.print("Found green 1 (right)\t");
-        stopping_in = 3;
+        stopping_in = 2;
         digitalWrite(LEDG, LOW);
-        delay(50);
+        delay(10);
         if (green_occurences2 >= 2) {
           digitalWrite(LEDR, HIGH);
           digitalWrite(LEDB, LOW);
@@ -32,9 +32,9 @@ void kreuzung(int sides /*- 1 is left, 0 is none, 1 is right*/) {
       if (isGreen2()) {
         green_occurences2 += 1;
         Serial.print("Found green 2 (left)\t");
-        stopping_in = 3;
+        stopping_in = 2;
         digitalWrite(LEDB, LOW);
-        delay(50);
+        delay(10);
         if (green_occurences1 >= 2) {
           digitalWrite(LEDR, HIGH);
           digitalWrite(LEDG, LOW);
@@ -45,14 +45,14 @@ void kreuzung(int sides /*- 1 is left, 0 is none, 1 is right*/) {
       calculatedReflection = calculateReflection();
 
       if (!(calculatedReflection == "frontalLine" || calculatedReflection == "sideLine") && stopping_in < 0) {
-        stopping_in = 2;
+        stopping_in = 3;
       }
       
       if (green_occurences1 >= 2 && green_occurences2 >= 2) stopping = true;
 
-      if (green_occurences1 >= 5 && green_occurences2 < 2)  stopping = true;
+      if (green_occurences1 >= 4 && green_occurences2 < 2)  stopping = true;
 
-      if (green_occurences2 >= 5 && green_occurences1 < 2)  stopping = true;
+      if (green_occurences2 >= 4 && green_occurences1 < 2)  stopping = true;
 
       delay(10);
       if (digitalRead(motorPin)) {

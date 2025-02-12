@@ -321,34 +321,34 @@ void loop()
 
     else if (calculatedReflection == "normalLine") { // detected normal line
       last_side = MIDDLE;
-      straight(1.8);
+      straight(2);
     }
 
     else if (calculatedReflection == "leftLine") { // detected a slight left line
       last_side = LEFT_SIDE;
-      left_to_line();
+      left_to_line(1.6);
     }
 
     else if (calculatedReflection == "rightLine") { // detected a slight right line
       last_side = RIGHT_SIDE;
-      right_to_line();
+      right_to_line(1.6);
     }
 
     else if (calculatedReflection == "hardleftLine") { // detected a hard left line
       last_side = LEFT_SIDE;
-      left_to_line();
+      left_to_line(1.6);
     }
 
     else if (calculatedReflection == "hardrightLine") { // detected a hard right line
       last_side = RIGHT_SIDE;
-      right_to_line();
+      right_to_line(1.6);
     }
 
     else if (calculatedReflection == "noLine") {// no line detected
       last_side = MIDDLE;
       // Serial.print("\n");
       // Serial.print("keine Linie...");
-      straight(1.8);
+      straight(2);
       no_line_cycle_count++;
     }
 

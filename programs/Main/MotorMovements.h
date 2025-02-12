@@ -91,7 +91,7 @@ void straight_right(float speed = 1) //drive straight but pull right
 }
 
 
-void left_to_line(int turnBy = 330) {
+void left_to_line(float speed = 1, int turnBy = 190) {
   // going left until it finds a line  
   if (digitalRead(motorPin)) {
     stop();
@@ -99,7 +99,7 @@ void left_to_line(int turnBy = 330) {
   }
   readDirection();
   int initialDirection = direction;
-  left();
+  left(0, speed);
   while ((calculatedReflection = calculateReflection()) == "noLine") {
     delay(10);
     readDirection();
@@ -121,7 +121,7 @@ void left_to_line(int turnBy = 330) {
   }
 }
 
-void right_to_line(int turnBy = 330) {
+void right_to_line(float speed = 1, int turnBy = 190) {
   // going right until it finds a line  
   if (digitalRead(motorPin)) {
     stop();
@@ -129,7 +129,7 @@ void right_to_line(int turnBy = 330) {
   }
   readDirection();
   int initialDirection = direction;
-  right();
+  right(0, speed);
   while ((calculatedReflection = calculateReflection()) == "noLine") {
     delay(10);
     readDirection();
