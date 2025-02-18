@@ -38,7 +38,7 @@ int readDistance() {
             distance_array[4] = distance_val;
 
             distance_val = findAverage(distance_array, 5);
-            return; // rausgehen aus der Funktion, damit wir nicht zum Fehler kommen
+            return distance_val; // rausgehen aus der Funktion, damit wir nicht zum Fehler kommen
         }
     }
     // Fehler:
