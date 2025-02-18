@@ -23,7 +23,8 @@ void moveArrBack(int *array, int size) {
   }
 }
 
-int readDistance() {
+
+int readDistance(int num_average = 5) {
     if (!tofSensor.timeoutOccurred()) {
         distance_val = tofSensor.readRangeContinuousMillimeters();
         // logDistance();
@@ -34,10 +35,10 @@ int readDistance() {
                 // merken: der Wert hat sich verändert
                 last_distance_val = distance_val;
             }
-            moveArrBack(distance_array, 5);
+            moveArrBack(distance_array, num_average);
             distance_array[4] = distance_val;
 
-            distance_val = findAverage(distance_array, 5);
+            distance_val = findAverage(distance_array, num_average);
             return distance_val; // rausgehen aus der Funktion, damit wir nicht zum Fehler kommen
         }
     }

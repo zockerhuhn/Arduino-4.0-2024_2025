@@ -129,7 +129,7 @@ void setup()
   motors.flipRightMotor(true); // nur notwendig, wenn man true reinschreibt
 
 
-  debug = LOG_LINE;
+  debug = LOG_NOTHING;
 }
 
 #include "Reflectance.h" // commands for reading and processing reflectionsensor
@@ -143,7 +143,7 @@ void setup()
 
 void loop()
 {
-  if (no_line_cycle_count >= 35)
+  if (no_line_cycle_count >= 0)
   {
     Serial.println("opfer");
     opfer();
