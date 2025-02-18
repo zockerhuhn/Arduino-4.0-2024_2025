@@ -23,7 +23,7 @@ void moveArrBack(int *array, int size) {
   }
 }
 
-void readDistance() {
+int readDistance() {
     if (!tofSensor.timeoutOccurred()) {
         distance_val = tofSensor.readRangeContinuousMillimeters();
         // logDistance();
@@ -44,4 +44,5 @@ void readDistance() {
     // Fehler:
     distance_val = LOST_CONNECTION;
     Serial.println("ToF Verdrahtung prüfen! Roboter aus- und einschalten! " + String(tofSensor.readRangeContinuousMillimeters()));
+    return distance_val;
 }
