@@ -23,27 +23,31 @@ void moveArrBack(int *array, int size) {
   }
 }
 
+int readRawDistance() {
+  if (!tofSensor.timeoutOccurred()) {
+    distance_val = tofSensor.readRangeContinuousMillimeters();
+  }
+  // logDistance();
+  // statt 65535 kann es auch passieren, dass sich der Wert einfach nicht mehr ändert
+  if (distance_val != 65535) {
+    return distance_val;
+  }
+  // Fehler:
+  distance_val = LOST_CONNECTION;
+  Serial.println("ToF Verdrahtung prüfen! Roboter aus- und einschalten! " + String(tofSensor.readRangeContinuousMillimeters()));
+  return distance_val;
+}
 
 int readDistance(int num_average = 5) {
-    if (!tofSensor.timeoutOccurred()) {
-        distance_val = tofSensor.readRangeContinuousMillimeters();
-        // logDistance();
-        // statt 65535 kann es auch passieren, dass sich der Wert einfach nicht mehr ändert
-        if (distance_val != 65535) {
-            // alles OK
-            if (last_distance_val != distance_val) {
-                // merken: der Wert hat sich verändert
-                last_distance_val = distance_val;
-            }
-            moveArrBack(distance_array, num_average);
-            distance_array[4] = distance_val;
+  readRawDistance();
+  moveArrBack(distance_array, num_average);
+  distance_array[4] = distance_val;
 
-            distance_val = findAverage(distance_array, num_average);
-            return distance_val; // rausgehen aus der Funktion, damit wir nicht zum Fehler kommen
-        }
-    }
-    // Fehler:
-    distance_val = LOST_CONNECTION;
-    Serial.println("ToF Verdrahtung prüfen! Roboter aus- und einschalten! " + String(tofSensor.readRangeContinuousMillimeters()));
-    return distance_val;
+  distance_val = findAverage(distance_array, num_average);
+  return distance_val;
+}
+
+int readWriteDistanceArray(int num_average = 5) {
+  for (int i = 0; i < num_average; i++) readDistance(num_average);
+  return distance_val;
 }

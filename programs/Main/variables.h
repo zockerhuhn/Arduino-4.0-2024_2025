@@ -32,17 +32,19 @@ RescueBoardMotors motors = RescueBoardMotors();
 #define calibrationPin A6
 
 //ABSTANDSSENSOR
-const uint16_t LOST_CONNECTION = 0;
+const uint16_t LOST_CONNECTION = -1;
 uint16_t last_distance_val = LOST_CONNECTION;
 VL53L0X tofSensor = VL53L0X();
 const uint8_t NEW_TOF_ADDRESS = 0x30;
 
 // hier speichern wir 5 TOF-Sensorwerte ab:
-int distance_array[5] = {65535, 65535, 65535, 65535, 65535}; // , 65535, 65535, 65535, 65535, 65535
+const int NUM_DISTANCE_VALS = 5;
+int distance_array[NUM_DISTANCE_VALS]; 
 int distance_val;
 
 int obstacle_threshold = 80;
 int wallscan_threshold = 20;
+int opfer_wall_threshold = 80;
 
 //KOMPASSSENSOR
 #define CMPS12 0x60

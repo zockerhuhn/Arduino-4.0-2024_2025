@@ -92,7 +92,8 @@ void setup()
   tofSensor.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14);
   // lasse Sensor die ganze Zeit an
   tofSensor.startContinuous();
-
+  // Initialise the default values for the "window", should be in variables but won't work there
+  for (int i = 0; i < NUM_DISTANCE_VALS; i++) distance_array[i] = 65535;
   Serial.println("Initialisierung Abstandssensor abgeschlossen");
 
 
