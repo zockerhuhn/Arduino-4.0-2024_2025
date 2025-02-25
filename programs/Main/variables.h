@@ -1,16 +1,19 @@
 //REFLEKTIONSSENSOREN
 int varrechts = 0;
 int varlinks = 0;
-const uint8_t SENSOR_LEISTE_ANZAHL_SENSOREN = 6;
-const uint8_t SENSOR_LEISTE_PINS[] = {D6, D0, D1, D7, D8, D9};
+const uint8_t SENSOR_BAR_NUM_SENSORS = 6;
+const uint8_t SENSOR_BAR_PINS[] = {D6, D0, D1, D7, D8, D9};
 // hier speichern wir die 6 Reflektionssensorwerte ab:
-uint16_t helligkeiten[SENSOR_LEISTE_ANZAHL_SENSOREN];
-QTRSensors sensorLeiste = QTRSensors();
+uint16_t reflectance_array[SENSOR_BAR_NUM_SENSORS];
+QTRSensors reflectanceSensor = QTRSensors();
 String calculatedReflection;
 // hier speichern wir die Farbsensorwerte ab:
 // Roh-Werte (Es gibt auch kalibierte Werte, aber die sind sehr langsam auszulesen):
-uint16_t rot, gruen, blau, helligkeit;
-uint16_t rot2, gruen2, blau2, helligkeit2;
+uint16_t red, green, blue, brightness;
+uint16_t red2, green2, blue2, brightness2;
+
+uint16_t old_colour[4];
+uint16_t old_colour2[4];
 
 //FARBSENSOREN
 /** Sensor sehr schnell einstellen (ungenauer):
@@ -18,34 +21,57 @@ uint16_t rot2, gruen2, blau2, helligkeit2;
  *  dass die Fehlerdetektion immer ausgelöst hat (siehe unten "helligkeitStatischStoppuhr.hasPassed"). */
 Adafruit_TCS34725 rgbSensor = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_60MS, TCS34725_GAIN_4X);
 Adafruit_TCS34725 rgbSensor2 = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_60MS, TCS34725_GAIN_4X);
-// Counter für wie oft rot hintereinander gesehen wurde
-int red_counter = 0;
 
+// Declaring values for calibration, will be reset
+uint16_t average_r, average_g, average_b, average_c,  average_r2, average_g2, average_b2, average_c2;
 
 //MOTOREN
 // Dieses Objekt repräsentiert 2 Motor-Kanäle (1..2 Motoren pro Kanal):
 RescueBoardMotors motors = RescueBoardMotors();
-#define calibrationPin D12
-#define kalibrierung A7
+#define motorPin D12
+#define calibrationPin A6
 
 //ABSTANDSSENSOR
-SparkFun_VL53L5CX abstandsSensor = SparkFun_VL53L5CX();
-const uint8_t NEUE_ABSTANDSADDRESSE = 0x35;
-typedef struct Einstellungen {
-    uint8_t aufloesung;
-    uint8_t bildSeitenlaenge;
-    uint8_t maxMessfrequenz;
-} Einstellungen_t;
-// Bei meinem Sensor habe ich hier ein paar "kaputte Pixel":
-const Einstellungen ACHT_MAL_ACHT = { VL53L5CX_RESOLUTION_8X8, 8, 15 }; // 8x8: max 15Hz
-// Bei meinem Sensor sieht hier alles gut aus:
-const Einstellungen VIER_MAL_VIER = { VL53L5CX_RESOLUTION_4X4, 4, 60 }; // 4x4: max 60Hz
-Einstellungen einstellungen = VIER_MAL_VIER;
-// hier speichern wir die 6 TOFsensorwerte ab:
-VL53L5CX_ResultsData messDaten;
-int currentDistance;
+const uint16_t LOST_CONNECTION = -1;
+uint16_t last_distance_val = LOST_CONNECTION;
+VL53L0X tofSensor = VL53L0X();
+const uint8_t NEW_TOF_ADDRESS = 0x30;
 
+// hier speichern wir 5 TOF-Sensorwerte ab:
+const int NUM_DISTANCE_VALS = 5;
+int distance_array[NUM_DISTANCE_VALS]; 
+int distance_val;
+
+int obstacle_threshold = 80;
+int wallscan_threshold = 20;
+int opfer_wall_threshold = 80;
 
 //KOMPASSSENSOR
 #define CMPS12 0x60
 uint16_t direction;
+uint16_t current_direction;
+
+
+// Track what side was last seen
+enum Sides {
+  MIDDLE,
+  LEFT_SIDE,
+  RIGHT_SIDE,
+};
+enum Sides last_side = MIDDLE;
+
+// Debug modes:
+enum DebugMode {
+  LOG_NOTHING,
+  LOG_DISTANCE,
+  LOG_COLOUR,
+  LOG_REFLECTANCE,
+  LOG_LINE,
+};
+enum DebugMode debug = LOG_NOTHING;
+
+// Kreuzungslogic
+int last_kreuzung = 0; // TODO implement this so kreuzung doesn't trigger immediately after another kreuzung
+
+// Opferlogic
+int no_line_cycle_count = 0;

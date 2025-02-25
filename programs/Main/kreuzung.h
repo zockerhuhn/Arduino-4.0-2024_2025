@@ -1,74 +1,64 @@
-//#include "Motorbewegungen.h"
-//#include "Farbauslese.h"
-//#include "Reflektionsauslese.h"
+#pragma once
 
-void kreuzung(bool bothSides) {
-  if (!(digitalRead(calibrationPin))) {
-    if (bothSides) { // very probably a crossing where green is
-
+void kreuzung(int sides /*- 1 is left, 0 is none, 1 is right*/) {
+  if (!(digitalRead(motorPin))) {
     // drive forward slowly, check for greens
     digitalWrite(LED_BUILTIN, HIGH); // Activate Lamp to see when a Kreuzung is detected
-    
-    motors.flipLeftMotor(false);
-    motors.flipRightMotor(true);
-    
 
-    bool green1 = false; // right
-    bool green2 = false; // left
+    int green_occurences1 = 0; // right
+    int green_occurences2 = 0; // left
 
     bool stopping = false;
     int stopping_in = -1;
-    String reflection;
-    
+    straight();
     while (!(stopping)) {
       if (stopping_in > 0) stopping_in--;
       if (stopping_in == 0) stopping = true;
-      motors.setSpeeds((int)(42 * 0.5),(int)(50 * 0.5)); // half the default speed
       readColor2();
       readColor();
 
-      if (calculateColor() && !green1) {
-        green1 = true; 
+      if (isGreen()) {
+        green_occurences1 += 1; 
         Serial.print("Found green 1 (right)\t");
-        stopping_in = 10;
+        stopping_in = 2;
         digitalWrite(LEDG, LOW);
-        delay(50);
-        if (green2) {
+        delay(10);
+        if (green_occurences2 >= 2) {
           digitalWrite(LEDR, HIGH);
           digitalWrite(LEDB, LOW);
         }
         else digitalWrite(LEDG, HIGH);
       }
-      if (calculateColor2() && !green2) {
-        green2 = true;
+      if (isGreen2()) {
+        green_occurences2 += 1;
         Serial.print("Found green 2 (left)\t");
-        stopping_in = 10;
+        stopping_in = 2;
         digitalWrite(LEDB, LOW);
-        delay(50);
-        if (green1) {
+        delay(10);
+        if (green_occurences1 >= 2) {
           digitalWrite(LEDR, HIGH);
           digitalWrite(LEDG, LOW);
         }
         else digitalWrite(LEDB, HIGH);
       }
 
-      reflection = calculateReflection();
+      calculatedReflection = calculateReflection();
 
-      if ((!(reflection == "frontalLine" || reflection == "sideLine")) && stopping_in < 0) {
-        stopping_in = 8;
+      if (!(calculatedReflection == "frontalLine" || calculatedReflection == "sideLine") && stopping_in < 0) {
+        stopping_in = 3;
       }
       
-      if (green1 && green2) {
-        stopping = true;
-      }
+      if (green_occurences1 >= 2 && green_occurences2 >= 2) stopping = true;
 
-      else if (green1 || green2) {
-        // Stop to indicate that green has been detected
-        stop();
-        delay(250);
-      }
+      if (green_occurences1 >= 4 && green_occurences2 < 2)  stopping = true;
+
+      if (green_occurences2 >= 4 && green_occurences1 < 2)  stopping = true;
 
       delay(10);
+      if (digitalRead(motorPin)) {
+        stop();
+        return;
+      }
     }
 
     digitalWrite(LED_BUILTIN, LOW);
@@ -78,64 +68,96 @@ void kreuzung(bool bothSides) {
 
 
     // Handle the recorded greens
-    if (green1 && green2) {
+    if (green_occurences1 >= 2 && green_occurences2 >= 2) {
       // Turn
       Serial.print("turn\t");
-      right(180);
-      delay(600);
+      right(180, 2);
     }
-    else if (green1) {
+    else if (green_occurences1 >= 2) {
       Serial.print("right\t");
 
-      // Drive forward for some time to position the geometric centre above the crossing
-      straight();
-      delay(300);
-      right(90);
-      delay(1500);
-      straight(); // then go straight a bit to avoid seeing a crossing again
-      delay(500);     
+      // Robot should be about above the geometric centre
+      right(90, 1.8);
+      straight(1.8); // then go straight a bit to avoid seeing a crossing again
+      delay(200);     
     }
-    else if (green2) {
+    else if (green_occurences2 >= 2) {
       Serial.print("left\t");
-      straight();
-      delay(300);
-      left(90);
-      delay(1500);
-      straight();
-      delay(500);
+
+      left(90, 1.8);
+      straight(1.8);
+      delay(200);
     }
     else { // Did not find any green
-      straight();
-      delay(500); // adjust that waiting time
-
       if (calculateReflection() == "noLine") {
-        // finding line
-        left(90);
-        
-        // going right "forever"    
-        motors.flipLeftMotor(false);
-        motors.flipRightMotor(false);
-        motors.setSpeeds(35, 37.5); // probably accounting for motor deficiencies
-        Serial.print("looping\t");
-        while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
-        {
-          Serial.print("\nsuche...");
+        if (sides == -1 || sides == 0) {
+          // finding line
+          readDirection();
+          int initialDirection = direction;
+          left();
+          while ((((initialDirection - 80) + 360) % 360) != direction) {
+            delay(10);
+            readDirection();
+            if (calculateReflection() == "normalLine") break;
+            
+            if (digitalRead(motorPin)) {
+              stop();
+              return;
+            }
+          }
+          stop();
+          straight();
+          delay(100);
+
+          if (calculateReflection() != "normalLine") {
+            // going right "forever"    
+            right();
+            // Serial.print("looping\t");
+            while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
+            {
+              // Serial.print("\nsuche...");
+              delay(10);
+              if (digitalRead(motorPin)) {
+                stop();
+                return;
+              }
+            }
+          }
+        }
+        else if (sides == 1) {
+          // finding line
+          readDirection();
+          int initialDirection = direction;
+          right();
+          while (((initialDirection + 80) % 360) != direction) {
+            delay(10);
+            readDirection();
+            if (calculateReflection() == "normalLine") break;
+
+            if (digitalRead(motorPin)) {
+              stop();
+              return;
+            }
+          }
+          stop();
+          straight();
+          delay(100);
+          
+          if (calculateReflection() != "normalLine") {
+            // going right "forever"    
+            left();
+            Serial.print("looping\t");
+            while (calculateReflection() == "noLine") // MAYBE because it turns left at the start ignore left Lines because these would be the wrong direction (for a kreuzung for example they would be left instead of straight)
+            {
+              Serial.print("\nsuche...");
+              if (digitalRead(motorPin)) {
+                stop();
+                return;
+              }
+            }
+          }
         }
       }
-    }
-  }
-    else { // hit the kreuzung more from a side
-        motors.flipLeftMotor(true);
-        motors.flipRightMotor(false);
-        motors.setSpeeds(35, 37.5);
-        delay(1000);
-        stop();
-        delay(200);
-        motors.flipLeftMotor(false);
-        motors.flipRightMotor(true);
-        motors.setSpeeds(35, 37.5);
-        delay(1200);
-        kreuzung(true);
     }
   }
 }

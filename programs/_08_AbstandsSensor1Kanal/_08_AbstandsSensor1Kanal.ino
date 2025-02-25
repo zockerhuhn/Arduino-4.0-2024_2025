@@ -31,7 +31,7 @@
  * - oder Bus I2C1 ("Wire1") verbunden werden.
 */
 
-/** der I2C Bus */
+/** der I2C Bus */  
 #include <Wire.h>
 /** I2C Adresse: 0x29 (7-bit) (Das Beispiel programmiert die Adresse auf 0x30 um) */
 #include <VL53L0X.h>
@@ -50,18 +50,16 @@ enum Modus {
 };
 
 /** hier einstellen, was das Programm mit den Sensorwerten anfangen soll: */
-Modus modus = WERTE_LOGGEN;
+Modus modus = IM_SERIAL_PLOTTER_ZEIGEN;
 
 void setup() {
     Serial.begin(115200);
 
     // I2C Bus 1x für alle Bus-Teilnehmer initialisieren (sonst crasht das Betriebssystem)
-    Wire.begin(); // Bus I2C0
-    Wire.setClock(1000000); // 1MHz Kommunikationsgeschwindigkeit
-    //Wire1.begin();  // Bus I2C1
+    Wire1.begin();  // Bus I2C1
 
     // hier den zu nutzenden I2C Bus und die zu nutzende I2C Adresse eintragen:
-    abstandsSensor.setBus(&Wire);
+    abstandsSensor.setBus(&Wire1);
     abstandsSensor.setAddress(NEUE_ADDRESSE);
     if (!abstandsSensor.init()) {
         delay(10000); // damit wir Zeit haben den Serial Monitor zu öffnen nach dem Upload
