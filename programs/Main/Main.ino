@@ -275,7 +275,7 @@ void loop()
           digitalWrite(LEDR, LOW);
           Serial.println("Left!");
           straight();
-          delay(1367);
+          delay(967);
           // Let cam correct the rest
           left(75);
           straight(-1);
@@ -301,7 +301,7 @@ void loop()
           digitalWrite(LEDR, HIGH);
           Serial.println("Right.");
           straight();
-          delay(1367);
+          delay(967);
           right(75);
           straight(-1);
           delay(607);
@@ -326,11 +326,11 @@ void loop()
           digitalWrite(LEDB, HIGH);
           digitalWrite(LEDR, HIGH);
           // Not really important to be positioned exactly above crossing, so only driving a bit more forward
-          straight();
-          delay(1300);
-          left(190);
+          // straight(); 
+          // delay(1267);
+          left(180);
           straight(-1);
-          delay(607);
+          delay(207);
           clear_cam_data();
           cam_angle = kreuzung_angle = prev_kreuzung_angle = 360;
           get_angle();

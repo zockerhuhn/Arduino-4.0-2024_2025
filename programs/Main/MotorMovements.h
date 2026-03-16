@@ -262,6 +262,13 @@ void abstand_umfahren() {
 
   straight_right(70, 1.5);
 
+  readDistance();
+  bool reversed = false;
+  if (distance_val <= 1.5 * obstacle_threshold) {
+    reversed = true;
+    right(180);
+  }
+
   for (int i = 0; i < NUM_ANGLE_VALS; i++) angle_array[i] = 360;
   clear_cam_data();
   cam_angle = 360;
@@ -274,19 +281,24 @@ void abstand_umfahren() {
   get_angle();
   Serial.println(String(direction) + " " + String(received_cam_data.num_pixels));
   // (((start_direction - direction) + 360) % 360 > 10 && (((start_direction - direction) + 360) % 360 < 70 && ((start_direction - direction) + 360) % 360 > 110)))
-  while ((received_cam_data.num_pixels < 1300 && !(received_cam_data.angle1 != 360 && received_cam_data.angle1 > 20 && received_cam_data.angle2 != 360 && received_cam_data.angle2 < -20))) {
+  bool logic_term;
+  if (!reversed) logic_term = (received_cam_data.angle1 != 360 && received_cam_data.angle1 > 20 && received_cam_data.angle2 != 360 && received_cam_data.angle2 < -20);
+  else (received_cam_data.angle1 != 360 && received_cam_data.angle1 < -20 && received_cam_data.angle2 != 360 && received_cam_data.angle2 > 20);
+  while ((received_cam_data.num_pixels < 1300 && !logic_term)) {
     readDirection();
     Serial.println(String(direction) + " " + String(received_cam_data.num_pixels) + " " + String(received_cam_data.line_right) + " " + String(((start_direction - direction) + 360) % 360 > 10));
     if (openMvCam.loop()) {
       append_to_window(received_cam_data.kreuzung_data);
       get_angle();
     }
-    motors.setSpeeds((int)(base_left_speed / 2), (int)(2 * base_right_speed));
+    if (!reversed) motors.setSpeeds((int)(base_left_speed / 2), (int)(2 * base_right_speed));
+    else motors.setSpeeds((int)(2 * base_left_speed), (int)(base_right_speed / 2));
     delay(1);
   }
 
   delay(1700);
-  right(100);
+  if (!reversed) right(100);
+  else left(100);
   straight(-1);
   delay(500);
   // right_to_line();
